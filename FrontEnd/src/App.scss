@@ -1,0 +1,6 @@
+@import "./assets/styles/layout.scss";
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

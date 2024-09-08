@@ -1,0 +1,78 @@
+@import "variable.scss";
+
+.theme-layout {
+  .container-content {
+    margin-top: 4rem;
+    .row .menu-part, .row .content.part {
+      padding: 0;
+    }
+  }
+  .top-bar-admin {
+    background-color: $gray-700;
+    color: $white;
+    height: 4rem;
+    padding: 0 2rem;
+    position: fixed;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    top: 0;
+    .top-bar-contanier {
+      height: 100%;
+      .top-bar-item {
+        display: flex;
+        align-items: center;
+        .top-bar-item-info {
+          cursor: pointer;
+        }
+      }
+        .menu {
+          gap: 30px;
+          font-weight: 600;
+          text-transform: uppercase;
+          div {
+            display: inline-block;
+            height: inherit;
+            vertical-align: bottom;
+          }
+        }
+    }
+    .top-bar-content-left {
+      padding: 8px;
+      color: $black;
+      transition: opacity 0.2s linear;
+      border: $gray-300 1px solid;
+      position: absolute;
+      opacity: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      height: calc(100vh - 4rem);
+      right: 0;
+      min-width: 360px;
+      overflow: hidden;
+      .header {
+        height: 20%;
+      }
+      .body {
+        height: 60%;
+      }
+      .footer {
+        height: 10%;
+      }
+
+      .bottom {
+        position: absolute;
+        bottom: 10px;
+        height: 10px;
+        background-color: $primary;
+      }
+    }
+    .top-bar-content-left.show {
+      opacity: 1;
+    }
+  }
+
+  .menu-side-admin {
+    //position: sticky;
+    height:  calc(100vh - 4rem);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: $white;
+  }
+}
