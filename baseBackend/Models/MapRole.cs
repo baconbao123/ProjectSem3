@@ -2,17 +2,17 @@
 using System.ComponentModel.DataAnnotations;
 namespace AuthenticationJWT.Models;
 
-[Index(nameof(roleId), nameof(userId), IsUnique = true)]
+[Index(nameof(RoleId), nameof(UserId), IsUnique = true)]
 
 public class MapRole
 {
     [Key]
     public int Id { get; set; }
     [Required]
-    public int roleId { get; set; }
+    public int RoleId { get; set; }
 
     [Required]
-    public int userId { get; set; }
+    public int UserId { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }

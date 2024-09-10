@@ -1,36 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationJWT.Models;
 
-[Index(nameof(Email), IsUnique = true)]
-public class User
+public class UserAddress
 {
     [Key]
     public int Id { get; set; }
-
     [Required]
-    public string Username { get; set; }
+    public int UserId { get; set; }
 
-    [Required]
-    public string Password { get; set; }
+    public int Mark { get; set; }
 
-    [Required]
-    public string Email { get; set; }
     public string? Phone { get; set; }
-    public string? RefreshToken { get; set; }
+    public bool Index { get; set; }
+    public string? OtherMark { get; set; }
+    public string DetailAdress { get; set; }
+    public string? Address { get; set; }
 
     public int Version { get; set; }
     public int Status { get; set; }
 
-    public DateTime? Expired { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
     public int CreatedBy { get; set; }
     public int UpdatedBy { get; set; }
 
     public DateTime? DeletedAt { get; set; }
-    public User()
+
+    public UserAddress()
     {
         CreatedBy = 0;
         UpdatedBy = 0;

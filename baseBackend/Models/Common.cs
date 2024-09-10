@@ -2,14 +2,17 @@
 
 namespace AuthenticationJWT.Models;
 
-public class Resource
+public class Common
 {
     [Key]
     public int Id { get; set; }
     [Required]
     public string Name { get; set; }
-    public string? Description { get; set; }
+    public string? Value { get; set; }
+    public string Type { get; set; }
+
     public int Status { get; set; }
+
     public int Version { get; set; }
 
     public DateTime? CreatedAt { get; set; }
@@ -19,7 +22,7 @@ public class Resource
 
     public DateTime? DeletedAt { get; set; }
 
-    public Resource()
+    public Common()
     {
         CreatedBy = 0;
         UpdatedBy = 0;

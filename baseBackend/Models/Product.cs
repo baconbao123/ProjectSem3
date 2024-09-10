@@ -3,22 +3,37 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationJWT.Models;
 
-[Index(nameof(Email), IsUnique = true)]
-public class User
+[Index(nameof(Code), IsUnique = true)]
+public class Product
 {
     [Key]
     public int Id { get; set; }
 
     [Required]
-    public string Username { get; set; }
+    public string Code { get; set; }
+    [Required]
+    public int CategoryId { get; set; }
 
     [Required]
-    public string Password { get; set; }
+    public int ManufactorId { get; set; }
 
     [Required]
-    public string Email { get; set; }
-    public string? Phone { get; set; }
+    public int PublisherId { get; set; }
+
+    [Required]
+    public string Name { get; set; }
+
+    public string Description { get; set; }
+
     public string? RefreshToken { get; set; }
+
+    public string? BasePrice { get; set; }
+
+    public string? SellPrice { get; set; }
+
+    public float? Profit { get; set; }
+
+    public int Quantity { get; set; }
 
     public int Version { get; set; }
     public int Status { get; set; }
@@ -30,7 +45,7 @@ public class User
     public int UpdatedBy { get; set; }
 
     public DateTime? DeletedAt { get; set; }
-    public User()
+    public Product()
     {
         CreatedBy = 0;
         UpdatedBy = 0;

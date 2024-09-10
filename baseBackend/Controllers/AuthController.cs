@@ -98,7 +98,6 @@ public class AuthController : ControllerBase
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
             };
 
-        user.Roles.ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],

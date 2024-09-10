@@ -2,14 +2,15 @@
 
 namespace AuthenticationJWT.Models;
 
-public class Resource
+public class Feedback
 {
     [Key]
     public int Id { get; set; }
     [Required]
-    public string Name { get; set; }
-    public string? Description { get; set; }
-    public int Status { get; set; }
+    public int ProductId { get; set; }
+    public int ParentId { get; set; }
+
+    public string? Content { get; set; }
     public int Version { get; set; }
 
     public DateTime? CreatedAt { get; set; }
@@ -19,7 +20,7 @@ public class Resource
 
     public DateTime? DeletedAt { get; set; }
 
-    public Resource()
+    public Feedback()
     {
         CreatedBy = 0;
         UpdatedBy = 0;

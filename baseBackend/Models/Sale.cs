@@ -2,15 +2,19 @@
 
 namespace AuthenticationJWT.Models;
 
-public class Resource
+public class Sale
 {
     [Key]
     public int Id { get; set; }
     [Required]
     public string Name { get; set; }
-    public string? Description { get; set; }
-    public int Status { get; set; }
+    public float Discount { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public int Type { get; set; }
     public int Version { get; set; }
+
+    public int Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
@@ -19,7 +23,7 @@ public class Resource
 
     public DateTime? DeletedAt { get; set; }
 
-    public Resource()
+    public Sale()
     {
         CreatedBy = 0;
         UpdatedBy = 0;

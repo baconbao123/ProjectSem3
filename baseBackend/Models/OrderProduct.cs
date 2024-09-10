@@ -2,14 +2,21 @@
 
 namespace AuthenticationJWT.Models;
 
-public class Resource
+public class OrderProduct
 {
     [Key]
     public int Id { get; set; }
     [Required]
-    public string Name { get; set; }
-    public string? Description { get; set; }
-    public int Status { get; set; }
+    public int OderId { get; set; }
+    [Required]
+
+    public int ProductId { get; set; }
+
+
+    public float Profit { get; set; }
+    public string BasePrice { get; set; }
+    public string ShellPrice { get; set; }
+
     public int Version { get; set; }
 
     public DateTime? CreatedAt { get; set; }
@@ -19,7 +26,7 @@ public class Resource
 
     public DateTime? DeletedAt { get; set; }
 
-    public Resource()
+    public OrderProduct()
     {
         CreatedBy = 0;
         UpdatedBy = 0;

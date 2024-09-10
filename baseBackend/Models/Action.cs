@@ -8,6 +8,8 @@ public class Action
     public int Id { get; set; }
     [Required]
     public string Name { get; set; }
+    public string? Description { get; set; }
+    public int Version { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }

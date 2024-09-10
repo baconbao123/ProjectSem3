@@ -3,19 +3,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationJWT.Models;
 
-[Index(nameof(roleId), nameof(resourceId), nameof(actionId), IsUnique = true)]
+[Index(nameof(RoleId), nameof(ResourceId), nameof(ActionId), IsUnique = true)]
 
 public class MapAction
 {
     [Key]
-    public int id { get; set; }
+    public int Id { get; set; }
     [Required]
-    public int roleId { get; set; }
+    public int RoleId { get; set; }
     [Required]
-    public int resourceId { get; set; }
+    public int ResourceId { get; set; }
 
     [Required]
-    public int actionId { get; set; }
+    public int ActionId { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
     public int CreatedBy { get; set; }
