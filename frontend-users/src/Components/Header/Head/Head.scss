@@ -1,0 +1,22 @@
+.row-head {
+  border-bottom: 1px solid gainsboro;
+
+  .header-left {
+    padding: 3px 0;
+    color: gray;
+
+    .icon-phone {
+      padding-right: 10px;
+    }
+  }
+
+  .signIn {
+    padding: 3px 0;
+    text-align: right;
+    cursor: pointer;
+
+    &:hover {
+        color: #1CC0A0;
+    }
+  }
+}
