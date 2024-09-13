@@ -1,0 +1,143 @@
+@import '../../../../global.scss';
+
+.menu-container {
+  width: 100%;
+  background-color: #484646;
+  position: relative;
+
+  &.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: position 0.3s ease-in-out;
+  }
+
+  .category {
+    display: flex;
+    justify-content: space-between;
+    background-color: $prime-color;
+    align-items: center;
+    color: white;
+    padding: 8px 10px;
+    position: relative;
+
+    .content {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .title {
+        font-size: 16px;
+      }
+
+      .icon {
+        font-size: 18px;
+      }
+    }
+
+    .arrowitem {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding-left: 80px;
+    }
+  }
+
+  .categoryItem {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    padding: 0;
+
+    .item {
+      color: rgb(55, 55, 55);
+      padding: 7px 0;
+      padding-left: 20px;
+      cursor: pointer;
+      border-bottom: 0.5px solid rgb(239, 237, 237);
+
+      &:hover .name {
+        color: $prime-color;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 0; /* Loại bỏ khoảng cách dưới item, không có margin dưới phần tử cuối cùng */
+      }
+    }
+  }
+
+  .categoryItem {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    padding: 0;
+
+    .item {
+      color: rgb(55, 55, 55);
+      padding: 7px 0;
+      padding-left: 20px;
+      cursor: pointer;
+      border-bottom: 0.5px solid rgb(239, 237, 237);
+
+      &:hover .name {
+        color: $prime-color;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 0; /* Loại bỏ khoảng cách dưới item, không có margin dưới phần tử cuối cùng */
+      }
+    }
+  }
+
+  .page-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+
+    .item {
+      color: white;
+      font-weight: 500;
+      padding: 0 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .name {
+        cursor: pointer;
+
+        &:hover {
+          color: $prime-color;
+        }
+      }
+    }
+  }
+
+  .save-container {
+    display: flex;
+    padding: 10px 0;
+    color: white;
+    justify-content: center;
+    font-weight: 500;
+    align-items: center;
+  }
+}
