@@ -1,0 +1,8 @@
+@import '../../../global.scss';
+
+.link-email {
+    color: black;
+    &:hover {
+        color: $btn-bgColor-hover;
+    }
+}
