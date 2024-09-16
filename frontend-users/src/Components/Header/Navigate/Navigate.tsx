@@ -5,7 +5,7 @@ import { Button } from 'primereact/button'
 import 'primeicons/primeicons.css'
 import { useState } from 'react'
 import './Navigate.scss'
-
+import { Link } from 'react-router-dom'
 interface MenuItem {
   id: number
   name: string
@@ -25,12 +25,14 @@ export const Navigate = () => {
       <Container>
         <Row className='row-navigate'>
           {/* Logo */}
-          <Col lg={3}>
-            <img src='images/Logo.png' style={{ width: '200px', height: '50px'}}/>
+          <Col lg={3} md={3} sm={3}>
+            <Link to='/home'>
+              <img src='images/Logo.png' style={{ width: '200px', height: '50px' }} />
+            </Link>
           </Col>
 
           {/* Search */}
-          <Col lg={6}>
+          <Col lg={6} md={5} sm={5}>
             <div className='p-inputgroup flex-1'>
               <InputText placeholder='Search...' className='inputgroup' />
               <Dropdown
@@ -41,24 +43,30 @@ export const Navigate = () => {
                 placeholder='All'
                 className='w-full md:w-14rem'
               />
-              <Button label='Search' className='btnSearch'/>
+              <Button label='Search' className='btnSearch' />
             </div>
           </Col>
 
           {/* Account */}
-          <Col lg={3} className='navi-right'>
+          <Col lg={3} md={4} sm={4} className='navi-right'>
             <div className='navi'>
+              <Link to='/store'>
+                <div className='storesystem'>
+                  <i className='pi pi-shop' style={{ fontSize: '1.8rem' }}></i>
+                  <span style={{ fontSize: '12px' }}>Store</span>
+                </div>
+              </Link>
+              <div className='orders'>
+                <i className='pi pi-heart icon' style={{ fontSize: '1.8rem' }}></i>
+                <span style={{ fontSize: '12px' }}>Orders</span>
+              </div>
               <div className='account'>
                 <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
-                <span style={{ fontSize: '12px'}}>Account</span>
-              </div>
-              <div className='wishlist'>
-                <i className='pi pi-heart icon' style={{ fontSize: '1.8rem' }}></i>
-                <span style={{ fontSize: '12px'}}>Wishlist</span>
+                <span style={{ fontSize: '12px' }}>Account</span>
               </div>
               <div className='cart'>
                 <i className='pi pi-shopping-cart icon' style={{ fontSize: '1.8rem' }}></i>
-                <span style={{ fontSize: '12px'}}>Cart</span>
+                <span style={{ fontSize: '12px' }}>Cart</span>
               </div>
             </div>
           </Col>

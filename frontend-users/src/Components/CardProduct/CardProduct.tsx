@@ -13,10 +13,15 @@ interface CardProductProps {
   priceSale: string
 }
 
+function sliceText ( text: string) {
+  return text.length > 20 ? text.slice(0, 20) + '...' : text;
+}
+
+
 export const CardProduct: React.FC<CardProductProps> = ({ title, image, special, author, price, priceSale }) => {
   const header = (
     <>
-      <img alt='Card' src={image} style={{ height: '240px', width: '100%', cursor: 'pointer' }} />
+      <img alt='Card' src={image} className='img-card'/>
     </>
   )
   const footer = (
@@ -27,8 +32,8 @@ export const CardProduct: React.FC<CardProductProps> = ({ title, image, special,
   )
 
   return (
-    <>
-      <Card title={title} subTitle={author} footer={footer} header={header}>
+    <div className='card-product'>
+      <Card title={sliceText(title)} subTitle={author} footer={footer} header={header}>
         {special && <span className='badge'>{special}</span>}
         {priceSale && priceSale !== '' && (
           <div className='card-price-sale'>
@@ -42,6 +47,6 @@ export const CardProduct: React.FC<CardProductProps> = ({ title, image, special,
           </div>
         )}
       </Card>
-    </>
+    </div>
   )
 }
