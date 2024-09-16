@@ -9,11 +9,10 @@ export const Footer = () => {
             <div className='col-sm-12 col-lg-6 col-xl-5'>
               <div className='widget widget-about'>
                 <img
-                  src='assets/images/demos/demo-20/logo-footer.png'
+                  src='images/Logo.png'
                   className='footer-logo'
                   alt='Footer Logo'
-                  width={105}
-                  height={25}
+                  
                 />
                 <p>
                   Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.
@@ -29,7 +28,8 @@ export const Footer = () => {
                     <div className='col-sm-6 col-md-8'>
                       <span className='widget-about-title'>Payment Method</span>
                       <figure className='footer-payments'>
-                        <img src='assets/images/payments.png' alt='Payment methods' width={272} height={20} />
+                        <img src='images/f-payment.png' alt='Payment methods' width={70} height={30} />
+
                       </figure>
                       {/* End .footer-payments */}
                     </div>
@@ -120,25 +120,16 @@ export const Footer = () => {
                         <a href='#'>Help</a>
                       </li>
                     </ul>
-                    {/* End .widget-list */}
                   </div>
-                  {/* End .widget */}
                 </div>
-                {/* End .col-sm-4 col-lg-2 */}
               </div>
-              {/* End .row */}
             </div>
-            {/* End .col-lg-6 col-xl-7 */}
           </div>
-          {/* End .row */}
         </div>
-        {/* End .container */}
       </div>
-      {/* End .footer-middle */}
       <div className='footer-bottom'>
         <div className='container'>
           <p className='footer-copyright'>Copyright © 2019 Molla Store. All Rights Reserved.</p>
-          {/* End .footer-copyright */}
           <ul className='footer-menu'>
             <li>
               <a href='#'>Terms Of Use</a>
@@ -147,7 +138,6 @@ export const Footer = () => {
               <a href='#'>Privacy Policy</a>
             </li>
           </ul>
-          {/* End .footer-menu */}
           <div className='social-icons social-icons-color'>
             <span className='social-label'>Social Media</span>
             <a href='#' className='social-icon social-facebook' title='Facebook' target='_blank'>
@@ -166,11 +156,8 @@ export const Footer = () => {
               <i className='icon-pinterest' />
             </a>
           </div>
-          {/* End .soial-icons */}
         </div>
-        {/* End .container */}
       </div>
-      {/* End .footer-bottom */}
     </footer>
   )
 }
