@@ -16,7 +16,7 @@ interface CardProductProps {
 export const CardProduct: React.FC<CardProductProps> = ({ title, image, special, author, price, priceSale }) => {
   const header = (
     <>
-      <img alt='Card' src={image} style={{ height: '240px', width: '100%', cursor: 'pointer' }} />
+      <img alt='Card' src={image} style={{ objectFit: "cover", width: '100%', cursor: 'pointer' }} />
     </>
   )
   const footer = (

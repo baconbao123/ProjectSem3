@@ -224,7 +224,7 @@ const Home = () => {
 
                 <Row>
                   {products.map((product) => (
-                    <Col lg={2}>
+                    <Col lg={3}>
                       <CardProduct {...product} />
                     </Col>
                   ))}
