@@ -134,61 +134,13 @@ $thirst-color: white;
           opacity: 1;
         }
       }
+
+      .error-text {
+        color: red;
+      }
     }
 
     // Checkbox remember me
-    .remember-me {
-      .hidden-checkbox {
-        display: none;
-      }
-
-      .custom-checkbox-label {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        color: $first-color;
-        font-weight: 600;
-        font-size: 14px;
-      }
-
-      .custom-checkbox {
-        width: 20px;
-        height: 20px;
-        border: 2px solid #ddd;
-        border-radius: 4px;
-        position: relative;
-        margin-right: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .checkmark {
-        width: 12px;
-        height: 12px;
-        background: $first-color;
-        border-radius: 2px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: opacity 0.2s ease;
-      }
-
-      .hidden-checkbox:checked + .custom-checkbox-label .checkmark {
-        opacity: 1;
-      }
-
-      .custom-checkbox:hover {
-        border-color: $second-color;
-      }
-
-      .hidden-checkbox:focus + .custom-checkbox-label {
-        outline: 2px solid $second-color;
-        outline-offset: 2px;
-      }
-    }
 
     /* Button */
     button {
@@ -213,7 +165,7 @@ $thirst-color: white;
 
     .footer-text {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 10px;
       color: #666;
 
       a {
@@ -228,3 +180,49 @@ $thirst-color: white;
     }
   }
 }
+
+.remember-container {
+  .remember-me {
+    display: none; // Ẩn checkbox gốc
+
+    &:checked + label::before {
+      background-color: #26c1a9; // Màu khi checkbox được chọn
+      border: 2px solid #26c1a9; // Đường viền khi checkbox được chọn
+    }
+
+    &:checked + label::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 50%;
+      transform: translateY(-50%) translateX(60%) rotate(45deg);
+      width: 5px;
+      height: 10px;
+      border-bottom: 2px solid white;
+      border-right: 2px solid white;
+    }
+  }
+
+  label {
+    position: relative;
+    padding-left: 30px; // Để có khoảng trống cho ô checkbox
+    cursor: pointer;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px; // Kích thước ô checkbox
+      height: 20px; // Kích thước ô checkbox
+      border: 2px solid #ccc; // Màu đường viền mặc định
+      border-radius: 4px;
+      background-color: white; // Màu nền mặc định
+      transition:
+        background-color 0.2s,
+        border-color 0.2s; // Hiệu ứng chuyển màu
+    }
+  }
+}
+
