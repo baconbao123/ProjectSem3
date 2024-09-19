@@ -14,41 +14,40 @@ const Loading = React.lazy(() => import("./components/Loading"))
 const App = () => {
     const dispatch = useDispatch();
     const currentPath = window.location.pathname;
-
     const checkToken = () => {
-        dispatch(setLoading(true))
-        if (Cookies.get("token") || Cookies.get("refreshToken")) {
-            const token = Cookies.get("token")
-            $axios.get('/Auth',{headers: authorization(token)} ).then((res) => {
-                console.log('Check res ', res)
-                if (res.status !== 200 && res.status !== 401) {
-                        window.location.href = '/login'
-                }
-                else {
-                    if (currentPath === '/login') {
-                        window.location.href = '/'
+            dispatch(setLoading(true))
+            if (Cookies.get("token") || Cookies.get("refreshToken")) {
+                const token = Cookies.get("token")
+                $axios.get('/Auth',{headers: authorization(token)} ).then((res) => {
+                    console.log('Check res ', res)
+                    if (res.status !== 200 && res.status !== 401 && currentPath !== '/login') {
+                            window.location.href = '/login'
                     }
-                }
-            })
-                .catch((err) => {
-                    if ( err.response.status === 401){
-                     refreshToken()
+                    else {
+                        if (currentPath === '/login' && res.status === 200) {
+                            window.location.href = '/'
+                        }
                     }
-                    console.log("Error ", err)
-                }).then(() => {
-            })
-            dispatch(setLoading(false))
-
-        }
-        else  {
-            if (currentPath !== '/login') {
-                window.location.href = '/login'
+                })
+                    .catch((err) => {
+                        if ( err.response.status === 401){
+                         refreshToken()
+                        }
+                        console.log("Error ", err)
+                    }).then(() => {
+                })
+                dispatch(setLoading(false))
 
             }
-        }
-        dispatch(setLoading(false))
+            else  {
+                if (currentPath !== '/login') {
+                    window.location.href = '/login'
 
-    }
+                }
+            }
+            dispatch(setLoading(false))
+        }
+
 
     const refreshToken = () => {
         if (Cookies.get("refreshToken")) {

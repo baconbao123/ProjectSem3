@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState} from "react";
 import { Avatar} from "@mui/material";
-import { MenuTopBar } from "@components/admin/Menu.ts"
+// @ts-ignore
+import { MenuTopBar } from "@components/admin/Nav.ts"
 import {Link, useNavigate} from "react-router-dom";
 import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
+
+// @ts-ignore
+import logo from '@src/images/logo.png'
 // @ts-ignore
 import Cookies from "js-cookie"
 
@@ -12,6 +16,7 @@ const TopBar : React.FC = () => {
     const navigate = useNavigate();
     const  refInfo = useRef(null);
     const refAvatar = useRef(null);
+    const [active, setActive] = useState<string>('');
     const logout = () => {
         try {
             Cookies.remove("token");
@@ -30,8 +35,8 @@ const TopBar : React.FC = () => {
         }
     }
     useEffect(() => {
+        setActive('admin')
         document.addEventListener('mousedown', handleClickOutSideInfo);
-
         return () => {
             document.removeEventListener('mousedown', handleClickOutSideInfo);
         };
@@ -40,19 +45,18 @@ const TopBar : React.FC = () => {
       <div className="top-bar-admin container-fluid ">
           <div className="row top-bar-contanier ">
               <div className="col-2 top-bar-item justify-content-center">
-                 <h1>LOGO</h1>
+                 <img src={logo}  className='logo-img' />
               </div>
               <div className="col-8 top-bar-item menu">
                   {
                       MenuTopBar.map(item => {
                           const IconComponent = item.icon;
                           return (
-                              <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.link}>
-                                  <IconComponent style={{ marginRight: '8px' }} />
-                                  <div >
-                                    {item.title}
-                                  </div>
-                              </Link>
+                              <div onClick={() => setActive(item.code)} className={active === item.code ? 'active item-nav': 'item-nav'} key={item.code}>
+                                  <Link  to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.code}>
+                                      <IconComponent />
+                                  </Link>
+                              </div>
                           )
                       })
                   }

@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationJWT.Controllers;
-public class MyBaseController : Controller
+public class MyBaseController : ControllerBase
 {
-    public IActionResult Index()
+    private MyContext db;
+
+    public MyBaseController(MyContext myContext)
     {
-        return View();
+        db = myContext;
+
     }
+
 }
