@@ -1,5 +1,4 @@
-import ValueContext from "../DataSave/ValueContext.ts";
-import React, {useContext, useEffect} from "react";
+import React, {useEffect} from "react";
 import { Outlet } from 'react-router-dom'
 import TopBar from "@components/admin/TopBar.tsx";
 import MenuSide from "@components/admin/MenuSide.tsx";
@@ -9,19 +8,18 @@ const LayOutAdmin : React.FC = () => {
     }, []);
 
     return (
-        <div>
+        <>
+        <div className="layout-admin">
+
             <TopBar/>
-            <div className="container-content container-fluid">
-                    <div className="row">
-                    <div className="col-1 menu-part">
-                        <MenuSide/>
-                    </div>
-                    <div className="col-11 content-part">
-                        <Outlet />
-                    </div>
+            <div className='default-layout'>
+                <MenuSide/>
+                <div className='container-fluid'>
+                    <Outlet />
                 </div>
             </div>
         </div>
+        </>
     )
 }
 

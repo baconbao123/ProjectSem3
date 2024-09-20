@@ -1,33 +1,40 @@
-import React, { useEffect, useRef, useState} from "react";
-import { Avatar} from "@mui/material";
-import { MenuTopBar } from "@components/admin/Menu.ts"
-import {Link, useNavigate} from "react-router-dom";
-import Button from '@mui/material/Button';
-import LogoutIcon from '@mui/icons-material/Logout';
-// @ts-ignore
-import Cookies from "js-cookie"
+import React, { useEffect} from "react";
+import {MenuSideBar} from '@components/admin/Nav.ts'
+import {Link, useLocation} from "react-router-dom";
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import MenuOpenOutlinedIcon from '@mui/icons-material/MenuOpenOutlined';
+import {useDispatch, useSelector} from "react-redux";
+import {setShowMenu} from "@src/Store/Slinces/appSlice.ts";
+import {Tooltip} from "@mui/material";
 
 const MenuSide : React.FC = () => {
-    const [showLeftMenu, setShowLeftMenu] = useState(false);
-    const navigate = useNavigate();
-    const  refInfo = useRef(null);
-    const refAvatar = useRef(null);
-    // const handleClickOutSideInfo = (e: any) => {
-    //     // @ts-ignore
-    //     if (refInfo.current && !refInfo.current.contains(e.target) && refAvatar.current && !refAvatar.current.contains(e.target)) {
-    //        setShowLeftMenu(false)
-    //     }
-    // }
-    // useEffect(() => {
-    //     document.addEventListener('mousedown', handleClickOutSideInfo);
-    //
-    //     return () => {
-    //         document.removeEventListener('mousedown', handleClickOutSideInfo);
-    //     };
-    // }, []);
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const showMenu = useSelector((state: any) => state.app.showMenu);
+    useEffect(() => {
+        console.log("check location", location)
+    }, []);
     return (
-      <div className="menu-side-admin">
-          <h1>Hello this is menu side</h1>
+      <div className={showMenu ? 'menu-side-admin show-menu' : 'menu-side-admin'}>
+          <div className="menu-container">
+              {MenuSideBar.map(item => {
+                  const IconComponent = item.icon;
+                  return (
+                    <Link   to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.code}>
+                        <Tooltip title={item.title}   placement="right" disableHoverListener={showMenu}>
+                          <div className={(location.pathname == item.link) ? 'menu-item active': 'menu-item'}>
+                            <IconComponent className="menu-icon"/>
+                            <div className="menu-title"> {item.title}</div>
+                          </div>
+                        </Tooltip>
+                    </Link>
+                  )
+              })}
+          </div>
+          <div className='bottom-menu' onClick={() => dispatch(setShowMenu(!showMenu))}>
+              <MenuOutlinedIcon className={showMenu ? 'd-none' : ''}/>
+              <MenuOpenOutlinedIcon className={!showMenu ? 'd-none' : ''} />
+          </div>
       </div>
     )
 }
