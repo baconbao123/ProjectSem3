@@ -4,9 +4,12 @@ import { createSlice } from '@reduxjs/toolkit';
 export const appSlice = createSlice({
     name: 'app',
     initialState: {
-        loading: true,
+        loading: false,
         toast: {status: 'info', message: 'This is toast', data: ''},
         showToast: false,
+        showMenu: false,
+        showModal: false,
+        modalComponent: ''
     },
     reducers: {
        setLoading: (state, action) => {
@@ -18,10 +21,28 @@ export const appSlice = createSlice({
         },
         closeToast: (state) => {
            state.showToast = false
+        },
+        setShowMenu: (state, action) => {
+           state.showMenu = action.payload;
+        },
+        setShowModal: (state, action) => {
+           state.showModal = action.payload;
+        },
+        setModalComponent: (state, action) => {
+           state.modalComponent = action.payload;
         }
     },
 });
 
-export const {setLoading, setToast,closeToast } = appSlice.actions;
+export const
+    {
+        setLoading,
+        setToast,
+        closeToast,
+        setShowMenu ,
+        setShowModal,
+        setModalComponent
+    }
+    = appSlice.actions;
 
 export default appSlice.reducer;

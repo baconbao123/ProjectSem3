@@ -25,3 +25,12 @@ public class UserRequest()
     public string UserName { get; set; }
 
 }
+
+public class ResourceRequest()
+{
+    public string Name { get; set; }
+    public string? Description { get; set; }
+    public int Status { get; set; }
+    public int Version { get; set; }
+
+}

@@ -9,12 +9,17 @@
 
 
     .inputgroup {
-      width: 50%;
+      width: 55%;
+      font-size: 14px;
     }
 
     .p-dropdown .p-dropdown-label {
       font-size: 14px;
       color: rgb(176, 176, 176);
+
+      ul {
+        padding-left: 0 !important;
+      }
     }
 
     .btnSearch {
@@ -42,21 +47,26 @@
       flex-direction: row;
       gap: 20px;
 
-      .storesystem,
-      .account,
-      .orders,
-      .cart
-       {
-        color: black;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        cursor: pointer;
-        &:hover {
-          color: $prime-color;
+      .url {
+        text-decoration: none;
+
+        .storesystem,
+        .account,
+        .orders,
+        .cart
+         {
+          color: black;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          cursor: pointer;
+          &:hover {
+            color: $prime-color;
+          }
         }
       }
+      
     }
   }
 }

@@ -26,7 +26,7 @@ export const Menu = () => {
     },
     {
       name: 'Vouchers',
-      url: '/vourchers'
+      url: '/vouchers'
     }
   ]
 
@@ -58,7 +58,7 @@ export const Menu = () => {
   return (
     <>
       <div className={`menu-container ${isSticky ? 'sticky' : ''}`}>
-        <Container style={{ marginBottom: '10px' }}>
+        <Container>
           <Row>
             {/* Category */}
             <Col lg={3} md={3} sm={3} xs={3}>
@@ -87,7 +87,7 @@ export const Menu = () => {
               <div className='page-container'>
                 {itemsPage.map((item, index) => (
                   <div key={index} className='item'>
-                    <Link to={item.url}>
+                    <Link to={item.url} className='url'>
                       <span className='name'>{item.name}</span>
                     </Link>
                   </div>
@@ -98,7 +98,7 @@ export const Menu = () => {
             {/* Sale */}
             <Col lg={3} md={5} sm={4} xs={4}>
               <div className='save-container'>
-                <p>|</p> &nbsp;&nbsp; <i className='pi pi-star-fill icon' style={{ fontSize: '1.2rem' }}></i> &nbsp;
+                <p style={{ paddingTop: '10px'}}>|</p> &nbsp;&nbsp; <i className='pi pi-star-fill icon' style={{ fontSize: '1.2rem' }}></i> &nbsp;
                 Extra &nbsp; <span style={{ color: 'yellow' }}>10%</span> &nbsp; off for loyal customers
               </div>
             </Col>

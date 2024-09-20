@@ -81,9 +81,10 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public IActionResult checkToken()
+    public async Task<IActionResult> checkToken()
     {
-        return Ok("Oke");
+        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+        return Ok(new { data = claims });
     }
 
     private string IssueToken(User user)
