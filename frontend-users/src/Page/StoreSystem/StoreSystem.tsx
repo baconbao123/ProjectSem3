@@ -10,8 +10,8 @@ interface StoreSystem {
 export const StoreSystem = () => {
   const email = 'anh450460@gmail.com'
   return (
-    <Container>
-      <h3>Store System</h3>
+    <Container style={{ paddingBottom: '50px', paddingTop: '30px' }}>
+      <h1>Store System</h1>
       <Row>
         <Col lg={6}>
           <iframe
@@ -26,13 +26,15 @@ export const StoreSystem = () => {
         </Col>
         <Col lg={6}>
           <div className='store-content'>
-            <h5>Shradha Bookstores</h5>
-            <h6>35/6 Đường D5, Phường 25, Bình Thạnh, Hồ Chí Minh</h6>
-            <h6>Tel: 098765432</h6>
-            <h6>
+            <h1>Shradha Bookstores</h1>
+            <h3>35/6 Đường D5, Phường 25, Bình Thạnh, Hồ Chí Minh</h3>
+            <h3>Tel: 098765432</h3>
+            <h3>
               Mail: &nbsp;
-              <a href={`mailto:${email}`} className='link-email'>{email}</a>
-            </h6>
+              <a href={`mailto:${email}`} className='link-email'>
+                {email}
+              </a>
+            </h3>
           </div>
         </Col>
       </Row>
