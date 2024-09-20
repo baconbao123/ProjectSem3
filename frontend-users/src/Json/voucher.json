@@ -1,0 +1,110 @@
+[
+    {
+        "type": "Freeship",
+        "discount": "5",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByOrder",
+        "discount": "10",
+        "totalOrder": "66",
+        "subCate": ""
+      },
+      {
+        "type": "discountByCategory",
+        "discount": "5",
+        "totalOrder": "30",
+        "subCate": "Novel"
+      },
+      {
+        "type": "Freeship",
+        "discount": "10",
+        "totalOrder": "60",
+        "subCate": ""
+      },
+      {
+        "type": "discountByOrder",
+        "discount": "5",
+        "totalOrder": "77",
+        "subCate": ""
+      },
+      {
+        "type": "discountByCategory",
+        "discount": "9",
+        "totalOrder": "30",
+        "subCate": "Trinh thám"
+      },
+      {
+        "type": "Freeship",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByOrder",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByCategory",
+        "discount": "10",
+        "totalOrder": "30",
+        "subCate": "Biography"
+      },
+      {
+        "type": "Freeship",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByOrder",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByCategory",
+        "discount": "6",
+        "totalOrder": "40",
+        "subCate": "Trinh thám"
+      },
+      {
+        "type": "Freeship",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByOrder",
+        "discount": "5",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByCategory",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": "Technical"
+      },
+      {
+        "type": "Freeship",
+        "discount": "5",
+        "totalOrder": "30",
+        "subCate": ""
+      },
+      {
+        "type": "discountByOrder",
+        "discount": "10",
+        "totalOrder": "40",
+        "subCate": ""
+      },
+      {
+        "type": "discountByCategory",
+        "discount": "5",
+        "totalOrder": "40",
+        "subCate": "Biography"
+      }
+]

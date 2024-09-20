@@ -1,0 +1,49 @@
+@import '../../../global.scss';
+
+.container-order {
+  background-color: gainsboro;
+  font-size: 14px;
+
+  .heading {
+    padding: 20px 0;
+
+    .row-heading {
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+
+      .heading-title {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+
+        &:hover {
+          color: $prime-color;
+        }
+        border-right: 1px solid gainsboro;
+
+        &:not(:last-child) {
+          border-right: 1px solid gainsboro;
+        }
+      }
+
+      .heading-title3 {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+
+        &:hover {
+          color: $prime-color;
+        }
+      }
+    }
+  }
+
+  
+}
