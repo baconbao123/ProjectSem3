@@ -45,7 +45,7 @@ const TopBar : React.FC = () => {
       <div className="top-bar-admin container-fluid ">
           <div className="row top-bar-contanier ">
               <div className="col-2 top-bar-item justify-content-center">
-                 <img src={logo}  className='logo-img' />
+                 {/* <img src={logo}  className='logo-img' /> */}
               </div>
               <div className="col-8 top-bar-item menu">
                   {

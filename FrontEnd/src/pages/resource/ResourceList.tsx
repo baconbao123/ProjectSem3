@@ -5,6 +5,8 @@ import {useDispatch} from "react-redux";
 import {setShowModal} from "@src/Store/Slinces/appSlice.ts";
 import HomePage from "@pages/admin/HomePage";
 import Modal from "@pages/common/Modal.tsx";
+import Breadcrumb from "@pages/common/breadcrumbs";
+
 
 const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
@@ -28,11 +30,14 @@ const ResourceList : React.FC = () => {
     const showModalAdd = () => {
         dispatch(setShowModal(true))
     }
+ 
+  
+    
     const header: React.FC = () => {
         return (
-            <div>
-                This is header
-            </div>
+           <div>
+            <Breadcrumb/>
+           </div>
         )
     }
 
