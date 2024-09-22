@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthenticationJWT.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class ResourceController : ControllerBase
+public class CommonController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private MyContext db;
-    public ResourceController(IConfiguration configuration, MyContext myContext)
+    public CommonController(IConfiguration configuration, MyContext myContext)
     {
         _configuration = configuration;
         db = myContext;
@@ -30,24 +30,30 @@ public class ResourceController : ControllerBase
     }
 
     // GET api/<ResourceController>/5
-    [Authorize]
-    [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    //[Authorize]
+    [HttpGet("{resource}")]
+    public IActionResult Get(string resource)
     {
-        var resource = (from r in db.Resource
-                        join u in db.User on r.CreatedBy equals u.Id
-                        where r.Id == id && r.DeletedAt == null
-                        select new
-                        {
-                            Resource = r,
-                            User = u
-                        }).FirstOrDefault();
 
-        if (resource == null)
+
+        if (resource == "action")
         {
-            return BadRequest(new { message = "Data not found" });
+            var listData = (from item in db.Action
+                            where item.DeletedAt == null
+                            orderby item.CreatedAt descending
+                            select item).ToList();
+            return Ok(new { data = listData });
         }
-        return Ok(new { data = resource });
+        else if (resource == "resource")
+        {
+            var listData = (from item in db.Resource
+                            where item.DeletedAt == null && item.Status == 1
+                            orderby item.CreatedAt descending
+                            select item).ToList();
+            return Ok(new { data = listData });
+        }
+        return BadRequest(new { message = "Data not found" });
+
     }
 
     // POST api/<ResourceController>

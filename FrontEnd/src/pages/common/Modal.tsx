@@ -2,6 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setShowModal} from "@src/Store/Slinces/appSlice.ts";
 import React from "react";
 import ErrorPage from "@pages/common/ErrorPage.tsx";
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 interface ModalProps {
     content?: React.FC;
     title?: string;
@@ -20,14 +21,14 @@ const Modal : React.FC<ModalProps> = ({content, title}) => {
             <div className='modal-content'>
                 <div className='modal-content-header'>
                     <div>{title ? title : 'Modal title'}</div>
-                    <div onClick={() => dispatch(setShowModal(false))}>X</div>
+                    <div onClick={() => dispatch(setShowModal(false))}> <ClearOutlinedIcon  className='btn-delete'/></div>
                 </div>
                 <div className='modal-content-body'>
                     <Content />
                 </div>
-               <div className='modal-content-footer'>
-                   modal footer
-               </div>
+               {/*<div className='modal-content-footer'>*/}
+               {/*    modal footer*/}
+               {/*</div>*/}
             </div>
         </div>
     )

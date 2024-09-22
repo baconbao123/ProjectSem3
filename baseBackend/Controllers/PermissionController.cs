@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthenticationJWT.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class ResourceController : ControllerBase
+public class PermissionController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private MyContext db;
-    public ResourceController(IConfiguration configuration, MyContext myContext)
+    public PermissionController(IConfiguration configuration, MyContext myContext)
     {
         _configuration = configuration;
         db = myContext;
@@ -30,24 +30,26 @@ public class ResourceController : ControllerBase
     }
 
     // GET api/<ResourceController>/5
-    [Authorize]
+    //[Authorize]
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
-        var resource = (from r in db.Resource
-                        join u in db.User on r.CreatedBy equals u.Id
-                        where r.Id == id && r.DeletedAt == null
-                        select new
-                        {
-                            Resource = r,
-                            User = u
-                        }).FirstOrDefault();
+        var data = (from role in db.Role
+                    join map in db.MapAction on role.Id equals map.RoleId
+                    join resource in db.Resource on map.ResourceId equals resource.Id
+                    where role.Id == id && role.DeletedAt == null
+                    select new
+                    {
+                        role_id = role.Id,
+                        resource_id = resource.Id,
+                        action_id = map.ActionId
+                    }).ToList();
 
-        if (resource == null)
+        if (data == null)
         {
             return BadRequest(new { message = "Data not found" });
         }
-        return Ok(new { data = resource });
+        return Ok(new { data = data });
     }
 
     // POST api/<ResourceController>
