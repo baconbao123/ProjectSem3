@@ -12,7 +12,7 @@ interface ResourceAdd {
 const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    const [status, setStatus] = useState(false)
+    const [status, setStatus] = useState(true)
     const [error, setError] = useState({})
     const [item, setItem] = useState({})
     const token = Cookies.get("token")

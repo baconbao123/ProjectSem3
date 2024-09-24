@@ -9,7 +9,8 @@ export const appSlice = createSlice({
         showToast: false,
         showMenu: false,
         showModal: false,
-        modalComponent: ''
+        modalComponent: '',
+        skeleton: false
     },
     reducers: {
        setLoading: (state, action) => {
