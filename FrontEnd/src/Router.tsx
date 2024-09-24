@@ -8,6 +8,8 @@ import AboutAdmin from '@pages/admin/About.tsx'
 import ResourceList from "@pages/resource/ResourceList.tsx";
 import RoleList from "@pages/role/RoleList.tsx";
 import PermissionList from "@pages/role/RoleList.tsx";
+import CategoryList from "@pages/category/CategoryList"
+import AuthorList from "@pages/author/AuthorList"
 
 export  default  createBrowserRouter([
     {
@@ -37,6 +39,16 @@ export  default  createBrowserRouter([
             {
                 path: 'permission',
                 element: (<PermissionList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'category',
+                element: (<CategoryList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'author',
+                element: (<AuthorList/>),
                 errorElement: (<ErrorPage error="'Error page"/>),
             },
             {
