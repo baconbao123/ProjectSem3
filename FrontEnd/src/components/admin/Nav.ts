@@ -1,6 +1,8 @@
 import HomeIcon from '@mui/icons-material/Home';
 import BadgeIcon from '@mui/icons-material/Badge';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
+import AddModeratorOutlinedIcon from '@mui/icons-material/AddModeratorOutlined';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 const MenuTopBar = [
     {link: '/admin', title: 'Administration', icon: BadgeIcon, code: 'admin'},
     {link: '/home', title: 'Home Page', icon: HomeIcon, code: 'home'},
@@ -8,6 +10,8 @@ const MenuTopBar = [
 
 const MenuSideBar = [
     {link: '/resource', title: 'Resource', icon: CollectionsBookmarkOutlinedIcon,  code: 'resource'},
+    {link: '/role', title: 'Role', icon: AddModeratorOutlinedIcon,  code: 'role'},
+    {link: '/permission', title: 'Permission', icon: ShieldOutlinedIcon,  code: 'permission'},
     {link: '/admin/about', title: 'About', icon: BadgeIcon,  code: 'admin2'},
     {link: '/admin/product', title: 'Product', icon: BadgeIcon, code: 'admin3'},
     {link: '/admin/stock', title: 'Stock', icon: BadgeIcon,  code: 'admin4'},

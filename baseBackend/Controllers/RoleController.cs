@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace AuthenticationJWT.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class ResourceController : ControllerBase
+public class RoleController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private MyContext db;
-    public ResourceController(IConfiguration configuration, MyContext myContext)
+    public RoleController(IConfiguration configuration, MyContext myContext)
     {
         _configuration = configuration;
         db = myContext;
@@ -21,7 +21,7 @@ public class ResourceController : ControllerBase
     [Authorize]
     public IActionResult get()
     {
-        var listData = (from item in db.Resource
+        var listData = (from item in db.Role
                         where item.DeletedAt == null
                         orderby item.CreatedAt descending
                         select item).ToList();
@@ -34,70 +34,70 @@ public class ResourceController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
-        var resource = (from r in db.Resource
-                        join u in db.User on r.CreatedBy equals u.Id
-                        where r.Id == id && r.DeletedAt == null
-                        select new
-                        {
-                            Resource = r,
-                            User = u
-                        }).FirstOrDefault();
+        var role = (from r in db.Role
+                    join u in db.User on r.CreatedBy equals u.Id
+                    where r.Id == id && r.DeletedAt == null
+                    select new
+                    {
+                        Resource = r,
+                        User = u
+                    }).FirstOrDefault();
 
-        if (resource == null)
+        if (role == null)
         {
             return BadRequest(new { message = "Data not found" });
         }
-        return Ok(new { data = resource });
+        return Ok(new { data = role });
     }
 
     // POST api/<ResourceController>
     [HttpPost]
     [Authorize]
-    public IActionResult Post([FromBody] ResourceRequest request)
+    public IActionResult Post([FromBody] RoleRequest request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
-        var resource = new Resource();
-        resource.Name = request.Name;
-        resource.Description = request.Description;
-        resource.Status = request.Status ?? 0;
-        resource.Version = 0;
-        resource.UpdateAt = DateTime.Now;
-        resource.CreatedAt = DateTime.Now;
-        resource.UpdatedBy = int.Parse(userId);
-        resource.CreatedBy = int.Parse(userId);
-        db.Resource.Add(resource);
+        var role = new Role();
+        role.Name = request.Name;
+        role.Description = request.Description;
+        role.Status = request.Status ?? 0;
+        role.Version = 0;
+        role.UpdateAt = DateTime.Now;
+        role.CreatedAt = DateTime.Now;
+        role.UpdatedBy = int.Parse(userId);
+        role.CreatedBy = int.Parse(userId);
+        db.Role.Add(role);
         db.SaveChanges();
-        return Ok(new { data = resource });
+        return Ok(new { data = role });
     }
 
     // PUT api/<ResourceController>/5
     [Authorize]
     [HttpPut("{id}")]
-    public IActionResult Put(int id, [FromBody] ResourceRequest request)
+    public IActionResult Put(int id, [FromBody] RoleRequest request)
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
 
-        var resource = db.Resource.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
-        if (resource == null)
+        var role = db.Role.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+        if (role == null)
         {
             return BadRequest(new { message = "Data not found" });
         }
-        if (resource.Version != request.Version)
+        if (role.Version != request.Version)
         {
             return BadRequest(new { type = "reload", message = "Data has change pls reload" });
         }
-        resource.Name = request.Name;
-        resource.Description = request.Description;
-        resource.Status = request.Status ?? 0;
-        resource.Version = request.Version + 1;
-        resource.UpdateAt = DateTime.Now;
-        resource.UpdatedBy = int.Parse(userId);
+        role.Name = request.Name;
+        role.Description = request.Description;
+        role.Status = request.Status ?? 0;
+        role.Version = request.Version + 1;
+        role.UpdateAt = DateTime.Now;
+        role.UpdatedBy = int.Parse(userId);
         db.SaveChanges();
-        return Ok(new { data = resource });
+        return Ok(new { data = role });
     }
 
     // DELETE api/<ResourceController>/5'
@@ -106,15 +106,15 @@ public class ResourceController : ControllerBase
     public IActionResult Delete(int id)
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
-        var resource = db.Resource.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
-        if (resource == null)
+        var role = db.Role.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+        if (role == null)
         {
             return BadRequest(new { message = "Data not found" });
         }
-        resource.DeletedAt = DateTime.Now;
-        resource.UpdatedBy = int.Parse(userId);
+        role.DeletedAt = DateTime.Now;
+        role.UpdatedBy = int.Parse(userId);
         db.SaveChanges();
-        return Ok(new { data = resource });
+        return Ok(new { data = role });
 
     }
 }

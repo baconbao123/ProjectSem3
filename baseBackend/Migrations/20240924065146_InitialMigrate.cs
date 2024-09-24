@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace AuthenticationJWT.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialMigrate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -517,11 +519,35 @@ namespace AuthenticationJWT.Migrations
                     table.PrimaryKey("PK_UserSale", x => x.Id);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_MapAction_RoleId_ResourceId_ActionId",
-                table: "MapAction",
-                columns: new[] { "RoleId", "ResourceId", "ActionId" },
-                unique: true);
+            migrationBuilder.InsertData(
+                table: "Action",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "Name", "UpdateAt", "UpdatedBy", "Version" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(342), 1, null, null, "create", new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(358), 1, 0 },
+                    { 2, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(361), 1, null, null, "update", new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(361), 1, 0 },
+                    { 3, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(363), 1, null, null, "read", new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(363), 1, 0 },
+                    { 4, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(364), 1, null, null, "delete", new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(365), 1, 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Resource",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "Name", "Status", "UpdateAt", "UpdatedBy", "Version" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(496), 1, null, null, "Admin", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(498), 1, 0 },
+                    { 2, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(502), 1, null, null, "User", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(502), 1, 0 },
+                    { 3, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(504), 1, null, null, "Product", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(504), 1, 0 },
+                    { 4, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(506), 1, null, null, "Resource", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(506), 1, 0 },
+                    { 5, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(508), 1, null, null, "Role", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(509), 1, 0 },
+                    { 6, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(510), 1, null, null, "Sale", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(511), 1, 0 },
+                    { 7, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(512), 1, null, null, "Guest", 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(513), 1, 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Email", "Expired", "Password", "Phone", "RefreshToken", "Status", "UpdateAt", "UpdatedBy", "Username", "Version" },
+                values: new object[] { 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(551), 0, null, "SA@gmail.com", null, "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK", null, null, 1, new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(553), 0, "SA", 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_MapRole_RoleId_UserId",

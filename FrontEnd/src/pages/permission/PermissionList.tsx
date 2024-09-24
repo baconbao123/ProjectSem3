@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useState} from "react";
 import MainLayOut from "@pages/common/MainLayOut.tsx";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
 import Modal from "@pages/common/Modal.tsx";
-import {Breadcrumbs, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Breadcrumbs, Chip, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
@@ -11,14 +11,14 @@ import KeyboardDoubleArrowRightOutlinedIcon from "@mui/icons-material/KeyboardDo
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import HomeIcon from '@mui/icons-material/Home';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
-import ResourceAdd from "@pages/resource/ResourceAdd.tsx";
+import PermissionAdd from "@pages/permission/PermissionAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import ResourceDetail from "@pages/resource/ResourceDetail.tsx";
+import RoleDetail from "@pages/role/RoleDetail.tsx";
 import {Link} from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
 const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -38,9 +38,7 @@ const ResourceList : React.FC = () => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
-            {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "Description", label: "Description", class: ""},
-            {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
+            {key: "Name", label: "Name", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
 
         ])
@@ -112,7 +110,7 @@ const ResourceList : React.FC = () => {
 
     const loadDataTable = () => {
         const token = Cookies.get("token")
-        $axios.get('/Resource').then(res => {
+        $axios.get('/Role').then(res => {
             setData(res.data.data)
             setFilterData(res.data.data)
         })
@@ -122,28 +120,23 @@ const ResourceList : React.FC = () => {
 
     }
     const handleComponentAdd: React.FC =() => {
-        return  (<ResourceAdd loadDataTable={loadDataTable} form={'add'}/>)
+        return  (<PermissionAdd loadDataTable={loadDataTable} form={'add'}/>)
     }
     const handleComponentEdit: React.FC =( ) => {
-        return  (<ResourceAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
+        return  (<PermissionAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<ResourceDetail id={currentId} />)
-    }
-    const showModalAdd = () => {
-        dispatch(setShowModal(true))
-        setComponentTitle("Add resource")
-        setShowComponent('add')
+        return  (<PermissionAdd  form={'view'} id={currentId} />)
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Edit resource")
+        setComponentTitle("Edit permission "+ (item.Name).toLocaleLowerCase() + ' role')
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail resource")
+        setComponentTitle("View permission "+ (item.Name).toLocaleLowerCase() + ' role')
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -160,10 +153,10 @@ const ResourceList : React.FC = () => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
                 const token = Cookies.get("token")
-                $axios.delete(`Resource/${item.Id}`).then(res => {
+                $axios.delete(`Role/${item.Id}`).then(res => {
                     console.log("check res", res)
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete resource successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete role successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -186,13 +179,13 @@ const ResourceList : React.FC = () => {
                         color="inherit"
                         to="/"
                     >
-                        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+                        <HomeIcon sx={{mr: 0.5}} fontSize="inherit"/>
                         Home
                     </Link>
                     <Link
-                     to='/resource'
+                        to='/permission'
                     >
-                        Resource
+                        Permision
                     </Link>
                 </Breadcrumbs>
             </div>
@@ -209,23 +202,11 @@ const ResourceList : React.FC = () => {
         return (
             <div className='search-container'>
                 <div>
-                  <input
-                      value={filter.Name}
-                         onChange={e =>  setChangeName(e)}
-                         className='form-control test-position' placeholder="Search name..."/>
+                    <input
+                        value={filter.Name}
+                        onChange={e => setChangeName(e)}
+                        className='form-control test-position' placeholder="Search name..."/>
                 </div>
-            <Select
-                className="search-form width-200 custom-form"
-                value={filter.Status}
-                onChange={e => setChangeStatus(e)}
-                displayEmpty
-            >
-                <MenuItem value={-1}>
-                    <span className='placeholder-text'>Select status</span>
-                </MenuItem>
-                <MenuItem value={1}>Active</MenuItem>
-                <MenuItem value={0}>Disable</MenuItem>
-            </Select>
             </div>
         )
     }
@@ -233,7 +214,6 @@ const ResourceList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
-                <div onClick={ showModalAdd} className="btn btn-general">Add new </div>
             </div>
         )
     }
@@ -268,8 +248,8 @@ const ResourceList : React.FC = () => {
             setItemTo(perPage)
         }
         const setLastPage = () => {
-            setItemFrom(total-perPage)
-            setItemTo(total)
+            setItemFrom(total > perPage  ?  total - perPage :1)
+            setItemTo(total > perPage  ? total: perPage)
         }
         const getSortValue = (value:string) => {
             switch (value.toLowerCase()) {
@@ -371,9 +351,6 @@ const ResourceList : React.FC = () => {
                                                                 <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
-                                                                    <DeleteOutlineOutlinedIcon  />
-                                                                </span>
                                                             </TableCell>
                                                         )
                                                     }
@@ -428,6 +405,7 @@ const ResourceList : React.FC = () => {
             </div>
         )
     }
+
     const footer: React.FC = () => {
         return (
             <div>

@@ -35,6 +35,36 @@ public class MyContext : DbContext
     public DbSet<Feedback> Feedback { get; set; }
     public DbSet<FAQ> FAQ { get; set; }
 
-
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<AuthenticationJWT.Models.Action>().HasData(
+            new AuthenticationJWT.Models.Action { Id = 1, Name = "create", Version = 0, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+            new AuthenticationJWT.Models.Action { Id = 2, Name = "update", Version = 0, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+            new AuthenticationJWT.Models.Action { Id = 3, Name = "read", Version = 0, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+            new AuthenticationJWT.Models.Action { Id = 4, Name = "delete", Version = 0, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 }
+            );
+        builder.Entity<Resource>().HasData(
+           new Resource { Id = 1, Name = "Admin", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+           new Resource { Id = 2, Name = "User", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+           new Resource { Id = 3, Name = "Product", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+           new Resource { Id = 4, Name = "Resource", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+           new Resource { Id = 5, Name = "Role", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+           new Resource { Id = 6, Name = "Sale", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 },
+           new Resource { Id = 7, Name = "Guest", Version = 0, Status = 1, CreatedAt = DateTime.Now, UpdateAt = DateTime.Now, CreatedBy = 1, UpdatedBy = 1 }
+           );
+        builder.Entity<User>().HasData(
+         new User
+         {
+             Id = 1,
+             Username = "SA",
+             Email = "SA@gmail.com",
+             Password = "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK",
+             Version = 0,
+             Status = 1,
+             CreatedAt = DateTime.Now,
+             UpdateAt = DateTime.Now
+         }
+         );
+    }
 
 }

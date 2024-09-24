@@ -57,6 +57,48 @@ namespace AuthenticationJWT.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Action");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(342),
+                            CreatedBy = 1,
+                            Name = "create",
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(358),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(361),
+                            CreatedBy = 1,
+                            Name = "update",
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(361),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(363),
+                            CreatedBy = 1,
+                            Name = "read",
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(363),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(364),
+                            CreatedBy = 1,
+                            Name = "delete",
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(365),
+                            UpdatedBy = 1,
+                            Version = 0
+                        });
                 });
 
             modelBuilder.Entity("AuthenticationJWT.Models.Author", b =>
@@ -397,9 +439,6 @@ namespace AuthenticationJWT.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RoleId", "ResourceId", "ActionId")
-                        .IsUnique();
 
                     b.ToTable("MapAction");
                 });
@@ -800,6 +839,85 @@ namespace AuthenticationJWT.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Resource");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(496),
+                            CreatedBy = 1,
+                            Name = "Admin",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(498),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(502),
+                            CreatedBy = 1,
+                            Name = "User",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(502),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(504),
+                            CreatedBy = 1,
+                            Name = "Product",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(504),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(506),
+                            CreatedBy = 1,
+                            Name = "Resource",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(506),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(508),
+                            CreatedBy = 1,
+                            Name = "Role",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(509),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(510),
+                            CreatedBy = 1,
+                            Name = "Sale",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(511),
+                            UpdatedBy = 1,
+                            Version = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(512),
+                            CreatedBy = 1,
+                            Name = "Guest",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(513),
+                            UpdatedBy = 1,
+                            Version = 0
+                        });
                 });
 
             modelBuilder.Entity("AuthenticationJWT.Models.Role", b =>
@@ -949,6 +1067,21 @@ namespace AuthenticationJWT.Migrations
                         .IsUnique();
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(551),
+                            CreatedBy = 0,
+                            Email = "SA@gmail.com",
+                            Password = "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK",
+                            Status = 1,
+                            UpdateAt = new DateTime(2024, 9, 24, 13, 51, 45, 690, DateTimeKind.Local).AddTicks(553),
+                            UpdatedBy = 0,
+                            Username = "SA",
+                            Version = 0
+                        });
                 });
 
             modelBuilder.Entity("AuthenticationJWT.Models.UserAddress", b =>

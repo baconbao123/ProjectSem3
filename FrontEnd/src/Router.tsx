@@ -6,6 +6,8 @@ import ErrorPage from '@pages/common/ErrorPage.tsx'
 import HomePageAdmin from '@pages/admin/HomePage.tsx'
 import AboutAdmin from '@pages/admin/About.tsx'
 import ResourceList from "@pages/resource/ResourceList.tsx";
+import RoleList from "@pages/role/RoleList.tsx";
+import PermissionList from "@pages/permission/PermissionList.tsx";
 
 export  default  createBrowserRouter([
     {
@@ -25,6 +27,16 @@ export  default  createBrowserRouter([
             {
                 path: 'resource',
                 element: (<ResourceList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'role',
+                element: (<RoleList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'permission',
+                element: (<PermissionList />),
                 errorElement: (<ErrorPage error="'Error page"/>),
             },
             {
