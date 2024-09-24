@@ -67,3 +67,37 @@ public class PermisionForm()
 
 
 }
+
+public class CategoryRequest()
+{
+    [Required(ErrorMessage = "Name is required.")]
+    [StringLength(50, ErrorMessage = "Name cannot be longer than 50 characters.")]
+    public string Name { get; set; }
+    [StringLength(200, ErrorMessage = "Description cannot be longer than 200 characters.")]
+    public string? Description { get; set; }
+
+    public int? ParentId { get; set; }
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+
+}
+
+public class AuthorRequest()
+{
+    [Required(ErrorMessage = "Name is required.")]
+    [StringLength(60, ErrorMessage = "Name cannot be longer than 60 characters.")]
+    public string Name { get; set; }
+    [StringLength(500, ErrorMessage = "Biography  cannot be longer than 500 characters.")]
+    public string? Biography { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+    public DateTime? DateOfBirth { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+
+
+}
