@@ -1,0 +1,111 @@
+@import '../../../global.scss';
+
+// Freeship Card
+.bg-Freeship {
+  color: $prime-voucher-f-text;
+
+  .card-left {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-right: 1px solid $prime-voucher-f;
+  }
+
+  .card-btn {
+    .btnGet {
+      background-color: $prime-voucher-f;
+      border-color: $prime-voucher-f;
+
+      &:hover {
+        background-color: $prime-voucher-f-hover;
+      }
+    }
+  }
+}
+
+// Order Card
+.bg-discountByOrder {
+  color: $prime-voucher-o-hover;
+  .card-left {
+    border-right: 1px solid $prime-voucher-o;
+    
+  }
+
+  .card-btn {
+    .btnGet {
+      background-color: $prime-voucher-o;
+      border-color: $prime-voucher-o;
+
+      &:hover {
+        background-color: $prime-voucher-o-hover;
+      }
+    }
+  }
+}
+
+// Category Card
+.bg-discountByCategory {
+  color: $prime-voucher-c-hover;
+  .card-left {
+    border-right: 1px solid $prime-voucher-c;
+  }
+
+  .card-btn {
+    .btnGet {
+      background-color: $prime-voucher-c;
+      border-color: $prime-voucher-c;
+
+      &:hover {
+        background-color: $prime-voucher-c-hover;
+      }
+    }
+  }
+}
+
+// Card content
+.card-vouchers {
+  background-color: white;
+  display: flex;
+  border-radius: 10px;
+  border: 1px solid rgb(220, 219, 219);
+
+  .card-left {
+    padding: 18px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    i {
+      font-size: 20px;
+    }
+
+    .name {
+      font-size: 17px;
+      font-weight: 600;
+    }
+  }
+
+  .card-right {
+    padding: 18px;
+    font-size: 15px;
+    font-weight: 600;
+    // color: black;
+
+    .text {
+      font-weight: 400;
+    }
+  }
+
+  .card-btn {
+    padding: 0 17px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+
+    .btnGet {
+      border-radius: 5px;
+      width: 50px;
+      font-size: 14px;
+    }
+  }
+}
