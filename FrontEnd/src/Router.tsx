@@ -7,7 +7,7 @@ import HomePageAdmin from '@pages/admin/HomePage.tsx'
 import AboutAdmin from '@pages/admin/About.tsx'
 import ResourceList from "@pages/resource/ResourceList.tsx";
 import RoleList from "@pages/role/RoleList.tsx";
-import PermissionList from "@pages/role/RoleList.tsx";
+import PermissionList from "@pages/permission/PermissionList.tsx";
 import CategoryList from "@pages/category/CategoryList"
 import AuthorList from "@pages/author/AuthorList"
 

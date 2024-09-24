@@ -1,5 +1,5 @@
 import axios from "axios"
-// @ts-ignore
+//  @ts-ignore
 import Cookies from "js-cookie"
 import {setToast} from "@src/Store/Slinces/appSlice.ts";
 const $axios = axios.create({

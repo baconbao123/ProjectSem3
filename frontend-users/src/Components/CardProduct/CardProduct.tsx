@@ -1,28 +1,35 @@
 import { Card } from 'primereact/card'
 import { Button } from 'primereact/button'
 import { RiPaypalLine } from 'react-icons/ri'
-import './CardProduct.scss'
 import { BsCartPlus } from 'react-icons/bs'
+import './CardProduct.scss'
 
 interface CardProductProps {
-  title: string
-  image: string
+  Name: string
+  ProductImage: string[]
+  Manufactor: string
+  BasePrice: string
+  SellPrice: string
   special: string
-  author: string
-  price: string
-  priceSale: string
 }
 
-function sliceText ( text: string) {
-  return text.length > 20 ? text.slice(0, 20) + '...' : text;
+function sliceText(text: string) {
+  return text.length > 20 ? text.slice(0, 20) + '...' : text
 }
 
-
-export const CardProduct: React.FC<CardProductProps> = ({ title, image, special, author, price, priceSale }) => {
+export const CardProduct: React.FC<CardProductProps> = ({
+  Name,
+  ProductImage,
+  special,
+  Manufactor,
+  BasePrice,
+  SellPrice
+}) => {
   const header = (
-    <>
-      <img alt='Card' src={image} className='img-card'/>
-    </>
+    <div className='header-img'>
+      <img alt='Card' src={ProductImage[0]} className='img-card' />
+      {special && <span className='badge'>{special}</span>}
+    </div>
   )
   const footer = (
     <div className='card-btn'>
@@ -33,17 +40,16 @@ export const CardProduct: React.FC<CardProductProps> = ({ title, image, special,
 
   return (
     <div className='card-product'>
-      <Card title={sliceText(title)} subTitle={author} footer={footer} header={header}>
-        {special && <span className='badge'>{special}</span>}
-        {priceSale && priceSale !== '' && (
+      <Card title={sliceText(Name)} subTitle={Manufactor} footer={footer} header={header} >
+        {SellPrice && SellPrice !== '' && (
           <div className='card-price-sale'>
-            <p className='price-base'>$ {price}</p>
-            <p className='price-sale'>$ {priceSale}</p>
+            <p className='price-base'>$ {BasePrice}</p> &nbsp;&nbsp;
+            <p className='price-sale'>$ {SellPrice}</p>
           </div>
         )}
-        {!priceSale && priceSale == '' && (
+        {!SellPrice && SellPrice == '' && (
           <div className='card-price'>
-            <p className='price-base'>$ {price}</p>
+            <p className='price-base'>$ {BasePrice}</p>
           </div>
         )}
       </Card>

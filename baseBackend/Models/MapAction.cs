@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AuthenticationJWT.Models;
 
-[Index(nameof(RoleId), nameof(ResourceId), nameof(ActionId), IsUnique = true)]
 
 public class MapAction
 {

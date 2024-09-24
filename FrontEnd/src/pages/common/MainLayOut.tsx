@@ -11,7 +11,7 @@ interface MainLayOutProps {
 
 const MainLayOut : React.FC<MainLayOutProps> = ({header, search, button, content, footer}) => {
     const loading = useSelector((state: any) => state.app.loading);
-
+    const skeleton = useSelector((state: any) => state.app.skeleton);
     const skeletonSearch:React.FC =() => {
         return (
             <>
@@ -36,7 +36,7 @@ const MainLayOut : React.FC<MainLayOutProps> = ({header, search, button, content
     }
     return (
         <div className='main-page'>
-            {loading ?
+            {skeleton ?
                 skeletonSearch() :
                 (
                     <>

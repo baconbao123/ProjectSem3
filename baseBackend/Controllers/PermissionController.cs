@@ -37,7 +37,7 @@ public class PermissionController : ControllerBase
         var data = (from role in db.Role
                     join map in db.MapAction on role.Id equals map.RoleId
                     join resource in db.Resource on map.ResourceId equals resource.Id
-                    where role.Id == id && role.DeletedAt == null
+                    where role.Id == id && role.DeletedAt == null && map.DeletedAt == null && role.DeletedAt == null
                     select new
                     {
                         role_id = role.Id,
@@ -54,52 +54,40 @@ public class PermissionController : ControllerBase
 
     // POST api/<ResourceController>
     [HttpPost]
-    [Authorize]
-    public IActionResult Post([FromBody] ResourceRequest request)
+    //[Authorize]
+    public IActionResult Post([FromBody] List<PermisionForm> request)
     {
-        if (!ModelState.IsValid)
+        var mapAction = (from map in db.MapAction where map.DeletedAt == null select map).ToList();
+        foreach (var map in mapAction)
         {
-            return BadRequest(ModelState);
+            map.DeletedAt = DateTime.Now;
         }
-        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
-        var resource = new Resource();
-        resource.Name = request.Name;
-        resource.Description = request.Description;
-        resource.Status = request.Status ?? 0;
-        resource.Version = 0;
-        resource.UpdateAt = DateTime.Now;
-        resource.CreatedAt = DateTime.Now;
-        resource.UpdatedBy = int.Parse(userId);
-        resource.CreatedBy = int.Parse(userId);
-        db.Resource.Add(resource);
         db.SaveChanges();
-        return Ok(new { data = resource });
+        foreach (var item in request)
+        {
+            db.MapAction.Add(new MapAction { ResourceId = (item.resource_id ?? 0), ActionId = (item.action_id ?? 0), RoleId = (item.role_id ?? 0) });
+        }
+        db.SaveChanges();
+        return Ok(new { data = request });
     }
 
     // PUT api/<ResourceController>/5
     [Authorize]
     [HttpPut("{id}")]
-    public IActionResult Put(int id, [FromBody] ResourceRequest request)
+    public IActionResult Put(int id, [FromBody] List<PermisionForm> request)
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
-
-        var resource = db.Resource.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
-        if (resource == null)
+        var mapAction = (from map in db.MapAction where map.DeletedAt == null && map.RoleId == id select map).ToList();
+        foreach (var map in mapAction)
         {
-            return BadRequest(new { message = "Data not found" });
+            map.DeletedAt = DateTime.Now;
         }
-        if (resource.Version != request.Version)
-        {
-            return BadRequest(new { type = "reload", message = "Data has change pls reload" });
-        }
-        resource.Name = request.Name;
-        resource.Description = request.Description;
-        resource.Status = request.Status ?? 0;
-        resource.Version = request.Version + 1;
-        resource.UpdateAt = DateTime.Now;
-        resource.UpdatedBy = int.Parse(userId);
         db.SaveChanges();
-        return Ok(new { data = resource });
+        foreach (var item in request)
+        {
+            db.MapAction.Add(new MapAction { ResourceId = (item.resource_id ?? 0), ActionId = (item.action_id ?? 0), RoleId = (item.role_id ?? 0) });
+        }
+        db.SaveChanges();
+        return Ok(new { data = request });
     }
 
     // DELETE api/<ResourceController>/5'

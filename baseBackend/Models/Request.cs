@@ -53,6 +53,20 @@ public class RoleRequest()
     public int Version { get; set; }
 
 }
+public class PermisionForm()
+{
+    [Required(ErrorMessage = "Role_id is required.")]
+    public int? role_id { get; set; }
+
+
+    [Required(ErrorMessage = "Resource_id is required.")]
+    public int? resource_id { get; set; }
+
+    [Required(ErrorMessage = "Action_id is required.")]
+    public int? action_id { get; set; }
+
+
+}
 
 public class CategoryRequest()
 {

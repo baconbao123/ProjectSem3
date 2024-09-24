@@ -17,7 +17,6 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     const [item, setItem] = useState({})
     const token = Cookies.get("token")
     useEffect(() => {
-        console.log("check props ", form , id)
         if (form === 'edit') {
             loadData()
         }
