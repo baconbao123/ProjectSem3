@@ -2,23 +2,17 @@
 
 namespace AuthenticationJWT.Models;
 
-public class UserAddress
+public class ManuPublish
 {
     [Key]
     public int Id { get; set; }
     [Required]
-    public int UserId { get; set; }
-
-    public int Mark { get; set; }
-
-    public string? Phone { get; set; }
-    public bool Index { get; set; }
-    public string? OtherMark { get; set; }
-    public string DetailAddress { get; set; }
+    public string Name { get; set; }
     public string? Address { get; set; }
-
-    public int Version { get; set; }
+    public int? Type { get; set; }
+    public string? Description { get; set; }
     public int Status { get; set; }
+    public int Version { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
@@ -27,7 +21,7 @@ public class UserAddress
 
     public DateTime? DeletedAt { get; set; }
 
-    public UserAddress()
+    public ManuPublish()
     {
         CreatedBy = 0;
         UpdatedBy = 0;
