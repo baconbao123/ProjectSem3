@@ -20,15 +20,57 @@ public class CategoryController : ControllerBase
     // GET: api/<CategoryController>
     [HttpGet]
     [Authorize]
-    public IActionResult get()
+    public IActionResult Get()
     {
-        var listData = (from item in db.Category
-                        where item.DeletedAt == null
-                        orderby item.CreatedAt descending
-                        select item).ToList();
+        // Lấy tất cả các danh mục vào bộ nhớ.
+        var categories = (from item in db.Category
+                          where item.DeletedAt == null
+                          orderby item.CreatedAt descending
+                          select item).ToList();
+
+        //// Tạo danh sách chứa kết quả.
+        var listData = new List<object>();
+
+        //// Tìm tất cả các danh mục gốc (ParentId = null).
+        var rootCategories = categories.Where(c => c.ParentId == null).ToList();
+
+        //// Xây dựng danh sách theo cấp bậc bắt đầu từ danh mục gốc.
+        foreach (var rootCategory in rootCategories)
+        {
+            GetCategoryWithLevel(categories, rootCategory, 0, listData);
+        }
 
         return Ok(new { data = listData, total = listData.Count() });
+        //return Ok(new { data = listData, total = listData.Count });
     }
+
+    // Phương thức đệ quy để xác định cấp bậc và thêm vào danh sách kết quả.
+    private void GetCategoryWithLevel(List<Category> categories, Category currentCategory, int level, List<object> listData)
+    {
+        // Thêm danh mục hiện tại vào danh sách với cấp bậc.
+        listData.Add(new
+        {
+            currentCategory.Id,
+            currentCategory.Name,
+            currentCategory.Description,
+            currentCategory.CategoryCode,
+            currentCategory.Status,
+            currentCategory.CreatedAt,
+            currentCategory.UpdateAt,
+            ParentId = currentCategory.ParentId,
+            Level = level  // Cấp bậc hiện tại của danh mục.
+        });
+
+        // Tìm các danh mục con của danh mục hiện tại.
+        var subCategories = categories.Where(c => c.ParentId == currentCategory.Id).ToList();
+
+        // Đệ quy cho từng danh mục con, tăng cấp bậc lên 1.
+        foreach (var subCategory in subCategories)
+        {
+            GetCategoryWithLevel(categories, subCategory, level + 1, listData);
+        }
+    }
+
 
     // GET api/<CategoryController>/5
     [Authorize]
@@ -37,11 +79,13 @@ public class CategoryController : ControllerBase
     {
         var category = (from r in db.Category
                         join u in db.User on r.CreatedBy equals u.Id
+                        join u2 in db.User on r.UpdatedBy equals u2.Id
                         where r.Id == id && r.DeletedAt == null
                         select new
                         {
                             Category = r,
-                            User = u
+                            UserCreate = u.Username,
+                            UserUpdate = u2.Username,
                         }).FirstOrDefault();
 
         if (category == null)
@@ -60,7 +104,19 @@ public class CategoryController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-
+        // check ParentId
+        if (request.ParentId.HasValue)
+        {
+            var parentCategory = db.Category.FirstOrDefault(c => c.Id == request.ParentId);
+            if (parentCategory == null)
+            {
+                return BadRequest(new { message = "Parent not found." });
+            }
+            if (parentCategory.Id == request.ParentId)
+            {
+                return BadRequest(new { message = "Parent must not coincide with itself " });
+            }
+        }
         string categoryCode = GenerateCategoryCode(request.Name);
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
@@ -75,6 +131,7 @@ public class CategoryController : ControllerBase
         category.CreatedAt = DateTime.Now;
         category.UpdatedBy = int.Parse(userId);
         category.CreatedBy = int.Parse(userId);
+
         db.Category.Add(category);
         db.SaveChanges();
         return Ok(new { data = category });
@@ -113,14 +170,22 @@ public class CategoryController : ControllerBase
         {
             return BadRequest(new { message = "Data not found" });
         }
-        //if (category.Version != request.Version)
-        //{
-        //    return BadRequest(new { type = "reload", message = "Data has change pls reload" });
-        //}
+        if (category.Id == request.ParentId)
+        {
+            return BadRequest(new { message = "Parent must not coincide with itself " });
+        }
+        if (category.Version != request.Version)
+        {
+            return BadRequest(new { type = "reload", message = "Data has change pls reload" });
+        }
+        string categoryCode = GenerateCategoryCode(request.Name);
+
         category.Name = request.Name;
         category.Description = request.Description;
+        category.CategoryCode = categoryCode;
+        category.ParentId = request.ParentId;
         category.Status = request.Status ?? 0;
-        category.Version = category.Version + 1;
+        category.Version = request.Version + 1;
         category.UpdateAt = DateTime.Now;
         category.UpdatedBy = int.Parse(userId);
         db.SaveChanges();
