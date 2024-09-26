@@ -105,5 +105,30 @@ public class AuthorRequest()
 
 public class ProductRequest()
 {
+    [Required(ErrorMessage = "Name is required.")]
+    [StringLength(60, ErrorMessage = "Name cannot be longer than 60 characters.")]
+    public string Name { get; set; }
+    public string? Description { get; set; }
+
+    public int? CategoryId { get; set; }
+    [Required(ErrorMessage = "ManufactorId is required.")]
+    public int ManufactorId { get; set; }
+
+    [Required(ErrorMessage = "PublisherId is required")]
+    public int PublisherId { get; set; }
+
+    public string? BasePrice { get; set; }
+
+    public string? SellPrice { get; set; }
+
+    public int Quantity { get; set; }
+    [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+    public DateTime? Expired { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+    public int Version { get; set; }
 
 }
+
