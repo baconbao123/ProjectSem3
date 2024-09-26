@@ -1,10 +1,17 @@
 .main-page {
   margin: 10px;
   .header-page {
+
     font-size: 20px;
     font-weight: bold;
     .breadcrumb {
+      display: flex;
+      align-items: center;
       a {
+        .icon-breadcrum {
+          font-size: 30px;
+        }
+        line-height: 1.5;
         color: #000;
         text-decoration: none;
         &:hover {

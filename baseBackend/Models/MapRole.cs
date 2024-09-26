@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 namespace AuthenticationJWT.Models;
-
-[Index(nameof(RoleId), nameof(UserId), IsUnique = true)]
 
 public class MapRole
 {
