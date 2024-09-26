@@ -24,6 +24,36 @@ public class UserRequest()
     [Required(ErrorMessage = "UserName is required.")]
     public string UserName { get; set; }
 
+    [Required(ErrorMessage = "Phone is required.")]
+    public string Phone { get; set; }
+
+    [Required(ErrorMessage = "Role is required.")]
+    public string Role { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+
+}
+public class UserRequestUpdate()
+{
+    [Required(ErrorMessage = "Email is required.")]
+    public string Email { get; set; }
+
+    [Required(ErrorMessage = "UserName is required.")]
+    public string UserName { get; set; }
+
+    [Required(ErrorMessage = "Phone is required.")]
+    public string Phone { get; set; }
+
+    [Required(ErrorMessage = "Role is required.")]
+    public string Role { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+    public int Version { get; set; }
+
 }
 
 public class ResourceRequest()

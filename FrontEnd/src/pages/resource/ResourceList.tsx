@@ -186,8 +186,9 @@ const ResourceList : React.FC = () => {
                         color="inherit"
                         to="/"
                     >
-                        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-                        Home
+                        <HomeIcon className='icon-breadcrum' />
+
+
                     </Link>
                     <Link
                      to='/resource'
