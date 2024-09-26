@@ -90,15 +90,15 @@ public class AuthorController : ControllerBase
         {
             return BadRequest(new { message = "Data not found" });
         }
-        //if (author.Version != request.Version)
-        //{
-        //    return BadRequest(new { type = "reload", message = "Data has change pls reload" });
-        //}
+        if (author.Version != request.Version)
+        {
+            return BadRequest(new { type = "reload", message = "Data has change please reload" });
+        }
         author.Name = request.Name;
         author.Birth = request.DateOfBirth;
         author.Biography = request.Biography;
         author.Status = request.Status ?? 0;
-        author.Version = author.Version + 1;
+        author.Version = request.Version + 1;
         author.UpdateAt = DateTime.Now;
         author.UpdatedBy = int.Parse(userId);
         db.SaveChanges();

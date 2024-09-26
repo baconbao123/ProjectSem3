@@ -63,6 +63,13 @@ const Login = () => {
         dispatch(setUser({ userId, email, name }))
       }
 
+      await Swal.fire({
+        title: 'Login Success!',
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1500
+      })
+
       navigate('/home')
     } catch {
       await Swal.fire({
@@ -80,7 +87,6 @@ const Login = () => {
     }
   }
 
-  // Handle form register
   const handleSubmitRegister = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
@@ -106,7 +112,7 @@ const Login = () => {
     } catch (error) {
       let errorMess = ''
 
-      if (axios.isAxiosError(error) && error.response?.data) {
+      if(axios.isAxiosError(error) && error.response?.data) {
         errorMess = error.response.data
       }
       await Swal.fire({
@@ -118,133 +124,126 @@ const Login = () => {
   }
 
   return (
-    <Container style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ paddingTop: '100px', width: '970px' }}>
-        <Container className='container-login'>
-          <div className='image-container'>
-            {/* Login Video */}
-            {!formRegister && (
-              <video className='login-video' autoPlay muted loop playsInline preload='auto' key='login-video'>
-                <source src='videos/logo-video.mp4' type='video/MP4' />
+    <div style={{ paddingTop: '100px' }}>
+      <Container className='container-login'>
+        <div className='image-container'>
+          {/* Login Video */}
+          {!formRegister && (
+            <video className='login-video' autoPlay muted loop playsInline preload='auto' key='login-video'>
+              <source src='videos/logo-video.mp4' type='video/MP4' />
+            </video>
+          )}
+          {/* Register Video */}
+          {formRegister && (
+            <div className='video-wrapper'>
+              <video className='register-video' autoPlay muted loop playsInline preload='auto' key='register-video'>
+                <source src='videos/register-video.mp4' type='video/MP4' />
               </video>
-            )}
-            {/* Register Video */}
-            {formRegister && (
-              <div className='video-wrapper'>
-                <video className='register-video' autoPlay muted loop playsInline preload='auto' key='register-video'>
-                  <source src='videos/register-video.mp4' type='video/MP4' />
-                </video>
-              </div>
-            )}
-          </div>
-          {/* Form Container */}
-          <div className='form-container'>
-            {/* Login Form */}
-            {!formRegister && (
-              <div className='form-content'>
-                <h2 className='login-title'>Login</h2>
-                <form onSubmit={handleSubmitLogin}>
-                  <div className='input-group'>
-                    <label htmlFor='email'>Email</label>
-                    <input
-                      type='email'
-                      id='email'
-                      placeholder='Enter your email'
-                      value={Email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className='input-enter'
-                      required
-                    />
-                  </div>
-                  <div className='input-group'>
-                    <label htmlFor='password'>Password</label>
-                    <input
-                      type='password'
-                      id='password'
-                      placeholder='Enter your password'
-                      value={Password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className='input-enter'
-                      required
-                    />
-                  </div>
-                  <div className='remember-container'>
-                    <input
-                      type='checkbox'
-                      id='rememberMe'
-                      className='remember-me'
-                      checked={Remember}
-                      onChange={(e) => setRemember(e.target.checked)}
-                    />{' '}
-                    &nbsp;
-                    <label htmlFor='rememberMe'>Remember Me</label>
-                  </div>
-                  <button type='submit'>Login</button>
-                </form>
-                <p className='footer-text'>
-                  Don't have an account? &nbsp;
-                  <a onClick={() => setFormRegister(!formRegister)} style={{ cursor: 'pointer' }}>
-                    Register
-                  </a>
-                </p>
-              </div>
-            )}
+            </div>
+          )}
+        </div>
+        {/* Form Container */}
+        <div className='form-container'>
+          {/* Login Form */}
+          {!formRegister && (
+            <div className='form-content'>
+              <h2 className='login-title'>Login</h2>
+              <form onSubmit={handleSubmitLogin}>
+                <div className='input-group'>
+                  <label htmlFor='email'>Email</label>
+                  <input
+                    type='email'
+                    id='email'
+                    placeholder='Enter your email'
+                    value={Email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className='input-group'>
+                  <label htmlFor='password'>Password</label>
+                  <input
+                    type='password'
+                    id='password'
+                    placeholder='Enter your password'
+                    value={Password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className='remember-container'>
+                  <input
+                    type='checkbox'
+                    id='rememberMe'
+                    className='remember-me'
+                    checked={Remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                  />{' '}
+                  &nbsp;
+                  <label htmlFor='rememberMe'>Remember Me</label>
+                </div>
+                <button type='submit'>Login</button>
+              </form>
+              <p className='footer-text'>
+                Don't have an account? &nbsp;
+                <a onClick={() => setFormRegister(!formRegister)} style={{ cursor: 'pointer' }}>
+                  Register
+                </a>
+              </p>
+            </div>
+          )}
 
-            {/* Register Form */}
-            {formRegister && (
-              <div className='form-content'>
-                <h2 className='login-title'>Register</h2>
-                <form onSubmit={handleSubmitRegister}>
-                  <div className='input-group'>
-                    <label htmlFor='username'>Username</label>
-                    <input
-                      type='text'
-                      id='username'
-                      placeholder='Enter your username'
-                      value={usernameRegister}
-                      onChange={(e) => setUsernameRegister(e.target.value)}
-                      className='input-enter'
-                      required
-                    />
-                  </div>
-                  <div className='input-group'>
-                    <label htmlFor='email'>Email</label>
-                    <input
-                      type='email'
-                      id='email'
-                      placeholder='Enter your email'
-                      value={emailRegister}
-                      onChange={(e) => setEmailRegister(e.target.value)}
-                      className='input-enter'
-                      required
-                    />
-                  </div>
-                  <div className='input-group'>
-                    <label htmlFor='password'>Password</label>
-                    <input
-                      type='password'
-                      id='password'
-                      placeholder='Enter your password'
-                      value={passwordRegister}
-                      onChange={(e) => setPasswordRegister(e.target.value)}
-                      className='input-enter'
-                      required
-                    />
-                  </div>
-                  <button type='submit'>Register</button>
-                </form>
-                <p className='footer-text'>
-                  Already have an account? &nbsp;
-                  <a onClick={() => setFormRegister(!formRegister)} style={{ cursor: 'pointer' }}>
-                    Login
-                  </a>
-                </p>
-              </div>
-            )}
-          </div>
-        </Container>
-      </div>
-    </Container>
+          {/* Register Form */}
+          {formRegister && (
+            <div className='form-content'>
+              <h2 className='login-title'>Register</h2>
+              <form onSubmit={handleSubmitRegister}>
+                <div className='input-group'>
+                  <label htmlFor='username'>Username</label>
+                  <input
+                    type='text'
+                    id='username'
+                    placeholder='Enter your username'
+                    value={usernameRegister}
+                    onChange={(e) => setUsernameRegister(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className='input-group'>
+                  <label htmlFor='email'>Email</label>
+                  <input
+                    type='email'
+                    id='email'
+                    placeholder='Enter your email'
+                    value={emailRegister}
+                    onChange={(e) => setEmailRegister(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className='input-group'>
+                  <label htmlFor='password'>Password</label>
+                  <input
+                    type='password'
+                    id='password'
+                    placeholder='Enter your password'
+                    value={passwordRegister}
+                    onChange={(e) => setPasswordRegister(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type='submit'>Register</button>
+              </form>
+              <p className='footer-text'>
+                Already have an account? &nbsp;
+                <a onClick={() => setFormRegister(!formRegister)} style={{ cursor: 'pointer' }}>
+                  Login
+                </a>
+              </p>
+            </div>
+          )}
+        </div>
+      </Container>
+    </div>
   )
 }
 

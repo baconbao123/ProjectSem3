@@ -1,19 +1,15 @@
 @import '../../../global.scss';
 
-.header-img {
-  position: relative;
-  width: 100%!important;
-
+.card-product {
   .img-card {
     object-fit: none;
-    cursor: pointer;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    height: 180px;
-    padding-top: 2px;
-    margin: 0;
     width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
   }
+
   .badge {
     position: absolute;
     top: 10px;
@@ -25,20 +21,8 @@
     border-radius: 4px; // Optional: rounded corners
   }
 
-  .card-product .p-card-header {
-    padding: 0 !important; // Xóa padding mặc định của phần header trong card
-  }
-  
-  .p-card {
-    width: 100%; // Đảm bảo toàn bộ card mở rộng full-width nếu cần
-  }
-}
-
-.card-product {
-
-
   .p-card-body {
-    padding: 0.5rem;
+    padding: 0.8rem;
 
     // Card title
     .p-card-title {
@@ -92,9 +76,6 @@
       margin: 0;
 
       .card-price-sale {
-        display: flex;
-        align-items: center;
-        justify-content: end;
         p {
           text-align: right;
         }
@@ -106,23 +87,17 @@
 
         .price-sale {
           color: $btn-color;
-          font-size: 16px;
-          font-weight: 500;
         }
       }
 
       .card-price {
-        // padding: 10px 0;
+        padding: 10px 0;
 
         p {
           text-align: right;
-          font-size: 16px;
+          font-size: 14px;
         }
       }
-    }
-
-    .p-card-footer {
-      padding: 0;
     }
   }
 }

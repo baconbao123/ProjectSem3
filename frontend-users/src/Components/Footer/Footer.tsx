@@ -8,7 +8,12 @@ export const Footer = () => {
           <div className='row'>
             <div className='col-sm-12 col-lg-6 col-xl-5'>
               <div className='widget widget-about'>
-                <img src='images/Logo.png' className='footer-logo' alt='Footer Logo' width={300} height={300} />
+                <img
+                  src='images/Logo.png'
+                  className='footer-logo'
+                  alt='Footer Logo'
+                  
+                />
                 <p>
                   Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.
                   Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.
@@ -24,6 +29,7 @@ export const Footer = () => {
                       <span className='widget-about-title'>Payment Method</span>
                       <figure className='footer-payments'>
                         <img src='images/f-payment.png' alt='Payment methods' width={70} height={30} />
+
                       </figure>
                       {/* End .footer-payments */}
                     </div>

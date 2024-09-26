@@ -50,30 +50,24 @@ export const Navigate = () => {
           {/* Account */}
           <Col lg={3} md={4} sm={4} className='navi-right'>
             <div className='navi'>
-              <Link to='/store' className='url'>
+              <Link to='/store'>
                 <div className='storesystem'>
                   <i className='pi pi-shop' style={{ fontSize: '1.8rem' }}></i>
                   <span style={{ fontSize: '12px' }}>Store</span>
                 </div>
               </Link>
-              <Link to='/orders' className='url'>
-                <div className='orders'>
-                  <i className='pi pi-box icon' style={{ fontSize: '1.8rem' }}></i>
-                  <span style={{ fontSize: '12px' }}>Orders</span>
-                </div>
-              </Link>
-              <Link to='' className='url'>
-                <div className='account'>
-                  <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
-                  <span style={{ fontSize: '12px' }}>Account</span>
-                </div>
-              </Link>
-              <Link to='/checkout/cart' className='url'>
-                <div className='cart'>
-                  <i className='pi pi-shopping-cart icon' style={{ fontSize: '1.8rem' }}></i>
-                  <span style={{ fontSize: '12px' }}>Cart</span>
-                </div>
-              </Link>
+              <div className='orders'>
+                <i className='pi pi-heart icon' style={{ fontSize: '1.8rem' }}></i>
+                <span style={{ fontSize: '12px' }}>Orders</span>
+              </div>
+              <div className='account'>
+                <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
+                <span style={{ fontSize: '12px' }}>Account</span>
+              </div>
+              <div className='cart'>
+                <i className='pi pi-shopping-cart icon' style={{ fontSize: '1.8rem' }}></i>
+                <span style={{ fontSize: '12px' }}>Cart</span>
+              </div>
             </div>
           </Col>
         </Row>
