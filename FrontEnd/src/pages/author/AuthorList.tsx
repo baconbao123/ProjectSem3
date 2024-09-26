@@ -18,7 +18,7 @@ import ResourceAdd from "@pages/resource/ResourceAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
 import AuthorDetail from "./AuthorDetail.tsx";
-import Breadcrumb from "@pages/common/Breadcrumbs";
+import Breadcrumb from "@pages/common/breadcrumbs.tsx";
 import {Link} from "react-router-dom";
 import AuthorAdd from "./AuthorAdd";
 import dayjs from "dayjs";

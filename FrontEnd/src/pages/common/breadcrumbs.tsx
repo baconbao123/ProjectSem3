@@ -1,41 +1,40 @@
 import * as React from 'react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
-import {Link} from "react-router-dom";
-
+import { Link, useLocation } from "react-router-dom";
 import Stack from '@mui/material/Stack';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 
-
-
-
-// function handleClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
-//     event.preventDefault();
-//     console.info('You clicked a breadcrumb.');
-//   }
-// const breadcrumbs =[]
 export default function Breadcrumb() {
-    const breadcrumbs = [
-      <Link  key="1" color="inherit" to="/" >
-        MUI
-      </Link>,
-      <Link
+  const location = useLocation();
+  
+  // Tách đường dẫn từ location.pathname (ví dụ "/products/laptops/dell-xps-13")
+  const pathnames = location.pathname.split('/').filter((x) => x);
+
+  return (
+    <Stack spacing={2}>
+      <Breadcrumbs separator="›" aria-label="breadcrumb" className='breadcrumb'>
+  
+        <Link  to="/" >
+          <HomeOutlinedIcon color="inherit"/> 
+        </Link>
+
        
-        key="2"
-        color="inherit"
-       to="/material-ui/getting-started/installation/"
-      
-      >
-        Core
-      </Link>,
-      <Typography key="3" sx={{ color: 'text.primary' }}>
-        Breadcrumb
-      </Typography>,
-    ];
-    return (
-        <Stack spacing={2}>
-          <Breadcrumbs separator="›" aria-label="breadcrumb">
-            {breadcrumbs}
-          </Breadcrumbs>
-        </Stack>
-      );
-}  
+        {pathnames.map((value, index) => {
+          const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+
+          const isLast = index === pathnames.length - 1;
+          return isLast ? (
+            <Typography key={to} sx={{ color: 'text.primary' }}>
+              {value.charAt(0).toUpperCase() + value.slice(1)}
+            </Typography>
+          ) : (
+            <Link key={to} color="inherit" to={to} className=''>
+              {value.charAt(0).toUpperCase() + value.slice(1)}
+            </Link>
+          );
+        })}
+      </Breadcrumbs>
+    </Stack>
+  );
+}
