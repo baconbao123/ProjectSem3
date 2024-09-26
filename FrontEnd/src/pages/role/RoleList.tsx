@@ -268,8 +268,8 @@ const ResourceList : React.FC = () => {
             setItemTo(perPage)
         }
         const setLastPage = () => {
-            setItemFrom(total-perPage)
-            setItemTo(total)
+            setItemFrom(total > perPage  ?  total - perPage :1)
+            setItemTo(total > perPage  ? total: perPage)
         }
         const getSortValue = (value:string) => {
             switch (value.toLowerCase()) {

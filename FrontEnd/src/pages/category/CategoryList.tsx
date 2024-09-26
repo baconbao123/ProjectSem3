@@ -3,7 +3,7 @@ import MainLayOut from "@pages/common/MainLayOut.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
 import Modal from "@pages/common/Modal.tsx";
-import {MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Breadcrumbs, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
@@ -18,7 +18,7 @@ import ResourceAdd from "@pages/resource/ResourceAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
 import CategoryDetail from "./CategoryDetail";
-import Breadcrumb from "@pages/common/Breadcrumbs";
+
 import {Link} from "react-router-dom";
 const CategoryList : React.FC = () => {
     const dispatch = useDispatch();
@@ -40,8 +40,8 @@ const CategoryList : React.FC = () => {
         setField([
             {key: "No", label: "No", class: "th__no"},
             {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "Category Code", label: "CategoryCode", class: "width-300", sortable: true, sortValue: 'none'},
-            // {key: "Description", label: "Description", class: "with-500"},
+            {key: "CategoryCode", label: "CategoryCode", class: "", sortable: true, sortValue: 'none'},
+            {key: "ParentName", label: "Parent Category", class: ""},
             {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
 
@@ -134,18 +134,18 @@ const CategoryList : React.FC = () => {
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
-        setComponentTitle("Add resource")
+        setComponentTitle("Add category")
         setShowComponent('add')
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Edit resource")
+        setComponentTitle("Edit category")
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail resource")
+        setComponentTitle("Detail category")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -162,10 +162,10 @@ const CategoryList : React.FC = () => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
                 const token = Cookies.get("token")
-                $axios.delete(`Resource/${item.Id}`).then(res => {
+                $axios.delete(`Category/${item.Id}`).then(res => {
                     console.log("check res", res)
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete resource successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete category successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -183,7 +183,22 @@ const CategoryList : React.FC = () => {
     const header: React.FC = () => {
         return (
             <div className='header-page'>
-                <Breadcrumb/>  
+               <div className='header-page'>
+                <Breadcrumbs separator="›" aria-label="breadcrumb" className='breadcrumb'>
+                    <Link
+                        color="inherit"
+                        to="/"
+                    >
+                        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+                        Home
+                    </Link>
+                    <Link
+                     to='/resource'
+                    >
+                       Category
+                    </Link>
+                </Breadcrumbs>
+            </div>
             </div>
         )
     }
@@ -365,6 +380,14 @@ const CategoryList : React.FC = () => {
                                                                 </span>
                                                             </TableCell>
                                                         )
+                                                    }
+                                                    if(field.key ==="ParentName"){
+                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
+                                                               
+                                                                <span className='' >
+                                                                   {item[field.key] ? item[field.key] : '-'}
+                                                                </span>
+                                                            </TableCell>
                                                     }
                                                     return (
                                                         <TableCell className={field.class} key={crypto.randomUUID()}>

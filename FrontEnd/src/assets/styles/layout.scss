@@ -1,6 +1,6 @@
 @import "variable";
 @import "helper";
-@import "modal";
+
 $default-color:$cyan;
 .theme-layout {
   @import "button";
@@ -25,6 +25,5 @@ $default-color:$cyan;
   @import "top-bar";
   @import "menu-side";
   @import "main";
-
-
+  @import "modal";
 }

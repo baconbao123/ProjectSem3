@@ -94,6 +94,7 @@ const AuthorAdd : React.FC<AuthorAdd> = ({loadDataTable, form, id}) => {
             Biography: biography ,
             DateOfBirth: birth ,
             Status: status? 1: 0,
+            Version: item.Version
         }
         dispatch(setLoading(true))
         $axios.put(`Author/${id}`,dataForm).then(res => {
