@@ -25,7 +25,6 @@ public class Product
 
     public string Description { get; set; }
 
-    public string? RefreshToken { get; set; }
 
     public string? BasePrice { get; set; }
 

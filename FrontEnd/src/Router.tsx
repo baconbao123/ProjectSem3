@@ -10,6 +10,7 @@ import RoleList from "@pages/role/RoleList.tsx";
 import PermissionList from "@pages/permission/PermissionList.tsx";
 import CategoryList from "@pages/category/CategoryList"
 import AuthorList from "@pages/author/AuthorList"
+import UserList from "@pages/user/UserList.tsx";
 
 export  default  createBrowserRouter([
     {
@@ -29,6 +30,11 @@ export  default  createBrowserRouter([
             {
                 path: 'resource',
                 element: (<ResourceList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'user',
+                element: (<UserList />),
                 errorElement: (<ErrorPage error="'Error page"/>),
             },
             {

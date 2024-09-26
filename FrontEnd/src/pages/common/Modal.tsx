@@ -19,7 +19,7 @@ const Modal : React.FC<ModalProps> = ({content, title}) => {
         <div  className={!showModal ? 'd-none' : 'modal-container'}>
             <div className='modal-content'>
                 <div className='modal-content-header'>
-                    <div>{title ? title : 'Modal title'}</div>
+                    <div>{title ? ( <span>{title}</span>) : 'Modal title'}</div>
                     <div onClick={() => dispatch(setShowModal(false))}> <ClearOutlinedIcon  className='btn-delete'/></div>
                 </div>
                 <div className='modal-content-body'>
