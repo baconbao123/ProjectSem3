@@ -8,6 +8,7 @@ import { useDispatch} from 'react-redux';
 // @ts-ignore
 import Cookies from "js-cookie";
 import {setLoading, setShowModal} from "@src/Store/Slinces/appSlice.ts";
+import "primereact/resources/themes/lara-light-cyan/theme.css";
 const Toast = React.lazy(() => import("./components/Toast"))
 const Loading = React.lazy(() => import("./components/Loading"))
 

@@ -52,6 +52,18 @@ public class CommonController : ControllerBase
                             select item).ToList();
             return Ok(new { data = listData });
         }
+        else if (resource == "role")
+        {
+            var listData = (from item in db.Role
+                            where item.DeletedAt == null && item.Status == 1
+                            orderby item.CreatedAt descending
+                            select new
+                            {
+                                label = item.Name,
+                                code = item.Id,
+                            }).ToList();
+            return Ok(new { data = listData });
+        }
         return BadRequest(new { message = "Data not found" });
 
     }
