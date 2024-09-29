@@ -4,8 +4,6 @@
   width: 100%;
   background-color: #484646;
   position: relative;
-  font-size: 16px;
-
 
   &.sticky {
     position: fixed;
@@ -22,12 +20,12 @@
     background-color: $prime-color;
     align-items: center;
     color: white;
-    padding: 10px 10px;
+    padding: 8px 10px;
     position: relative;
     height: 100%;
 
     .content {
-      font-weight: 600;
+      font-weight: 500;
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -77,13 +75,11 @@
       &:not(:last-child) {
         margin-bottom: 0; /* Loại bỏ khoảng cách dưới item, không có margin dưới phần tử cuối cùng */
       }
-
-      .name {
-        color: black;
-        
-        font-weight: 500;
-      }
     }
+  }
+
+  .name {
+    color: white;
   }
 
   .categoryItem {
@@ -122,21 +118,16 @@
     padding: 10px 0;
 
     .item {
+      color: white;
       font-weight: 500;
       padding: 0 25px;
       display: flex;
-      align-items: center;
 
-      .url {
-        text-decoration: none;
-        .name {
-          cursor: pointer;
-          color: white;
-          
+      .name {
+        cursor: pointer;
 
-          &:hover {
-            color: $prime-color;
-          }
+        &:hover {
+          color: $prime-color;
         }
       }
     }
@@ -144,9 +135,10 @@
 
   .save-container {
     display: flex;
+    padding: 10px 0;
     color: white;
-    justify-content: end;
-    font-weight: 600;
+    justify-content: center;
+    font-weight: 500;
     align-items: center;
   }
 }

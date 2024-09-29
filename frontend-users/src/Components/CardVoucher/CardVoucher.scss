@@ -11,7 +11,8 @@
   }
 
   .card-btn {
-    .btnGet {
+    .btnGet,
+    .btnUse {
       background-color: $prime-voucher-f;
       border-color: $prime-voucher-f;
 
@@ -27,11 +28,11 @@
   color: $prime-voucher-o-hover;
   .card-left {
     border-right: 1px solid $prime-voucher-o;
-    
   }
 
   .card-btn {
-    .btnGet {
+    .btnGet,
+    .btnUse {
       background-color: $prime-voucher-o;
       border-color: $prime-voucher-o;
 
@@ -50,7 +51,8 @@
   }
 
   .card-btn {
-    .btnGet {
+    .btnGet,
+    .btnUse {
       background-color: $prime-voucher-c;
       border-color: $prime-voucher-c;
 
@@ -89,7 +91,6 @@
     padding: 18px;
     font-size: 15px;
     font-weight: 600;
-    // color: black;
 
     .text {
       font-weight: 400;
@@ -102,10 +103,30 @@
     display: flex;
     align-items: center;
 
+    // GET
     .btnGet {
       border-radius: 5px;
       width: 50px;
       font-size: 14px;
+    }
+
+    .claimed {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    // BELONG
+    .btnUse {
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    // Common
+    .btnCancel {
+      border-radius: 5px;
+      font-size: 10px;
+      background-color: rgb(230, 126, 16);
+      border-color: rgb(230, 126, 16);
     }
   }
 }

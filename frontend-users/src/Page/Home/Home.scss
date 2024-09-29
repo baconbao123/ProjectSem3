@@ -20,6 +20,10 @@
     }
   }
 
+  .member {
+    margin-top: 30px;
+  }
+
   // boxes container
   .icon-boxes-container {
     h3 {
@@ -58,8 +62,28 @@
   .container-banner-books {
     // banner
     .img-books {
-      width: 100%;
-      height: 400px;
     }
+  }
+
+  .div-see-more {
+    display: flex;
+    justify-content: center;
+
+    .btn-see-more {
+      border-radius: 5px;
+      color: $btn-color;
+      width: 160px;
+      font-size: 16px;
+    }
+  }
+
+  .container-banner-stationery {
+    margin-top: 45px;
+  }
+
+  .img-category-banner {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
   }
 }

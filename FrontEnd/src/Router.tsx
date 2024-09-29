@@ -11,6 +11,8 @@ import PermissionList from "@pages/permission/PermissionList.tsx";
 import CategoryList from "@pages/category/CategoryList"
 import AuthorList from "@pages/author/AuthorList"
 import UserList from "@pages/user/UserList.tsx";
+import CompanyList from "@pages/companyparent/ComanyPartnerList"
+import ProductList from "@pages/product/ProductList"
 
 export  default  createBrowserRouter([
     {
@@ -55,6 +57,16 @@ export  default  createBrowserRouter([
             {
                 path: 'author',
                 element: (<AuthorList/>),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'company',
+                element: (<CompanyList/>),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'product',
+                element: (<ProductList/>),
                 errorElement: (<ErrorPage error="'Error page"/>),
             },
             {

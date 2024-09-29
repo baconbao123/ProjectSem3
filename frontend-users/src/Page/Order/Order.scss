@@ -1,16 +1,27 @@
 @import '../../../global.scss';
 
 .container-order {
-  background-color: gainsboro;
+  background-color: $prime-bgColor-Pages;
   font-size: 14px;
+  padding-bottom: 20px;
 
-  .heading {
-    padding: 20px 0;
+  .heading-order {
+    padding: 28px 0 10px 0;
+    margin-bottom: 0.8rem;
 
     .row-heading {
       background-color: white;
       padding: 10px;
       border-radius: 10px;
+
+      .url {
+        text-decoration: none;
+        color: black;
+      }
+
+      .active {
+        color: $prime-color;
+      }
 
       .heading-title {
         cursor: pointer;
@@ -23,7 +34,6 @@
         &:hover {
           color: $prime-color;
         }
-        border-right: 1px solid gainsboro;
 
         &:not(:last-child) {
           border-right: 1px solid gainsboro;
@@ -45,5 +55,6 @@
     }
   }
 
-  
+  .container-outlet {
+  }
 }

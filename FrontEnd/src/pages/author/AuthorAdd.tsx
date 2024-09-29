@@ -59,7 +59,7 @@ const AuthorAdd : React.FC<AuthorAdd> = ({loadDataTable, form, id}) => {
     const addNew = () => {
         setError({})
        
-    // Chuyển đổi ngày tháng theo định dạng yyyy/MM/dd nếu birth có giá trị
+
     const formattedBirth = birth ? dayjs(birth).format('YYYY-MM-DD') : '';
         
     const dataForm = {
@@ -94,6 +94,7 @@ const AuthorAdd : React.FC<AuthorAdd> = ({loadDataTable, form, id}) => {
             Biography: biography ,
             DateOfBirth: birth ,
             Status: status? 1: 0,
+            Version: item.Version
         }
         dispatch(setLoading(true))
         $axios.put(`Author/${id}`,dataForm).then(res => {

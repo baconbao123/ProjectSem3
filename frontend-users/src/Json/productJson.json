@@ -1,86 +1,114 @@
 [
-    {
-      "Id": 1,
-      "Name": "Practical MongoDB Part 1",
-      "ProductImage": ["https://itbook.store/img/books/9781484206485.png"],
-      "special": "10%",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "32.75",
-      "SellPrice": "10",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    },
-    {
-      "Id": 2,
-      "Name": "Java",
-      "ProductImage": ["https://itbook.store/img/books/9781491954249.png"],
-      "special": "",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "3.1",
-      "SellPrice": "",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    },
-    {
-      "Id": 3,
-      "Name": "Angular",
-      "ProductImage": ["https://itbook.store/img/books/9781491985571.png"],
-      "special": "",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "19",
-      "SellPrice": "",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    },
-    {
-      "Id": 4,
-      "Name": "Angular",
-      "ProductImage": ["https://itbook.store/img/books/9781491999226.png"],
-      "special": "20%",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "19",
-      "SellPrice": "10",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    },
-    {
-      "Id": 5,
-      "Name": "JWT",
-      "ProductImage": ["https://itbook.store/img/books/9781617294136.png"],
-      "special": "",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "19",
-      "SellPrice": "",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    },
-    {
-      "Id": 6,
-      "Name": "Figma",
-      "ProductImage": ["https://itbook.store/img/books/9781484211830.png"],
-      "special": "",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "19",
-      "SellPrice": "",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    },
-    {
-      "Id": 7,
-      "Name": "Ruby",
-      "ProductImage": ["https://itbook.store/img/books/9781484206485.png"],
-      "special": "",
-      "Manufactor": "Manufactor 1",
-      "BasePrice": "19",
-      "SellPrice": "",
-      "Status": true,
-      "Description": "Des1111111",
-      "Quantity": "120"
-    }
-  ]
+  {
+    "Id": 1,
+    "Name": "Practical MongoDB Part 1",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781484206485.png"
+    ],
+    "special": "10%",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "32.75",
+    "SellPrice": "10",
+    "Status": true,
+    "Description": "Des1111111",
+    "CategoryName": "Novel",
+    "Quantity": "120",
+    "CreateAt": "23/09/2024"
+  },
+  {
+    "Id": 2,
+    "Name": "Java",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781491954249.png"
+    ],
+    "special": "",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "3.1",
+    "SellPrice": "",
+    "Status": true,
+    "Description": "Des1111111",
+    "CategoryName": "Trinh thám",
+    "Quantity": "120",
+    "CreateAt": "24/09/2024"
+  },
+  {
+    "Id": 3,
+    "Name": "Angular",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781491985571.png"
+    ],
+    "special": "",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "19",
+    "SellPrice": "",
+    "Status": true,
+    "CategoryName": "Biography",
+    "Description": "Des1111111",
+    "Quantity": "120",
+    "CreateAt": "25/09/2024"
+  },
+  {
+    "Id": 4,
+    "Name": "Angular",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781491999226.png"
+    ],
+    "special": "20%",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "19",
+    "SellPrice": "10",
+    "Status": true,
+    "CategoryName": "Logic",
+    "Description": "Des1111111",
+    "Quantity": "120",
+    "CreateAt": "22/09/2024"
+  },
+  {
+    "Id": 5,
+    "Name": "JWT",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781617294136.png"
+    ],
+    "special": "",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "19",
+    "SellPrice": "",
+    "Status": true,
+    "Description": "Des1111111",
+    "Quantity": "120",
+    "CategoryName": "Technical",
+    "CreateAt": "26/09/2024"
+  },
+  {
+    "Id": 6,
+    "Name": "Figma",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781484211830.png"
+    ],
+    "special": "",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "19",
+    "SellPrice": "",
+    "Status": true,
+    "Description": "Des1111111",
+    "Quantity": "120",
+    "CategoryName": "Technical",
+    "CreateAt": "22/09/2024"
+  },
+  {
+    "Id": 7,
+    "Name": "Ruby",
+    "ProductImage": [
+      "https://itbook.store/img/books/9781484206485.png"
+    ],
+    "special": "",
+    "Manufactor": "Manufactor 1",
+    "BasePrice": "19",
+    "SellPrice": "",
+    "Status": true,
+    "Description": "Des1111111",
+    "Quantity": "120",
+    "CategoryName": "Technical",
+    "CreateAt": "22/09/2024"
+  }
+]

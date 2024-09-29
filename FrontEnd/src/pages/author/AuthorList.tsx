@@ -14,11 +14,10 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import HomeIcon from '@mui/icons-material/Home';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
-import ResourceAdd from "@pages/resource/ResourceAdd.tsx";
+
 import Swal from 'sweetalert2'
 import _ from 'lodash';
 import AuthorDetail from "./AuthorDetail.tsx";
-import Breadcrumb from "@pages/common/Breadcrumbs";
 import {Link} from "react-router-dom";
 import AuthorAdd from "./AuthorAdd";
 import dayjs from "dayjs";
@@ -187,7 +186,7 @@ const AuthorList : React.FC = () => {
     const header: React.FC = () => {
         return (
             <div className='header-page'>
-                <Breadcrumb/>  
+                {/* <Breadcrumbs/>   */}
             </div>
         )
     }
@@ -237,7 +236,7 @@ const AuthorList : React.FC = () => {
 // Xuất file CSV
 const exportToCSV = () => {
     try {
-        const csv = Papa.unparse(filterData); // Chuyển đổi JSON thành CSV
+        const csv = Papa.unparse(filterData); 
         const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
         saveAs(blob, `authors_${new Date().toISOString()}.csv`);
         dispatch(setToast({status: 'success', message: 'Export successful', data: 'File exported successfully'}));

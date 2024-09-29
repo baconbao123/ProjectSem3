@@ -1,0 +1,223 @@
+@import '/global.scss';
+
+.conatiner-checkout-products {
+  background-color: $prime-bgColor-Pages;
+
+  .container-checkout-content {
+    .row-checkout {
+      span {
+        font-size: 30px;
+        color: $btn-color;
+      }
+    }
+
+    .row-address {
+      margin-top: 10px;
+      background-color: white;
+      width: 1307px;
+      margin-left: 2px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+
+      .row-address-1 {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        height: 60px;
+
+        .div-address-heading {
+          display: flex;
+          align-items: center;
+
+          .icon {
+            font-size: 20px;
+            color: $btn-color;
+          }
+
+          span {
+            margin-left: 5px;
+            font-size: 20px;
+            color: $btn-color;
+          }
+        }
+
+        .div-address-change {
+          padding: 20px;
+
+          .icon {
+            font-size: 20px;
+            color: $btn-color;
+          }
+
+          span {
+            margin-left: 5px;
+            font-size: 20px;
+            color: $btn-color;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .row-address-content {
+        padding: 0 30px 16px 24px;
+
+        .name,
+        .phone {
+          font-size: 18px;
+          font-weight: 600;
+        }
+
+        .address {
+          font-size: 18px;
+        }
+      }
+    }
+
+    .row-products {
+      margin-left: 2px;
+      border-radius: 5px;
+      width: 1307px;
+      margin-top: 20px;
+      background-color: white;
+
+      .row-heading {
+        padding: 20px 30px;
+        font-size: 19px;
+
+        .product-title {
+          color: #1bb092;
+          font-size: 20px;
+          display: flex;
+          align-items: center;
+        }
+
+        .price,
+        .quantity,
+        .total {
+          color: gray;
+          text-align: center;
+        }
+      }
+    }
+
+    .row-voucher {
+      margin-left: 2px;
+      border-radius: 5px;
+      width: 1307px;
+      margin-top: 20px;
+      background-color: white;
+
+      .heading-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 30px;
+        font-size: 19px;
+        border-bottom: 1px solid gainsboro;
+
+        .row-heading-content {
+          .icon {
+            font-size: 24px;
+            color: $btn-color;
+          }
+
+          span {
+            font-size: 20px;
+            color: $btn-color;
+          }
+        }
+
+        .row-heading-voucher {
+          font-size: 20px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .row-payment-method {
+      margin-left: 2px;
+      border-radius: 5px;
+      width: 1307px;
+      margin-top: 20px;
+      background-color: white;
+
+      .payment-method-heading {
+        padding: 20px 30px;
+        font-size: 20px;
+      }
+
+      .div-cod,
+      .div-paypal {
+        display: flex;
+        align-items: center;
+
+        .radio {
+          width: 22px;
+          height: 22px;
+        }
+
+        span {
+          font-size: 20px;
+          color: grey;
+        }
+      }
+
+      .div-paypal {
+        margin-bottom: 20px;
+      }
+    }
+
+    .row-bill {
+      margin-left: 2px;
+      border-radius: 5px;
+      width: 1307px;
+      margin-top: 20px;
+      background-color: white;
+
+      .heading-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 30px;
+        font-size: 20px;
+      }
+
+      .row-bill-content {
+        background-color: #f0f6f5;
+
+        .bill-content {
+          display: flex;
+          justify-content: space-between;
+          padding: 20px 30px 10px 0;
+          font-size: 20px;
+        }
+
+        .bill-content-bottom {
+          display: flex;
+          justify-content: space-between;
+          padding: 0 30px 0 0;
+          font-size: 20px;
+        }
+
+        .btn-payment {
+          padding-right: 30px;
+          margin-top: 20px;
+          margin-bottom: 20px;
+          text-align: end;
+          font-size: 18px;
+
+          .btn-pay {
+            border-radius: 5px;
+            background-color: $btn-color;
+            border-color: $btn-color;
+
+            &:hover {
+              background-color: $btn-bgColor-hover;
+            }
+          }
+        }
+      }
+    }
+  }
+}

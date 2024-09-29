@@ -1,0 +1,128 @@
+@import '/global.scss';
+
+.container-register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 970px;
+  background-color: white;
+
+  .form-box-register {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    max-width: 970px;
+    padding: 40px;
+  }
+
+  .register-video {
+    width: 100%;
+    height: auto;
+  }
+
+  .form-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-align: center;
+      background: linear-gradient(90deg, $second-color, $btn-color);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -5px;
+        height: 2px;
+        background: linear-gradient(90deg, $second-color, $btn-color);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+
+      label {
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        color: $btn-color;
+      }
+
+      input {
+        border: 2px solid $first-color;
+        border-radius: 10px;
+        font-size: 14px;
+        transition:
+          border-color 0.3s ease,
+          background-color 0.3s ease,
+          box-shadow 0.3s ease;
+        line-height: 1.5;
+        color: #333;
+        outline: none;
+        width: 100%;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s ease;
+
+        &:focus {
+          border-color: $second-color;
+          background-color: #fff;
+          box-shadow: 0 0 5px rgba($second-color, 0.5);
+        }
+      }
+
+      input::placeholder {
+        color: #888;
+        opacity: 1;
+      }
+    }
+
+    .register-button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, $second-color 0%, $first-color 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition:
+        background 0.3s ease,
+        transform 0.2s;
+
+      &:hover {
+        background: linear-gradient(135deg, $first-color 0%, $second-color 100%);
+        transform: translateY(-3px);
+      }
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 10px;
+      color: #666;
+
+      a {
+        color: $first-color;
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
