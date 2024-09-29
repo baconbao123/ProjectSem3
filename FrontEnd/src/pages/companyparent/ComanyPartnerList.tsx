@@ -14,14 +14,14 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import HomeIcon from '@mui/icons-material/Home';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
-
+import ResourceAdd from "@pages/resource/ResourceAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import CategoryDetail from "./CategoryDetail";
 
 import {Link} from "react-router-dom";
-import CategoryAdd from "./CategoryAdd";
-const CategoryList : React.FC = () => {
+import CompanyAdd from "./CompanyAdd";
+import CompanyDetail from "./CompanyDetail";
+const CompanyList : React.FC = () => {
     const dispatch = useDispatch();
 
     const [field, setField] = React.useState<any>([]);
@@ -41,8 +41,10 @@ const CategoryList : React.FC = () => {
         setField([
             {key: "No", label: "No", class: "th__no"},
             {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "CategoryCode", label: "CategoryCode", class: "", sortable: true, sortValue: 'none'},
-            {key: "ParentName", label: "Parent Category", class: ""},
+            {key: "Email", label: "Email", class: ""},
+            {key: "Phone", label: "Phone", class: ""},
+            {key: "Address", label: "Address", class: ""},
+            {key: "Type", label: "Company type", class: ""},
             {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
 
@@ -115,7 +117,7 @@ const CategoryList : React.FC = () => {
 
     const loadDataTable = () => {
         const token = Cookies.get("token")
-        $axios.get('/Category').then(res => {
+        $axios.get('/CompanyPartner').then(res => {
             setData(res.data.data)
             setFilterData(res.data.data)
         })
@@ -125,28 +127,28 @@ const CategoryList : React.FC = () => {
 
     }
     const handleComponentAdd: React.FC =() => {
-        return  (<CategoryAdd loadDataTable={loadDataTable} form={'add'}/>)
+        return  (<CompanyAdd loadDataTable={loadDataTable} form={'add'}/>)
     }
     const handleComponentEdit: React.FC =( ) => {
-        return  (<CategoryAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
+        return  (<CompanyAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<CategoryDetail id={currentId} />)
+        return  (<CompanyDetail id={currentId} />)
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
-        setComponentTitle("Add category")
+        setComponentTitle("Add company")
         setShowComponent('add')
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Edit category")
+        setComponentTitle("Edit company")
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail category")
+        setComponentTitle("Detail company")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -163,10 +165,10 @@ const CategoryList : React.FC = () => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
                 const token = Cookies.get("token")
-                $axios.delete(`Category/${item.Id}`).then(res => {
+                $axios.delete(`CompanyPartner/${item.Id}`).then(res => {
                     console.log("check res", res)
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete category successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete resource successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -184,22 +186,21 @@ const CategoryList : React.FC = () => {
     const header: React.FC = () => {
         return (
             <div className='header-page'>
-               <div className='header-page'>
                 <Breadcrumbs separator="›" aria-label="breadcrumb" className='breadcrumb'>
                     <Link
                         color="inherit"
                         to="/"
                     >
-                        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-                        Home
+                        <HomeIcon className='icon-breadcrum' />
+
+
                     </Link>
                     <Link
-                     to='/category'
+                     to='/company'
                     >
-                       Category
+                        Company Partner
                     </Link>
                 </Breadcrumbs>
-            </div>
             </div>
         )
     }
@@ -382,7 +383,6 @@ const CategoryList : React.FC = () => {
                                                             </TableCell>
                                                         )
                                                     }
-                                                
                                                     return (
                                                         <TableCell className={field.class} key={crypto.randomUUID()}>
                                                             {item[field.key] ? item[field.key] : '-'}
@@ -469,4 +469,4 @@ const CategoryList : React.FC = () => {
     )
 }
 
-export default CategoryList
+export default CompanyList

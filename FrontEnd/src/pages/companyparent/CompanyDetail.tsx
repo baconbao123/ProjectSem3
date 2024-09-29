@@ -5,16 +5,18 @@ import {
   setToast,
 } from "@src/Store/Slinces/appSlice.ts";
 import { useDispatch } from "react-redux";
-import $axios, { Categoryization } from "@src/axios.ts";
+import $axios, { authorization } from "@src/axios.ts";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
-interface CategoryDetail {
+interface CompanyDetail {
   id: any;
 }
-const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
+const CompanyDetail: React.FC<CompanyDetail> = ({ id }) => {
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [parentCategory, setParentCategory] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [type, setType] = useState("");
   const [status, setStatus] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const [updatedBy, setUpdatedBy] = useState("");
@@ -29,38 +31,42 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
     dispatch(setLoading(true));
 
     $axios
-      .get(`Category/${id}`)
+      .get(`CompanyPartner/${id}`)
       .then((res) => {
-        if (res.data.data && res.data.data.Category.Name) {
-          setName(res.data.data.Category.Name);
+        if (res.data.data && res.data.data.CompanyPartner.Name) {
+          setName(res.data.data.CompanyPartner.Name);
         }
-        if (res.data.data && res.data.data.Category.Description) {
-          setDescription(res.data.data.Category.Description);
+        if (res.data.data && res.data.data.CompanyPartner.Email) {
+          setEmail(res.data.data.CompanyPartner.Email);
         }
-        if (res.data.data && res.data.data.ParentName) {
-          setParentCategory(res.data.data.ParentName);
+        if (res.data.data && res.data.data.CompanyPartner.Address) {
+          setAddress(res.data.data.CompanyPartner.Address);
         }
-        if (res.data.data && res.data.data.Category.Status) {
-          setStatus(res.data.data.Category.Status);
+        if (res.data.data && res.data.data.CompanyPartner.Phone) {
+          setPhone(res.data.data.CompanyPartner.Phone);
         }
-        if (res.data.data && res.data.data.Category.UpdateAt) {
+        if (res.data.data && res.data.data.CompanyPartner.Type) {
+          setType(res.data.data.CompanyPartner.Type);
+        }
+        if (res.data.data && res.data.data.CompanyPartner.Status) {
+          setStatus(res.data.data.CompanyPartner.Status);
+        }
+        if (res.data.data && res.data.data.CompanyPartner.UpdateAt) {
           setUpdateAt(
-            dayjs(res.data.data.Category.UpdateAt).format("YYYY-MM-DD HH:mm:ss")
+            dayjs(res.data.data.CompanyPartner.UpdateAt).format("YYYY-MM-DD HH:mm:ss")
           );
         }
-        if (res.data.data && res.data.data.Category.CreatedAt) {
+        if (res.data.data && res.data.data.CompanyPartner.CreatedAt) {
           setCreatedAt(
-            dayjs(res.data.data.Category.CreatedAt).format(
-              "YYYY-MM-DD HH:mm:ss"
-            )
+            dayjs(res.data.data.CompanyPartner.CreatedAt).format("YYYY-MM-DD HH:mm:ss")
           );
         }
 
-        if (res.data.data && res.data.data.UserCreate) {
-          setCreatedBy(res.data.data.UserCreate);
+        if (res.data.data && res.data.data.CreatedUpdated) {
+          setCreatedBy(res.data.data.CreatedUpdated);
         }
-        if (res.data.data && res.data.data.UserUpdate) {
-          setUpdatedBy(res.data.data.UserUpdate);
+        if (res.data.data && res.data.data.UserUpdated) {
+          setUpdatedBy(res.data.data.UserUpdated);
         }
       })
       .catch((err) => {
@@ -81,28 +87,24 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
             <span> {name ? name : "-"}</span>
           </div>
           <div>
-            <span className="label-form me-3">Parent category:</span>
-            <span> {parentCategory? parentCategory : "-"}</span>
+            <span className="label-form me-3">Email:</span>
+            <span> {email ? email : "-"}</span>
+          </div>
+          <div>
+            <span className="label-form me-3">Phone:</span>
+            <span> {phone ? phone : "-"}</span>
+          </div>
+          <div>
+            <span className="label-form me-3">Address:</span>
+            <span> {address ? address : "-"}</span>
+          </div>
+          <div>
+            <span className="label-form me-3">Type:</span>
+            <span> {type ? type : "-"}</span>
           </div>
         </div>
         <div className="col-6">
-          <div>
-            <span className="label-form me-3">Description:</span>
-            <span> {description ? description : "-"}</span>
-          </div>
-        </div>
-        <div className="mt-3 col-6">
-          <div>
-            <span className="label-form me-3">Status:</span>
-            {status ? (
-              <span className="status-success ">Active</span>
-            ) : (
-              <span className="status-disable">Disable</span>
-            )}
-          </div>
-        </div>
-        <div className="col-6 mt-3">
-          <div className="col-6 mt-3">
+        <div>
             <div>
               <span className="label-form me-3">Created by:</span>
               <span> {createdBy ? createdBy : "-"}</span>
@@ -132,6 +134,19 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
             </div>
           </div>
         </div>
+        <div className="mt-3 col-6">
+          <div>
+            <span className="label-form me-3">Status:</span>
+            {status ? (
+              <span className="status-success ">Active</span>
+            ) : (
+              <span className="status-disable">Disable</span>
+            )}
+          </div>
+        </div>
+        <div className="col-6 mt-3">
+          
+        </div>
         <div className=" group-btn">
           <button
             onClick={() => dispatch(setShowModal(false))}
@@ -146,4 +161,4 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
   );
 };
 
-export default CategoryDetail;
+export default CompanyDetail;
