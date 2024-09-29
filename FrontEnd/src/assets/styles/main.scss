@@ -136,6 +136,10 @@
     width: 70px;
   }
 }
+.image-avatar {
+  cursor: pointer;
+  border-radius: 5px;
+}
 .form-check-input:checked {
   background-color: $default-color;
   border-color: $default-color;

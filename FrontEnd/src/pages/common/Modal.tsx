@@ -13,7 +13,7 @@ const Modal : React.FC<ModalProps> = ({content, title}) => {
     const notFound = () => {
         return (<ErrorPage error={"Data not found"}/>)
     }
-
+    const Conntent = content ? content : notFound
     const dispatch = useDispatch();
     return (
         <div  className={!showModal ? 'd-none' : 'modal-container'}>
@@ -23,7 +23,7 @@ const Modal : React.FC<ModalProps> = ({content, title}) => {
                     <div onClick={() => dispatch(setShowModal(false))}> <ClearOutlinedIcon  className='btn-delete'/></div>
                 </div>
                 <div className='modal-content-body'>
-                    {content ? content() : notFound}
+                    <Conntent />
                 </div>
                {/*<div className='modal-content-footer'>*/}
                {/*    modal footer*/}

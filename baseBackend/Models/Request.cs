@@ -33,6 +33,7 @@ public class UserRequest()
     [Required(ErrorMessage = "Status is required.")]
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
+    public IFormFile Avatar { get; set; }
 
 }
 public class UserRequestUpdate()
@@ -110,6 +111,7 @@ public class CategoryRequest()
     [Required(ErrorMessage = "Status is required.")]
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
+    public int Version { get; set; }
 
 }
 
@@ -129,5 +131,20 @@ public class AuthorRequest()
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
 
+
+    public int Version { get; set; }
+
+
+}
+public class PasswordRequest()
+{
+    [Required(ErrorMessage = "Pasword is required.")]
+    [StringLength(60, ErrorMessage = "Pasword cannot be longer than 60 characters.")]
+    public string password { get; set; }
+}
+
+
+public class ProductRequest()
+{
 
 }

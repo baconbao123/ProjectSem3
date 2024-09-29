@@ -11,6 +11,7 @@ import KeyboardDoubleArrowRightOutlinedIcon from "@mui/icons-material/KeyboardDo
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
 import UserAdd from "@pages/user/UserAdd.tsx";
@@ -20,6 +21,10 @@ import RoleDetail from "@pages/role/RoleDetail.tsx";
 import {Link} from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import {Tag} from "primereact/tag";
+import UserForgot from "@pages/user/UserForgot.tsx";
+import {checkPermission} from "@src/Service/common.ts";
+import { Image } from 'primereact/image';
+import defaultImage from  '@src/images/default.png'
 const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -39,6 +44,7 @@ const ResourceList : React.FC = () => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
+            {key: "Avatar", label: "Avatar", class: "width-200 th__action "},
             {key: "UserName", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "Email", label: "Email", class: "width-300",  sortable: true, sortValue: 'none'},
             {key: "Roles", label: "Roles", class: "width-200 ", sortable: true, sortValue: 'none'},
@@ -131,6 +137,9 @@ const ResourceList : React.FC = () => {
     const handleComponentEdit: React.FC =( ) => {
         return  (<UserAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
+    const handleComponentForgot: React.FC =( ) => {
+        return  (<UserForgot loadDataTable={loadDataTable}  id={currentId} />)
+    }
     const handleComponentDetail: React.FC = () => {
         return  (<RoleDetail id={currentId} />)
     }
@@ -138,6 +147,12 @@ const ResourceList : React.FC = () => {
         dispatch(setShowModal(true))
         setComponentTitle("Add new user")
         setShowComponent('add')
+    }
+    const showModalForgot = (item: any) => {
+        setCurrentId(item.Id)
+        dispatch(setShowModal(true))
+        setComponentTitle("Change password")
+        setShowComponent('password')
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
@@ -163,8 +178,7 @@ const ResourceList : React.FC = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
-                const token = Cookies.get("token")
-                $axios.delete(`Role/${item.Id}`).then(res => {
+                $axios.delete(`User/${item.Id}`).then(res => {
                     console.log("check res", res)
                     loadDataTable()
                     dispatch(setToast({status: 'success', message: 'Success', data: 'Delete role successful'}))
@@ -236,7 +250,10 @@ const ResourceList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
+                {checkPermission('User', 'create') ? (
                 <div onClick={ showModalAdd} className="btn btn-general">Add new </div>
+            ) : ''}
+
             </div>
         )
     }
@@ -351,7 +368,6 @@ const ResourceList : React.FC = () => {
                                                                           Active
                                                                       </div>
                                                                 </div>
-
                                                                 )
                                                                     :
                                                                     (
@@ -377,24 +393,47 @@ const ResourceList : React.FC = () => {
                                                             </TableCell>
                                                         )
                                                     }
-                                                    if (field.key === "Action") {
+                                                    if (field.key === "Avatar") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
-                                                                    <RemoveRedEyeOutlinedIcon  />
+                                                                <Image src={item[field.key] ? item[field.key] : defaultImage} alt="Image" width="100" preview />
+                                                            </TableCell>
+                                                        )
+                                                    }
+                                                    if (field.key === "Action") {
+                                                        return (
+                                                            <TableCell className={field.class}
+                                                                       key={crypto.randomUUID()}>
+                                                             <span
+                                                                 className={`m-2 btn-icon p-1 ${checkPermission('User', 'read') ? '' : 'btn-disable'}`}
+                                                                 onClick={() => checkPermission('User', 'read') && showModalDetail(item)}
+                                                             >
+                                                                  <RemoveRedEyeOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('User', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('User', 'update') && showModalEdit(item)}
+                                                                >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
-                                                                    <DeleteOutlineOutlinedIcon  />
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('User', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('User', 'update') && showModalForgot(item)}
+                                                                >
+                                                                    <VpnKeyOutlinedIcon/>
+                                                                </span>
+                                                                <span
+                                                                    className={`m-2 btn-delete p-1 ${checkPermission('User', 'delete') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('User', 'delete') && deleteItem(item)}
+                                                                >
+                                                                    <DeleteOutlineOutlinedIcon/>
                                                                 </span>
                                                             </TableCell>
                                                         )
                                                     }
                                                     return (
                                                         <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                            {item[field.key] ? item[field.key] : '-'}
+                                                        {item[field.key] ? item[field.key] : '-'}
                                                         </TableCell>
                                                     )
                                                 })
@@ -458,7 +497,8 @@ const ResourceList : React.FC = () => {
                     content={
                         showComponent === 'add' ? handleComponentAdd :
                         showComponent === 'edit' ? handleComponentEdit :
-                        showComponent === 'view' ? handleComponentDetail : ''
+                        showComponent === 'view' ? handleComponentDetail :
+                        showComponent === 'password' ? handleComponentForgot : ''
                     }
                     title={componentTitle}
                 />
