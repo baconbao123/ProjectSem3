@@ -1,0 +1,17 @@
+@import '/global.scss';
+
+.row-card-checkout {
+  display: flex;
+  align-items: center;
+  margin-left: 2px;
+
+  .name-card-checkout {
+    font-size: 14px;
+  }
+
+  .price-card-checkout,
+  .quantity-card-checkout,
+  .totalPrice-card-checkout {
+    font-size: 16px;
+  }
+}

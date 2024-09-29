@@ -1,110 +1,256 @@
 [
-    {
-        "type": "Freeship",
-        "discount": "5",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByOrder",
-        "discount": "10",
-        "totalOrder": "66",
-        "subCate": ""
-      },
-      {
-        "type": "discountByCategory",
-        "discount": "5",
-        "totalOrder": "30",
-        "subCate": "Novel"
-      },
-      {
-        "type": "Freeship",
-        "discount": "10",
-        "totalOrder": "60",
-        "subCate": ""
-      },
-      {
-        "type": "discountByOrder",
-        "discount": "5",
-        "totalOrder": "77",
-        "subCate": ""
-      },
-      {
-        "type": "discountByCategory",
-        "discount": "9",
-        "totalOrder": "30",
-        "subCate": "Trinh thám"
-      },
-      {
-        "type": "Freeship",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByOrder",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByCategory",
-        "discount": "10",
-        "totalOrder": "30",
-        "subCate": "Biography"
-      },
-      {
-        "type": "Freeship",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByOrder",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByCategory",
-        "discount": "6",
-        "totalOrder": "40",
-        "subCate": "Trinh thám"
-      },
-      {
-        "type": "Freeship",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByOrder",
-        "discount": "5",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByCategory",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": "Technical"
-      },
-      {
-        "type": "Freeship",
-        "discount": "5",
-        "totalOrder": "30",
-        "subCate": ""
-      },
-      {
-        "type": "discountByOrder",
-        "discount": "10",
-        "totalOrder": "40",
-        "subCate": ""
-      },
-      {
-        "type": "discountByCategory",
-        "discount": "5",
-        "totalOrder": "40",
-        "subCate": "Biography"
-      }
+  {
+    "id": "1",
+    "type": "Freeship",
+    "discount": "2",
+    "totalOrder": "20",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "100"
+  },
+  {
+    "id": "2",
+    "type": "Freeship",
+    "discount": "4",
+    "totalOrder": "30",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "100"
+  },
+  {
+    "id": "3",
+    "type": "Freeship",
+    "discount": "4",
+    "totalOrder": "30",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "100"
+  },
+  {
+    "id": "4",
+    "type": "Freeship",
+    "discount": "5",
+    "totalOrder": "35",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "100"
+  },
+  {
+    "id": "5",
+    "type": "Freeship",
+    "discount": "7",
+    "totalOrder": "45",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "100"
+  },
+  {
+    "id": "6",
+    "type": "Freeship",
+    "discount": "12",
+    "totalOrder": "55",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "100"
+  },
+  {
+    "id": "7",
+    "type": "discountByOrder",
+    "discount": "2",
+    "totalOrder": "20",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "50"
+  },
+  {
+    "id": "8",
+    "type": "discountByOrder",
+    "discount": "4",
+    "totalOrder": "30",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "50"
+  },
+  {
+    "id": "9",
+    "type": "discountByOrder",
+    "discount": "5",
+    "totalOrder": "35",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "50"
+  },
+  {
+    "id": "100",
+    "type": "discountByOrder",
+    "discount": "7",
+    "totalOrder": "45",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "50"
+  },
+  {
+    "id": "11",
+    "type": "discountByOrder",
+    "discount": "100",
+    "totalOrder": "50",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "50"
+  },
+  {
+    "id": "12",
+    "type": "discountByOrder",
+    "discount": "12",
+    "totalOrder": "55",
+    "subCate": "",
+    "status": "GET",
+    "quantity": "50"
+  },
+  {
+    "id": "13",
+    "type": "discountByCategory",
+    "discount": "2",
+    "totalOrder": "20",
+    "subCate": "Novel",
+    "status": "GET",
+    "quantity": "20"
+  },
+  {
+    "id": "14",
+    "type": "discountByCategory",
+    "discount": "4",
+    "totalOrder": "30",
+    "subCate": "Trinh thám",
+    "status": "GET",
+    "quantity": "20"
+  },
+  {
+    "id": "15",
+    "type": "discountByCategory",
+    "discount": "5",
+    "totalOrder": "35",
+    "subCate": "Biography",
+    "status": "GET",
+    "quantity": "20"
+  },
+  {
+    "id": "16",
+    "type": "discountByCategory",
+    "discount": "7",
+    "totalOrder": "45",
+    "subCate": "Logic",
+    "status": "GET",
+    "quantity": "20"
+  },
+  {
+    "id": "17",
+    "type": "discountByCategory",
+    "discount": "2",
+    "totalOrder": "45",
+    "subCate": "Technical",
+    "status": "GET",
+    "quantity": "20"
+  },
+  {
+    "id": "18",
+    "type": "discountByCategory",
+    "discount": "12",
+    "totalOrder": "50",
+    "subCate": "Math",
+    "status": "GET",
+    "quantity": "20"
+  },
+  
+  // Belong
+  {
+    "idVoucher": "1",
+    "userId": "3",
+    "type": "Freeship",
+    "discount": "2",
+    "totalOrder": "20",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "2",
+    "userId": "3",
+    "type": "Freeship",
+    "discount": "4",
+    "totalOrder": "30",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "3",
+    "userId": "3",
+    "type": "Freeship",
+    "discount": "5",
+    "totalOrder": "35",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "8",
+    "userId": "3",
+    "type": "discountByOrder",
+    "discount": "4",
+    "totalOrder": "30",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "10",
+    "userId": "3",
+    "type": "discountByOrder",
+    "discount": "7",
+    "totalOrder": "45",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "15",
+    "userId": "3",
+    "type": "discountByCategory",
+    "discount": "5",
+    "totalOrder": "35",
+    "subCate": "Biography",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "1",
+    "userId": "2",
+    "type": "Freeship",
+    "discount": "2",
+    "totalOrder": "20",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "9",
+    "userId": "2",
+    "type": "discountByOrder",
+    "discount": "5",
+    "totalOrder": "35",
+    "subCate": "",
+    "status": "BELONG",
+    "quantity": "5"
+  },
+  {
+    "idVoucher": "18",
+    "userId": "2",
+    "type": "discountByCategory",
+    "discount": "12",
+    "totalOrder": "55",
+    "subCate": "Biography",
+    "status": "BELONG",
+    "quantity": "5"
+  }
 ]

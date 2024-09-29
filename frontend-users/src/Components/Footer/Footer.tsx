@@ -8,22 +8,22 @@ export const Footer = () => {
           <div className='row'>
             <div className='col-sm-12 col-lg-6 col-xl-5'>
               <div className='widget widget-about'>
-                <img src='images/Logo.png' className='footer-logo' alt='Footer Logo' width={300} height={300} />
+                <img src='/images/Logo.png' className='footer-logo' alt='Footer Logo' width={300} height={300} />
                 <p>
                   Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.
                   Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.
                 </p>
                 <div className='widget-about-info'>
                   <div className='row'>
-                    <div className='col-sm-6 col-md-4'>
+                    <div className='col-sm-6 col-md-6'>
                       <span className='widget-about-title'>Got Question? Call us 24/7</span>
                       <a href='tel:123456789'>+0123 456 789</a>
                     </div>
                     {/* End .col-sm-6 */}
-                    <div className='col-sm-6 col-md-8'>
+                    <div className='col-sm-6 col-md-6'>
                       <span className='widget-about-title'>Payment Method</span>
                       <figure className='footer-payments'>
-                        <img src='images/f-payment.png' alt='Payment methods' width={70} height={30} />
+                        <img src='/images/f-payment.png' alt='Payment methods' width={70} height={30} />
                       </figure>
                       {/* End .footer-payments */}
                     </div>
@@ -105,9 +105,6 @@ export const Footer = () => {
                         <a href='cart.html'>View Cart</a>
                       </li>
                       <li>
-                        <a href='wishlist.html'>My Wishlist</a>
-                      </li>
-                      <li>
                         <a href='#'>Track My Order</a>
                       </li>
                       <li>
@@ -123,15 +120,7 @@ export const Footer = () => {
       </div>
       <div className='footer-bottom'>
         <div className='container'>
-          <p className='footer-copyright'>Copyright © 2019 Molla Store. All Rights Reserved.</p>
-          <ul className='footer-menu'>
-            <li>
-              <a href='#'>Terms Of Use</a>
-            </li>
-            <li>
-              <a href='#'>Privacy Policy</a>
-            </li>
-          </ul>
+          <p className='footer-copyright'>Copyright © 2024 Books Store. All Rights Reserved.</p>
           <div className='social-icons social-icons-color'>
             <span className='social-label'>Social Media</span>
             <a href='#' className='social-icon social-facebook' title='Facebook' target='_blank'>

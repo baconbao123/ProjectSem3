@@ -1,9 +1,11 @@
-@import '../../../global.scss';
+@import '/global.scss';
 
 .cart-container {
   background-color: $bg-breadcrumb;
   font-size: 16px;
   padding-bottom: 20px;
+
+ 
 
   .row-heading {
     padding: 10px 5px;
@@ -24,7 +26,6 @@
       width: 20px;
       height: 18px;
       justify-content: start;
-
       accent-color: $color-check;
     }
 
@@ -53,7 +54,6 @@
 
     .row-item {
       position: relative;
-
       border-bottom: 1px solid gainsboro;
 
       &:nth-child(n) {
@@ -65,95 +65,6 @@
 
       &:last-child {
         border: none; /* Bỏ border cho dòng cuối cùng */
-      }
-
-      .div-left {
-        display: flex;
-        align-items: center;
-        .check-items {
-          width: 20px;
-          height: 18px;
-          accent-color: $color-check;
-        }
-
-        .img-card {
-          margin-left: 20px;
-          width: 120px;
-          height: 100px;
-        }
-      }
-
-      .content-books {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Đẩy title lên trên và card-price xuống dưới */
-        height: 100%;
-
-        .title {
-          font-size: 14px;
-        }
-
-        .card-price {
-          .base-price {
-            padding-left: 8px;
-            font-size: 16px;
-            color: gray;
-            text-decoration: line-through;
-          }
-
-          .sell-price {
-            font-weight: 600;
-            font-size: 18px;
-          }
-        }
-      }
-
-      .container-amount {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding-left: 10px;
-        .counter-amount {
-          padding: 2px 8px;
-          display: flex;
-          width: 80px;
-          border: 1px solid gainsboro;
-          display: flex;
-          justify-content: space-between;
-          border-radius: 10px;
-          color: rgb(104, 104, 104);
-          font-size: 18px;
-
-          .sign {
-            font-weight: 600;
-          }
-        }
-      }
-
-      .container-price {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .span-price {
-          font-weight: 600;
-          color: rgb(222, 9, 9);
-        }
-      }
-
-      .container-trash {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        i {
-          cursor: pointer;
-          font-size: 1.7rem;
-
-          &:hover {
-            color: rgb(222, 9, 9);
-          }
-        }
       }
     }
   }
@@ -225,9 +136,8 @@
           border-color: #cc0000;
 
           &:hover {
-          background-color: #910a0a;
-          border-color: #910a0a;
-
+            background-color: #910a0a;
+            border-color: #910a0a;
           }
         }
       }
@@ -248,4 +158,17 @@
 
 .row-item:last-child {
   border-bottom: none;
+}
+
+.notfound-product {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 80vh;
+
+  img {
+    width: 500px;
+    height: 500px;
+  }
 }

@@ -1,0 +1,128 @@
+@import '/global.scss';
+
+// Variables
+$secondary-color: #128275; // Darker shade of prime
+$accent-color: #ffb74d; // Accent color for highlights
+$light-bg-color: #f0f9f8; // Light background
+$text-color: #333333; // Text color
+$subtle-gray: #e0e0e0; // Gray for borders and subtle areas
+
+.container-member-benefits {
+  padding: 40px 0;
+  background: $light-bg-color;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .row-heading-member {
+    text-align: center;
+    margin-bottom: 30px;
+
+    h1 {
+      font-size: 3rem;
+      color: $prime-color;
+      font-weight: 800;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    p {
+      font-size: 1.25rem;
+      color: $secondary-color;
+      margin-top: 10px;
+    }
+  }
+
+  .row-content-member {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+
+    .col-member-discount {
+      margin-bottom: 20px;
+
+      .member-benefit-card {
+        background: #fff;
+        border-radius: 15px;
+        border: 1px solid $subtle-gray;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transition:
+          transform 0.3s ease-in-out,
+          box-shadow 0.3s ease-in-out;
+        text-align: center;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+        height: 100%; /* Ensure both cards are the same height */
+
+        &:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+          border-color: $prime-color;
+        }
+
+        .icon-container {
+          width: 60px;
+          height: 60px;
+          background-color: rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+          padding: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+          .discount-icon {
+            width: 100%;
+            height: auto;
+          }
+        }
+
+        .discount-condition {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: $secondary-color;
+          text-transform: uppercase;
+        }
+
+        .discount-amount {
+          font-size: 2.2rem;
+          font-weight: 800;
+          color: $prime-color;
+          margin: 15px 0;
+        }
+
+        .discount-description {
+          font-size: 1.1rem;
+          color: $text-color;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+
+  .row-register {
+    text-align: center;
+    margin-top: 40px;
+    width: 100%;
+
+    .register-btn {
+      text-decoration: none;
+      font-size: 1.6rem;
+      font-weight: 800;
+      padding: 15px 30px;
+      background-color: $prime-color;
+      border-color: $prime-color;
+      border-radius: 50px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: darken($prime-color, 10%);
+        border-color: darken($prime-color, 10%);
+      }
+    }
+  }
+}

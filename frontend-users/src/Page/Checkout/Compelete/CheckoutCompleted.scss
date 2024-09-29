@@ -1,0 +1,46 @@
+$primary-color: #1cc0a0;
+$background-color: #F5F5F5;
+
+.checkout-completed {
+  background-color: $background-color;
+  padding: 40px; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
+  max-width: 500px; 
+  margin: 50px auto;
+
+  h1 {
+    font-size: 2.5rem; // Tăng kích thước tiêu đề
+    color: $primary-color;
+    margin-bottom: 15px; // Khoảng cách dưới tiêu đề
+    text-align: left; // Căn trái tiêu đề
+    font-weight: bold; // Đậm hơn
+  }
+
+  .order-number {
+    font-size: 1.5rem; // Tăng kích thước mã đơn
+    color: #333;
+    margin-bottom: 25px; // Khoảng cách dưới mã đơn
+    strong {
+      color: $primary-color;
+      font-weight: bold;
+    }
+  }
+
+  .btn-view-order {
+    display: inline-block;
+    padding: 12px 20px; // Điều chỉnh padding
+    background-color: $primary-color;
+    color: white;
+    font-size: 1.1rem; // Lớn hơn
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s; // Thêm hiệu ứng biến đổi
+
+    &:hover {
+      background-color: darken($primary-color, 10%); // Tối màu khi hover
+      transform: scale(1.05); // Tăng kích thước khi hover
+    }
+  }
+}

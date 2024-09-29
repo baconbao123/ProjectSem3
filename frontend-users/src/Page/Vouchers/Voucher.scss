@@ -11,8 +11,7 @@
 
     .p-breadcrumb-list {
       padding-left: 0;
-    padding-top: 5px;
-
+      padding-top: 5px;
     }
 
     .p-menuitem-link {
@@ -32,8 +31,6 @@
 }
 
 .voucher-container {
-  // background-color: #61c2ef;
-
   .img-voucher {
     width: 100%;
     height: 730px;
@@ -52,7 +49,7 @@
       color: #b7b6b6;
       font-size: 60px;
       font-weight: 700;
-      font-family: 'Poppins', sans-serif;
+
       text-align: center;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -78,14 +75,12 @@
   .voucher-content-f {
     .title-type {
       color: $prime-voucher-f;
-
     }
   }
 
   .voucher-content-o {
     .title-type {
       color: $prime-voucher-o;
-
     }
   }
 

@@ -21,8 +21,8 @@ export const Menu = () => {
 
   const itemsPage: { name: string; url: string }[] = [
     {
-      name: 'All Books',
-      url: '/all-products'
+      name: 'Books',
+      url: '/all-books'
     },
     {
       name: 'Vouchers',

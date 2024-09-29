@@ -1,0 +1,42 @@
+.row-order-card {
+  border-bottom: 1px solid gainsboro;
+  padding-bottom: 10px;
+
+  .img-order {
+    width: 100px;
+    height: 80px;
+    object-fit: cover;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+    font-size: 14px;
+    font-weight: 600;
+
+    .sellPrice {
+      font-size: 15px;
+    }
+
+    .basePrice {
+      font-weight: 500;
+
+      font-size: 12px;
+      text-decoration: line-through;
+    }
+
+    .basePrice1 {
+      text-decoration: none;
+      font-size: 15px;
+    }
+  }
+
+  .total {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    font-size: 14px;
+  }
+}

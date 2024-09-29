@@ -17,11 +17,10 @@
     }
   }
 
-  .url {
+  .content {
     // padding-top: 5px;
-    text-decoration: none;
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
     color: gray;
 
     .signIn {
@@ -30,6 +29,14 @@
       cursor: pointer;
       text-decoration: none;
 
+      &:hover {
+        color: #1cc0a0;
+      }
+    }
+
+    .url {
+      text-decoration: none;
+      color: gray;
       &:hover {
         color: #1cc0a0;
       }
