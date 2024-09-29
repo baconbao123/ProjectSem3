@@ -17,11 +17,11 @@ import $axios, {authorization} from "@src/axios.ts";
 
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import CategoryDetail from "./CategoryDetail";
+import CategoryDetail from "./ProductDetail";
 
 import {Link} from "react-router-dom";
-import CategoryAdd from "./CategoryAdd";
-const CategoryList : React.FC = () => {
+import CategoryAdd from "./ProductAdd";
+const ProductList : React.FC = () => {
     const dispatch = useDispatch();
 
     const [field, setField] = React.useState<any>([]);
@@ -36,13 +36,18 @@ const CategoryList : React.FC = () => {
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
     const [filter, setFilter] = useState({Name: '', Status: -1});
+    const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
+            {key: "ProductImages.ImagePath", label: "Image", class: ""},
             {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "CategoryCode", label: "CategoryCode", class: "", sortable: true, sortValue: 'none'},
-            {key: "ParentName", label: "Parent Category", class: ""},
+            {key: "Code", label: "Product code", class: "", sortable: true, sortValue: 'none'},
+            {key: "CompanyPartnerName", label: "Company partner", class: ""},
+            {key: "Quantity", label: "Quantity", class: ""},
+            {key: "BasePrice", label: "Base price", class: ""},
+            {key: "SellPrice", label: "Sell price", class: ""},
             {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
 
@@ -115,9 +120,10 @@ const CategoryList : React.FC = () => {
 
     const loadDataTable = () => {
         const token = Cookies.get("token")
-        $axios.get('/Category').then(res => {
+        $axios.get('/Product').then(res => {
             setData(res.data.data)
             setFilterData(res.data.data)
+            
         })
             .catch(err => {
                 console.log(err)
@@ -135,18 +141,18 @@ const CategoryList : React.FC = () => {
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
-        setComponentTitle("Add category")
+        setComponentTitle("Add product")
         setShowComponent('add')
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Edit category")
+        setComponentTitle("Edit product")
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail category")
+        setComponentTitle("Detail product")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -163,10 +169,11 @@ const CategoryList : React.FC = () => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
                 const token = Cookies.get("token")
-                $axios.delete(`Category/${item.Id}`).then(res => {
+                $axios.delete(`Product/${item.Id}`).then(res => {
                     console.log("check res", res)
+                    
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete category successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete product successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -194,9 +201,9 @@ const CategoryList : React.FC = () => {
                         Home
                     </Link>
                     <Link
-                     to='/category'
+                     to='/product'
                     >
-                       Category
+                       Product
                     </Link>
                 </Breadcrumbs>
             </div>
@@ -332,6 +339,7 @@ const CategoryList : React.FC = () => {
                                     (itemFrom <= index && itemTo > index && currentPage !== 1 ) ||
                                     perPage === 'All'
                                 ) {
+                                    console.log(baseUrl+item.ProductImages[0].ImagePath); 
                                     return (
                                         <TableRow key={crypto.randomUUID()}>
                                             {
@@ -341,6 +349,14 @@ const CategoryList : React.FC = () => {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
                                                                 {index + 1}
+                                                            </TableCell>
+                                                        )
+                                                    }
+
+                                                    if (field.key === "ProductImages.ImagePath") {
+                                                        return (
+                                                            <TableCell className={field.class} key={crypto.randomUUID()}>
+                                                               <img src={baseUrl+item.ProductImages[0].ImagePath} alt={item.Name} className="image-product" width={70}/>
                                                             </TableCell>
                                                         )
                                                     }
@@ -469,4 +485,4 @@ const CategoryList : React.FC = () => {
     )
 }
 
-export default CategoryList
+export default ProductList

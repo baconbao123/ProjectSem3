@@ -11,7 +11,7 @@ public class AuthorProduct
     public int AuthorId { get; set; }
 
     [Required]
-    public string ProductId { get; set; }
+    public int ProductId { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
