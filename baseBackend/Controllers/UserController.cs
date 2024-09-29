@@ -102,16 +102,39 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public IActionResult Create(UserRequest user)
+    public async Task<IActionResult> Create(UserRequest user)
     {
-        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+        List<string> validExtensions = new List<string> { ".jpg", ".png", ".gif" };
+        string extension = Path.GetExtension(user.Avatar.FileName);
+        if (!validExtensions.Contains(extension))
+        {
+            return BadRequest($"Phần mở rộng file không hợp lệ ({string.Join(",", validExtensions)})");
+        }
 
+        long maxSize = 20 * 1024 * 1024;
+        if (user.Avatar.Length > maxSize)
+        {
+            return BadRequest("Kích thước file tối đa là 5MB");
+        }
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
         var password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         var existEmail = db.User.FirstOrDefault(item => item.Email == user.Email);
-
+        string fileName = Guid.NewGuid().ToString() + extension;
+        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileName);
         if (existEmail != null)
         {
             return BadRequest(new { Errors = new { Email = new string[] { "Email is already exist" } } });
+        }
+        try
+        {
+            using (FileStream stream = new FileStream(path, FileMode.Create))
+            {
+                await user.Avatar.CopyToAsync(stream);
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Lỗi trong quá trình tải lên: {ex.Message}");
         }
         List<int> roleItems = JsonSerializer.Deserialize<List<int>>(user.Role);
         var element = new User
@@ -120,8 +143,10 @@ public class UserController : ControllerBase
             Password = password,
             Username = user.UserName,
             Phone = user.Phone,
-            Status = (user.Status ?? 0)
+            Status = (user.Status ?? 0),
+            Avatar = path
         };
+
         db.User.Add(element);
         db.SaveChanges();
 
@@ -169,6 +194,43 @@ public class UserController : ControllerBase
         }
         db.SaveChanges();
         return Ok(new { data = user });
+    }
+
+    [Authorize]
+    [HttpPut("changePass/{id}")]
+    public IActionResult ChangePass(int id, [FromBody] PasswordRequest request)
+    {
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+        var user = db.User.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+        if (user == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        var password = BCrypt.Net.BCrypt.HashPassword(request.password);
+        user.Password = password;
+        user.RefreshToken = null;
+        db.SaveChanges();
+        return Ok(new { data = user });
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var user = db.User.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+        if (user == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        user.DeletedAt = DateTime.Now;
+        var listRole = (from map in db.MapRole where map.UserId == id select map).ToList();
+        foreach (var role in listRole)
+        {
+            role.DeletedAt = DateTime.Now;
+        }
+        db.SaveChanges();
+        return Ok(new { data = user });
+
     }
 
 

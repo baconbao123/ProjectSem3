@@ -1,11 +1,13 @@
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
 import {useDispatch} from "react-redux";
 import $axios, {authorization} from "@src/axios.ts";
 import Cookies from "js-cookie";
 import {MultiSelect} from "primereact/multiselect";
 import { InputText } from 'primereact/inputtext';
+import {Image} from "primereact/image";
+import defaultImage from "@src/images/default.png";
 interface ResourceAdd {
     loadDataTable: any,
     id?: any,
@@ -22,6 +24,9 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     const [error, setError] = useState({})
     const [roleList, setRoleList] = useState([])
     const [version, setVersion] = useState(0)
+    const [avatar, setAvatar] = useState('')
+    const [imageSrc, setImageSrc] = useState(null);
+    const inputFileRef = useRef('');
     useEffect(() => {
             loadData()
         if (form === 'edit') {
@@ -100,10 +105,15 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             Phone: phone,
             Role: JSON.stringify(dataRole),
             Status: status ? 1 : 0,
+            Avatar: avatar
         }
         console.log('Check data ', dataForm)
         dispatch(setLoading(true))
-        $axios.post('User',dataForm).then(res => {
+        $axios.post('User',dataForm, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Không bắt buộc phải thêm, Axios sẽ tự nhận diện
+            }
+        }).then(res => {
             console.log("check res", res)
             loadDataTable()
             dispatch(setToast({status: 'success', message: 'Success', data: 'Add new user successful'}))
@@ -176,6 +186,17 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             <div className="text-danger mt-1">{ data[0] ? data[0] : '' } </div>
         )
     }
+    const handleClickImage = () => {
+        inputFileRef.current.click()
+    };
+    const handleFileChange = (e: any) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatar(file);
+            const imageUrl = URL.createObjectURL(file);
+            setImageSrc(imageUrl);
+        }
+    };
 
     return (
         <div className='container-fluid'>
@@ -189,12 +210,11 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                     {ShowError('UserName')}
                 </div>
                 <div className='col-6'>
-                    <div className=''>
-                        <div className='label-form'>Phone <span className='text-danger'>*</span></div>
-                        <InputText keyfilter="int" value={phone} className='p-inputtext-lg w-100' placeholder='Phone'
-                                   onChange={e => setPhone(e.target.value)}/>
+                    <div className='label-form'>Avatar </div>
+                    <div >
+                        <input type='file' style={{ display: 'none' }}  ref={inputFileRef}   onChange={handleFileChange} />
+                        <Image   src={imageSrc || defaultImage} alt="Image" width="100"  className='image-avatar' onClick={handleClickImage} />
                     </div>
-                    {ShowError('Phone')}
                 </div>
             </div>
             <div className='row  '>
@@ -218,6 +238,29 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                 </div>
 
             </div>
+            <div className='row  '>
+                <div className='col-6 mt-3'>
+                    <div className=''>
+                        <div className='label-form'>Phone <span className='text-danger'>*</span></div>
+                        <InputText keyfilter="int" value={phone} className='p-inputtext-lg w-100' placeholder='Phone'
+                                   onChange={e => setPhone(e.target.value)}/>
+                    </div>
+                    {ShowError('Phone')}
+                </div>
+                <div className='col-6'>
+                    <div className='mt-3'>
+                        <div className='label-form'>Status <span className='text-danger'>*</span></div>
+                        <div className="form-check form-switch">
+                            <input checked={status} onChange={e => setStatus(e.target.checked)}
+                                   className="form-check-input form-switch switch-input" type="checkbox"
+                                   id="flexSwitchCheckDefault"/>
+                        </div>
+                        {ShowError('Status')}
+                    </div>
+                </div>
+                <div className='col-6'>
+                </div>
+            </div>
             {form !== 'edit' ? (
                 <div className='row'>
                     <div className='col-6'>
@@ -240,21 +283,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                 </div>
             ) : ''}
 
-            <div className='row  '>
-                <div className='col-6'>
-                    <div className='mt-3'>
-                        <div className='label-form'>Status <span className='text-danger'>*</span></div>
-                        <div className="form-check form-switch">
-                            <input checked={status} onChange={e => setStatus(e.target.checked)}
-                                   className="form-check-input form-switch switch-input" type="checkbox"
-                                   id="flexSwitchCheckDefault"/>
-                        </div>
-                        {ShowError('Status')}
-                    </div>
-                </div>
-                <div className='col-6'>
-                </div>
-            </div>
+
             <div className=' group-btn'>
                 <button onClick={() => dispatch(setShowModal(false))} type="button"
                         className="btn btn-outline-secondary">Cancel
