@@ -20,6 +20,15 @@
   border-radius: 5px ;
   &:hover {
     background-color:  red;
+    cursor: pointer;
     color: #fff;
+  }
+}
+.btn-disable {
+  opacity: .5;
+  pointer-events: none;
+  &:hover {
+    background-color: unset;
+    color: unset;
   }
 }

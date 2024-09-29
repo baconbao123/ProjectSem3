@@ -27,7 +27,7 @@ export const Navigate = () => {
           {/* Logo */}
           <Col lg={3} md={3} sm={3}>
             <Link to='/home'>
-              <img src='images/Logo.png' style={{ width: '200px', height: '50px' }} />
+              <img src='/images/Logo.png' style={{ width: '200px', height: '50px' }} />
             </Link>
           </Col>
 

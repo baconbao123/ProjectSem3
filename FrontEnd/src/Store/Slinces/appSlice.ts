@@ -10,7 +10,12 @@ export const appSlice = createSlice({
         showMenu: false,
         showModal: false,
         modalComponent: '',
-        skeleton: false
+        skeleton: false,
+        userName: '',
+        userEmail: '',
+        userPhone: '',
+        userId: '',
+        permission: []
     },
     reducers: {
        setLoading: (state, action) => {
@@ -31,6 +36,21 @@ export const appSlice = createSlice({
         },
         setModalComponent: (state, action) => {
            state.modalComponent = action.payload;
+        },
+        setUserName: (state, action) => {
+            state.userName = action.payload;
+        },
+        setUserEmail: (state, action) => {
+            state.userEmail = action.payload;
+        },
+        setUserId: (state, action) => {
+            state.userId = action.payload;
+        },
+        setUserPhone: (state, action) => {
+            state.userPhone = action.payload;
+        },
+        setPermission: (state, action) => {
+            state.permission = action.payload;
         }
     },
 });
@@ -42,7 +62,12 @@ export const
         closeToast,
         setShowMenu ,
         setShowModal,
-        setModalComponent
+        setModalComponent,
+        setUserName,
+        setUserEmail,
+        setUserId,
+        setUserPhone,
+        setPermission
     }
     = appSlice.actions;
 

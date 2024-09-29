@@ -1,0 +1,86 @@
+@import '../../../global.scss';
+
+.sidebar {
+  position: sticky;
+  top: 50px;
+  padding: 5px 15px;
+  background-color: white;
+  border-right: 1px solid #ddd;
+  font-size: 16px;
+  width: 100%;
+
+  .category-list {
+    padding: 0;
+
+    .category-name {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      .name {
+        font-weight: bold;
+        display: block;
+        font-size: 17px;
+
+        &:hover {
+          color: $btn-color;
+        }
+      }
+
+      .pi-plus,
+      .pi-minus {
+        font-weight: bold;
+        &:hover {
+          color: $btn-color;
+        }
+      }
+    }
+
+    .subcategory-list {
+      list-style-type: none;
+      padding-left: 1rem;
+      margin: 0.5rem 0;
+      max-height: 205px;
+
+      overflow-y: auto;
+      list-style-type: none;
+
+      .subcategory-item {
+        margin-bottom: 0.25rem;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: none;
+          color: $btn-color;
+        }
+      }
+    }
+  }
+
+  .prices-list {
+    list-style-type: none;
+    padding: 0;
+
+    .price-name {
+      font-weight: bold;
+    }
+    .subprices-list {
+      list-style-type: none;
+      padding-left: 1rem;
+      margin: 0.5rem 0;
+
+      .subprice-item {
+        margin-bottom: 0.25rem;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: none;
+          color: $btn-color;
+        }
+
+        input[type='checkbox'] {
+          accent-color: $btn-bgColor-hover;
+        }
+      }
+    }
+  }
+}

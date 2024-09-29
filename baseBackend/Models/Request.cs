@@ -33,6 +33,7 @@ public class UserRequest()
     [Required(ErrorMessage = "Status is required.")]
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
+    public IFormFile Avatar { get; set; }
 
 }
 public class UserRequestUpdate()
@@ -119,6 +120,7 @@ public class AuthorRequest()
     [Required(ErrorMessage = "Name is required.")]
     [StringLength(60, ErrorMessage = "Name cannot be longer than 60 characters.")]
     public string Name { get; set; }
+    [StringLength(500, ErrorMessage = "Biography  cannot be longer than 500 characters.")]
     public string? Biography { get; set; }
 
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
@@ -131,7 +133,19 @@ public class AuthorRequest()
     public int Version { get; set; }
 
 
+
+
+    public int Version { get; set; }
+
+
 }
+public class PasswordRequest()
+{
+    [Required(ErrorMessage = "Pasword is required.")]
+    [StringLength(60, ErrorMessage = "Pasword cannot be longer than 60 characters.")]
+    public string password { get; set; }
+}
+
 
 public class CompanyPartnerRequest()
 {

@@ -1,0 +1,166 @@
+[
+    {
+        "idOrder": "1",
+        "idUser": "1",
+        "status": "COMPLETED",
+        "statusDetail": {
+            "Ordered": "19/03/2024 19:30:21",
+            "Processing": "20/03/2024 09:00:21",
+            "Delivery": "21/03/2024 12:30:09",
+            "Completed": "21/03/2024 16:30:21"
+        },
+        "Products": [
+            {
+                "Id": "1",
+                "Name": "Practical MongoDB Part 1",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781484206485.png"
+                ],
+                "special": "10%",
+                "Manufactor": "Manufactor 1",
+                "BasePrice": "32.75",
+                "SellPrice": "10",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "1"
+            },
+            {
+                "Id": "2",
+                "Name": "Java",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781491954249.png"
+                ],
+                "special": "",
+                "Manufactor": "Manufactor 1",
+                "BasePrice": "3.1",
+                "SellPrice": "",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "2"
+            }
+        ]
+    },
+    {
+        "idOrder": "2",
+        "idUser": "2",
+        "status": "UNCOMPLETED",
+        "statusDetail": {
+            "Ordered": "19/12/2024 17:30:21",
+            "Canceled": "12/12/2024 19:00:21"
+        },
+        "CancellationReason": "Change of mind",
+        "Products": [
+            {
+                "Id": "3",
+                "Name": "World History - Lịch Sử Thế Giới - Từ Thế Giới Cổ Đại Đến Thời Đại Thông Tin - Bìa Cứng World History - Lịch Sử Thế Giới - Từ Thế Giới Cổ Đại Đến Thời Đại Thông Tin - Bìa Cứng World History - Lịch Sử Thế Giới - Từ Thế Giới Cổ Đại Đến Thời Đại Thông Tin - Bìa Cứng",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781491985571.png"
+                ],
+                "special": "",
+                "Manufactor": "Manufactor 2",
+                "BasePrice": "19",
+                "SellPrice": "",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "4"
+            },
+            {
+                "Id": "4",
+                "Name": "Angular",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781491999226.png"
+                ],
+                "special": "20%",
+                "Manufactor": "Manufactor 2",
+                "BasePrice": "19",
+                "SellPrice": "10",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "3"
+            }
+        ]
+    },
+    {
+        "idOrder": "3",
+        "idUser": "3",
+        "status": "COMPLETED",
+        "statusDetail": {
+            "Ordered": "19/03/2024 19:30:21",
+            "Processing": "20/03/2024 09:00:21",
+            "Delivery": "21/03/2024 12:30:09",
+            "Completed": "21/03/2024 16:30:21"
+        },
+        "Products": [
+            {
+                "Id": "1",
+                "Name": "Practical MongoDB Part 1",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781484206485.png"
+                ],
+                "special": "10%",
+                "Manufactor": "Manufactor 1",
+                "BasePrice": "32.75",
+                "SellPrice": "10",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "1"
+            },
+            {
+                "Id": "2",
+                "Name": "Java",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781491954249.png"
+                ],
+                "special": "",
+                "Manufactor": "Manufactor 1",
+                "BasePrice": "3.1",
+                "SellPrice": "",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "2"
+            }
+        ]
+    },
+    {
+        "idOrder": "4",
+        "idUser": "3",
+        "status": "CANCELED",
+        "statusDetail": {
+            "Ordered": "19/12/2024 17:30:21",
+            "Canceled": "12/12/2024 19:00:21"
+        },
+        "CancellationReason": "Change of mind",
+        "Products": [
+            {
+                "Id": "3",
+                "Name": "World History - Lịch Sử Thế Giới - Từ Thế Giới Cổ Đại Đến Thời Đại Thông Tin - Bìa Cứng World History - Lịch Sử Thế Giới - Từ Thế Giới Cổ Đại Đến Thời Đại Thông Tin - Bìa Cứng World History - Lịch Sử Thế Giới - Từ Thế Giới Cổ Đại Đến Thời Đại Thông Tin - Bìa Cứng",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781491985571.png"
+                ],
+                "special": "",
+                "Manufactor": "Manufactor 2",
+                "BasePrice": "19",
+                "SellPrice": "",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "4",
+                "CategoryName": "Biography"
+            },
+            {
+                "Id": "4",
+                "Name": "Angular",
+                "ProductImage": [
+                    "https://itbook.store/img/books/9781491999226.png"
+                ],
+                "special": "20%",
+                "Manufactor": "Manufactor 2",
+                "BasePrice": "19",
+                "SellPrice": "10",
+                "Status": "true",
+                "Description": "Des1111111",
+                "Quantity": "3",
+                "CategoryName": "Trinh thám"
+            }
+        ]
+    }
+]

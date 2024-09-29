@@ -1,0 +1,60 @@
+@import '../../../global.scss';
+
+.container-order {
+  background-color: $prime-bgColor-Pages;
+  font-size: 14px;
+  padding-bottom: 20px;
+
+  .heading-order {
+    padding: 28px 0 10px 0;
+    margin-bottom: 0.8rem;
+
+    .row-heading {
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+
+      .url {
+        text-decoration: none;
+        color: black;
+      }
+
+      .active {
+        color: $prime-color;
+      }
+
+      .heading-title {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+
+        &:hover {
+          color: $prime-color;
+        }
+
+        &:not(:last-child) {
+          border-right: 1px solid gainsboro;
+        }
+      }
+
+      .heading-title3 {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 600;
+
+        &:hover {
+          color: $prime-color;
+        }
+      }
+    }
+  }
+
+  .container-outlet {
+  }
+}
