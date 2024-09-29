@@ -4,73 +4,64 @@ import {RouterProvider} from "react-router-dom";
 import router from "./Router";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import $axios, {authorization} from "./axios";
-import { useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 // @ts-ignore
 import Cookies from "js-cookie";
-import {setLoading} from "@src/Store/Slinces/appSlice.ts";
+import {
+    setLoading, setPermission,
+    setShowModal,
+    setUserEmail,
+    setUserId,
+    setUserName,
+    setUserPhone
+} from "@src/Store/Slinces/appSlice.ts";
+import "primereact/resources/themes/lara-light-cyan/theme.css";
 const Toast = React.lazy(() => import("./components/Toast"))
 const Loading = React.lazy(() => import("./components/Loading"))
 
 const App = () => {
     const dispatch = useDispatch();
-    const currentPath = window.location.pathname;
     const checkToken = () => {
-            dispatch(setLoading(true))
-            if (Cookies.get("token") || Cookies.get("refreshToken")) {
-                const token = Cookies.get("token")
-                $axios.get('/Auth',{headers: authorization(token)} ).then((res) => {
-                    console.log('Check res ', res)
-                    if (res.status !== 200 && res.status !== 401 && currentPath !== '/login') {
-                            window.location.href = '/login'
-                    }
-                    else {
-                        if (currentPath === '/login' && res.status === 200) {
-                            window.location.href = '/'
-                        }
-                    }
-                })
-                    .catch((err) => {
-                        if ( err.response.status === 401){
-                         refreshToken()
-                        }
-                        console.log("Error ", err)
-                    }).then(() => {
-                })
-                dispatch(setLoading(false))
-
+        dispatch(setLoading(true))
+        $axios.get('/Auth').then(res => {
+            if (res.data && res.data.id) {
+                dispatch(setUserId(res.data.id))
+                localStorage.setItem("id", res.data.id)
             }
-            else  {
-                if (currentPath !== '/login') {
-                    window.location.href = '/login'
-
-                }
+            if (res.data && res.data.name) {
+                dispatch(setUserName(res.data.name))
+                localStorage.setItem("name", res.data.name)
+            }
+            if (res.data && res.data.email) {
+                dispatch(setUserEmail(res.data.email))
+                localStorage.setItem("email", res.data.email)
+            }
+            if (res.data && res.data.phone) {
+                dispatch(setUserPhone(res.data.phone))
+                localStorage.setItem("phone", res.data.phone)
             }
             dispatch(setLoading(false))
-        }
+            getPermission()
+        })
+            .catch(err => {
+                console.log(err)
+                dispatch(setLoading(false))
+            })
 
-
-    const refreshToken = () => {
-        if (Cookies.get("refreshToken")) {
-            $axios.post('/Auth/refreshToken', {
-                refreshToken: Cookies.get("refreshToken"),
-                publicKey: "mynameisnguyen"
-            } )
-                .then((res) => {
-                    Cookies.set("token", res.data.token, {expires: 0.1});
-                    Cookies.set('refreshToken', res.data.refreshToken, { expires: 7 });
-                    return true
-                })
-                .catch((err) => {
-                    if (currentPath !== '/login') {
-                        window.location.href = '/login'
-                    }
-                    console.log("Error ", err)
-                    return false
-                })
-        }
-        return false
     }
-
+    const getPermission = () => {
+        dispatch(setLoading(true))
+        const userId = localStorage.getItem('id')
+        $axios.get(`Auth/getPermision/${userId}`).then(res => {
+            dispatch(setPermission(res.data))
+            localStorage.setItem("permission", JSON.stringify(res.data.data))
+            dispatch(setLoading(false))
+        })
+            .catch(err => {
+                console.log(err)
+                dispatch(setLoading(false))
+            })
+    }
     useEffect(() => {
         checkToken()
     }, []);

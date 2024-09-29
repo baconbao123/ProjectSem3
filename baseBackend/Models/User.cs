@@ -18,6 +18,7 @@ public class User
     [Required]
     public string Email { get; set; }
     public string? Phone { get; set; }
+    public string? Avatar { get; set; }
     public string? RefreshToken { get; set; }
 
     public int Version { get; set; }

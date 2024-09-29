@@ -83,8 +83,18 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<IActionResult> checkToken()
     {
-        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
-        return Ok(new { data = claims });
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+
+        var id = int.Parse(userId ?? "00");
+
+        var user = db.User.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+        return Ok(new
+        {
+            id = user.Id,
+            name = user.Username,
+            email = user.Email,
+            phone = user.Phone
+        });
     }
 
     private string IssueToken(User user)
@@ -120,5 +130,69 @@ public class AuthController : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpGet("checkPermision")]
+    public IActionResult Get(string resource, string action)
+    {
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+        if (userId == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        var permision = (from u in db.User
+                         join map in db.MapRole on u.Id equals map.UserId
+                         join role in db.Role on map.RoleId equals role.Id
+                         join ma in db.MapAction on role.Id equals ma.RoleId
+                         join res in db.Resource on ma.ResourceId equals res.Id
+                         join ac in db.Action on ma.ActionId equals ac.Id
+                         where res.Name == resource && ac.Name == action && res.DeletedAt == null
+                         && u.DeletedAt == null && map.DeletedAt == null && role.DeletedAt == null
+                         && ma.DeletedAt == null && u.Id == int.Parse(userId)
+                         select
+                         new
+                         {
+                             res_id = res.Id,
+                             ac_id = ac.Id,
+                             user_id = u.Id,
+                         }
+                         ).FirstOrDefault();
+        if (permision == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        return Ok(new { data = permision });
+    }
+
+    [Authorize]
+    [HttpGet("getPermision/{id}")]
+    public IActionResult Get(int id)
+    {
+
+        var permisions = (from u in db.User
+                          join map in db.MapRole on u.Id equals map.UserId
+                          join role in db.Role on map.RoleId equals role.Id
+                          join ma in db.MapAction on role.Id equals ma.RoleId
+                          join res in db.Resource on ma.ResourceId equals res.Id
+                          join ac in db.Action on ma.ActionId equals ac.Id
+                          where res.DeletedAt == null
+                          && u.DeletedAt == null && map.DeletedAt == null && role.DeletedAt == null
+                          && ma.DeletedAt == null && u.Id == id && u.Status == 1
+                          select
+                          new
+                          {
+                              resource_id = res.Id,
+                              action_id = ac.Id,
+                              user_id = u.Id,
+                              role_id = role.Id,
+                              resource_name = res.Name,
+                              action_name = ac.Name,
+                          }
+                         ).ToList();
+        if (permisions == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        return Ok(new { data = permisions });
+    }
 
 }

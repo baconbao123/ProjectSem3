@@ -10,6 +10,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import logo from '@src/images/logo.png'
 // @ts-ignore
 import Cookies from "js-cookie"
+import {useSelector} from "react-redux";
 
 const TopBar : React.FC = () => {
     const [showRightInfo, setShowRightInfo] = useState(false);
@@ -17,6 +18,7 @@ const TopBar : React.FC = () => {
     const  refInfo = useRef(null);
     const refAvatar = useRef(null);
     const [active, setActive] = useState<string>('');
+    const name = useSelector((state: any) => state.app.userName);
     const logout = () => {
         try {
             Cookies.remove("token");
@@ -42,28 +44,28 @@ const TopBar : React.FC = () => {
         };
     }, []);
     return (
-      <div className="top-bar-admin container-fluid ">
+      <div className="top-bar-admin container-fluid " >
           <div className="row top-bar-contanier ">
               <div className="col-2 top-bar-item justify-content-center">
-                 {/* <img src={logo}  className='logo-img' /> */}
+                  <img src={logo}  className='logo-img' />
               </div>
               <div className="col-8 top-bar-item menu">
-                  {
-                      MenuTopBar.map(item => {
-                          const IconComponent = item.icon;
-                          return (
-                              <div onClick={() => setActive(item.code)} className={active === item.code ? 'active item-nav': 'item-nav'} key={item.code}>
-                                  <Link  to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.code}>
-                                      <IconComponent />
-                                  </Link>
-                              </div>
-                          )
-                      })
-                  }
+                  {/*{*/}
+                  {/*    MenuTopBar.map(item => {*/}
+                  {/*        const IconComponent = item.icon;*/}
+                  {/*        return (*/}
+                  {/*            <div onClick={() => setActive(item.code)} className={active === item.code ? 'active item-nav': 'item-nav'} key={item.code}>*/}
+                  {/*                <Link  to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.code}>*/}
+                  {/*                    <IconComponent />*/}
+                  {/*                </Link>*/}
+                  {/*            </div>*/}
+                  {/*        )*/}
+                  {/*    })*/}
+                  {/*}*/}
               </div>
               <div className="col-2 justify-content-end top-bar-item">
                   <div  ref={refAvatar} className='d-flex align-items-center gap-2 top-bar-item-info' onClick={() => setShowRightInfo(!showRightInfo)}>
-                      Truong Trung Nguyen
+                      {name ?  name: ''}
                     <Avatar>N</Avatar>
                   </div>
               </div>
@@ -74,7 +76,7 @@ const TopBar : React.FC = () => {
                       <Avatar sx={{width: 100, height: 100}}>N</Avatar>
                   </div>
                   <div className=' mt-2 d-flex justify-content-center'>
-                      <div>Truong Trung Nguyen</div>
+                      <div>  {name ?  name: ''}</div>
                   </div>
               </div>
 

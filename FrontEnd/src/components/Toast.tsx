@@ -1,4 +1,4 @@
-import {Alert, Snackbar} from "@mui/material";
+import {Alert, AlertTitle, Snackbar} from "@mui/material";
 import React from "react";
 
 import {useDispatch, useSelector} from "react-redux";
@@ -21,7 +21,8 @@ const Toast: React.FC = () => {
                     onClose={() => dispatch(closeToast())}
                     severity={toast.status}
                 >
-                    {toast.message}
+                    <AlertTitle> {toast.message}</AlertTitle>
+                    {toast.data ? toast.data : ''}
                 </Alert>
             </Snackbar>
         </>

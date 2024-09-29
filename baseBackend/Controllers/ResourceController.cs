@@ -23,16 +23,31 @@ public class ResourceController : ControllerBase
     {
         var listData = (from item in db.Resource
                         where item.DeletedAt == null
+                        orderby item.CreatedAt descending
                         select item).ToList();
 
         return Ok(new { data = listData, total = listData.Count() });
     }
 
     // GET api/<ResourceController>/5
+    [Authorize]
     [HttpGet("{id}")]
-    public string Get(int id)
+    public IActionResult Get(int id)
     {
-        return "value";
+        var resource = (from r in db.Resource
+                        join u in db.User on r.CreatedBy equals u.Id
+                        where r.Id == id && r.DeletedAt == null
+                        select new
+                        {
+                            Resource = r,
+                            User = u
+                        }).FirstOrDefault();
+
+        if (resource == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        return Ok(new { data = resource });
     }
 
     // POST api/<ResourceController>
@@ -40,11 +55,15 @@ public class ResourceController : ControllerBase
     [Authorize]
     public IActionResult Post([FromBody] ResourceRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
         var resource = new Resource();
         resource.Name = request.Name;
         resource.Description = request.Description;
-        resource.Status = request.Status;
+        resource.Status = request.Status ?? 0;
         resource.Version = 0;
         resource.UpdateAt = DateTime.Now;
         resource.CreatedAt = DateTime.Now;
@@ -69,11 +88,11 @@ public class ResourceController : ControllerBase
         }
         if (resource.Version != request.Version)
         {
-            return BadRequest(new { message = "Data has change" });
+            return BadRequest(new { type = "reload", message = "Data has change pls reload" });
         }
         resource.Name = request.Name;
         resource.Description = request.Description;
-        resource.Status = request.Status;
+        resource.Status = request.Status ?? 0;
         resource.Version = request.Version + 1;
         resource.UpdateAt = DateTime.Now;
         resource.UpdatedBy = int.Parse(userId);
@@ -81,7 +100,8 @@ public class ResourceController : ControllerBase
         return Ok(new { data = resource });
     }
 
-    // DELETE api/<ResourceController>/5
+    // DELETE api/<ResourceController>/5'
+    [Authorize]
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {

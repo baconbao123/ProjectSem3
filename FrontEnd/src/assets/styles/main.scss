@@ -1,0 +1,190 @@
+.main-page {
+  margin: 10px;
+  .header-page {
+
+    font-size: 20px;
+    font-weight: bold;
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      a {
+        .icon-breadcrum {
+          font-size: 30px;
+        }
+        line-height: 1.5;
+        color: #000;
+        text-decoration: none;
+        &:hover {
+          color: $default-color;
+        }
+      }
+    }
+  }
+  .search-page {
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    .search-form {
+      height: 38px;
+      .placeholder-text {
+          opacity: 0.6;
+      }
+    }
+    .search-container {
+      display: flex;
+      gap: 10px;
+    }
+  }
+  .content-page {
+    .table-container {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      position: static;
+      top: 4rem;
+    }
+    table {
+      border-collapse: collapse;
+
+      thead {
+        position: sticky;
+        top: 4rem;
+        th {
+          background-color: $default-color;
+          color: #fff;
+        }
+
+        tr>[aria-sort=ascending] {
+          background-repeat: no-repeat;
+          background-size: .65em 1em;
+          background-position: right .375rem center;
+          cursor: pointer;
+          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='101' height='101' preserveAspectRatio='none'%3E%3Cpath d='M51 1l25 23 24 22H1l25-22z'/%3E%3Cpath opacity='.3' d='M51 101l25-23 24-22H1l25 22z'/%3E%3C/svg%3E")
+        }
+
+        tr>[aria-sort=descending] {
+          background-repeat: no-repeat;
+          background-size: .65em 1em;
+          background-position: right .375rem center;
+          cursor: pointer;
+          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='101' height='101' preserveAspectRatio='none'%3E%3Cpath opacity='.3' d='M51 1l25 23 24 22H1l25-22z'/%3E%3Cpath d='M51 101l25-23 24-22H1l25 22z'/%3E%3C/svg%3E")
+        }
+
+        tr>[aria-sort=none] {
+          background-repeat: no-repeat;
+          background-size: .65em 1em;
+          background-position: right .375rem center;
+          cursor: pointer;
+          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='101' height='101' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' opacity='.3' d='M51 1l25 23 24 22H1l25-22zm0 100l25-23 24-22H1l25 22z'/%3E%3C/svg%3E")
+        }
+      }
+      td, th {
+        border: 1px solid rgba(224, 224, 224, 0.5)!important;
+        padding: 5px;
+      }
+      .th__action {
+        width: 70px;
+        text-align: center;
+      }
+      .th__no{
+        width: 40px;
+        text-align: center;
+
+      }
+      .body-table {
+
+      }
+      tbody tr {
+        td:first-child {
+          border-left: 3px solid rgba(224, 224, 224, 0.5) !important;
+        }
+        &:hover {
+          filter: brightness(90%);
+          background-color: rgba(224, 224, 224, 0.5);
+          td:first-child {
+            border-left: 3px solid $default-color !important;
+          }
+        }
+      }
+    }
+
+  }
+}
+.footer-table {
+  background-color: #fff;
+  display: flex;
+  margin-right: 20px;
+  justify-content: flex-end;
+  font-size: 16px;
+  .pagination {
+    height: 60px;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    .icon {
+      &:hover {
+        background-color: $default-color;
+        color: #fff;
+        border-radius: 5px;
+      }
+      cursor: pointer;
+    }
+
+  }
+  .select-per-page {
+    height: 40px;
+    width: 70px;
+  }
+}
+.image-avatar {
+  cursor: pointer;
+  border-radius: 5px;
+}
+.form-check-input:checked {
+  background-color: $default-color;
+  border-color: $default-color;
+}
+.form-control:focus {
+  border: $default-color solid 1px;
+  box-shadow: 0 0 0 0.25rem rgba($default-color, 0.25);
+}
+
+input:focus {
+  border: $default-color solid 1px;
+  box-shadow: 0 0 0 0.25rem rgba($default-color, 0.25);
+}
+
+.form-switch .form-check-input:focus {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+
+}
+.form-switch .form-check-input:checked {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+.status-success {
+  background-color: $success;
+  color: #fff;
+  border: 1px solid #ccc;
+  padding: 2px 10px;
+  border-radius: 15px;
+  text-align: center;
+  width: 70px;
+}
+.status-disable {
+  background-color: $gray-600;
+  color: #fff;
+  border: 1px solid #ccc;
+  padding: 2px 10px;
+  border-radius: 15px;
+  text-align: center;
+  width: 70px;
+}
+.css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border: $default-color solid 1px!important;
+  box-shadow: 0 0 0 0.25rem rgba($default-color, 0.25) !important;
+}
+.css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0, 0, 0, 0.23);
+}
+

@@ -14,7 +14,7 @@ public class UserAddress
     public string? Phone { get; set; }
     public bool Index { get; set; }
     public string? OtherMark { get; set; }
-    public string DetailAdress { get; set; }
+    public string DetailAddress { get; set; }
     public string? Address { get; set; }
 
     public int Version { get; set; }

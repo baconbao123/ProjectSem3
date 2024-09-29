@@ -1,0 +1,34 @@
+.btn-general {
+  background-color: $default-color;
+  color: #fff;
+  cursor: pointer;
+  &:hover {
+    background-color: $default-color;
+    box-shadow: 0 0 0 0.25rem rgba($default-color, 0.25);
+    color: #fff;
+  }
+}
+.btn-icon {
+  border-radius: 5px ;
+  cursor: pointer;
+  &:hover {
+    background-color:  $default-color;
+    color: #fff;
+  }
+}
+.btn-delete {
+  border-radius: 5px ;
+  &:hover {
+    background-color:  red;
+    cursor: pointer;
+    color: #fff;
+  }
+}
+.btn-disable {
+  opacity: .5;
+  pointer-events: none;
+  &:hover {
+    background-color: unset;
+    color: unset;
+  }
+}

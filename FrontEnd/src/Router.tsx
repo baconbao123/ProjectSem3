@@ -6,6 +6,13 @@ import ErrorPage from '@pages/common/ErrorPage.tsx'
 import HomePageAdmin from '@pages/admin/HomePage.tsx'
 import AboutAdmin from '@pages/admin/About.tsx'
 import ResourceList from "@pages/resource/ResourceList.tsx";
+import RoleList from "@pages/role/RoleList.tsx";
+import PermissionList from "@pages/permission/PermissionList.tsx";
+import CategoryList from "@pages/category/CategoryList"
+import AuthorList from "@pages/author/AuthorList"
+import UserList from "@pages/user/UserList.tsx";
+import CompanyList from "@pages/companyparent/ComanyPartnerList"
+import ProductList from "@pages/product/ProductList"
 
 export  default  createBrowserRouter([
     {
@@ -25,6 +32,41 @@ export  default  createBrowserRouter([
             {
                 path: 'resource',
                 element: (<ResourceList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'user',
+                element: (<UserList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'role',
+                element: (<RoleList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'permission',
+                element: (<PermissionList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'category',
+                element: (<CategoryList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'author',
+                element: (<AuthorList/>),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'company',
+                element: (<CompanyList/>),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'product',
+                element: (<ProductList/>),
                 errorElement: (<ErrorPage error="'Error page"/>),
             },
             {

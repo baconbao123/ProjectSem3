@@ -1,18 +1,48 @@
 import axios from "axios"
 //  @ts-ignore
 import Cookies from "js-cookie"
+import {setToast} from "@src/Store/Slinces/appSlice.ts";
 const $axios = axios.create({
     baseURL: import.meta.env.VITE_REACT_APP_BACK_END_LINK,
     headers: {
-        'Authorization': "Bearer "+ Cookies.get("token") ? Cookies.get("token") : "",
+        Authorization: "Bearer "+ ( Cookies.get("token") ? Cookies.get("token") : ""),
     }
 })
-
 const authorization = (token: any) => {
     return {Authorization: "Bearer " + token}
-
 }
 export {
     authorization
 }
+$axios.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401 && window.location.pathname  !== '/login' )
+        {
+            if (Cookies.get("refreshToken")) {
+                $axios.post('/Auth/refreshToken', {
+                    refreshToken: Cookies.get("refreshToken"),
+                    publicKey: "mynameisnguyen"
+                } )
+                    .then((res) => {
+                        Cookies.set("token", res.data.token, {expires: 0.1});
+                        Cookies.set('refreshToken', res.data.refreshToken, { expires: 7 });
+                        window.location.reload();
+                    })
+                    .catch((err) => {
+                        if (window.location.pathname !== '/login') {
+                                window.location.href = '/login'
+                        }
+                        console.log("Error ", err)
+                    })
+            }
+            else {
+                window.location.href = '/login'
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 export default $axios
