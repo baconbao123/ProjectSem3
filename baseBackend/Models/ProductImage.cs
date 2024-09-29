@@ -7,7 +7,7 @@ public class ProductImage
     [Key]
     public int Id { get; set; }
     [Required]
-    public string ProductId { get; set; }
+    public int ProductId { get; set; }
     [Required]
     public string ImagePath { get; set; }
 

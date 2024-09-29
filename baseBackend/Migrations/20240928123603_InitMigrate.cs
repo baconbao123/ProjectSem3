@@ -120,6 +120,30 @@ namespace AuthenticationJWT.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompanyPartner",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
+                    UpdatedBy = table.Column<int>(type: "int", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyPartner", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Delivery",
                 columns: table => new
                 {
@@ -183,29 +207,6 @@ namespace AuthenticationJWT.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Feedback", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ManuPublish",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Version = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<int>(type: "int", nullable: false),
-                    UpdatedBy = table.Column<int>(type: "int", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ManuPublish", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -376,12 +377,11 @@ namespace AuthenticationJWT.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    ManufactorId = table.Column<int>(type: "int", nullable: false),
-                    PublisherId = table.Column<int>(type: "int", nullable: false),
+                    CompanyPartnerId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BasePrice = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SellPrice = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BasePrice = table.Column<double>(type: "float", nullable: true),
+                    SellPrice = table.Column<double>(type: "float", nullable: true),
                     Profit = table.Column<float>(type: "real", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Version = table.Column<int>(type: "int", nullable: false),
@@ -404,7 +404,7 @@ namespace AuthenticationJWT.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -582,10 +582,10 @@ namespace AuthenticationJWT.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "Name", "UpdateAt", "UpdatedBy", "Version" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4503), 1, null, null, "create", new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4517), 1, 0 },
-                    { 2, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4520), 1, null, null, "update", new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4521), 1, 0 },
-                    { 3, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4522), 1, null, null, "read", new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4523), 1, 0 },
-                    { 4, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4524), 1, null, null, "delete", new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4525), 1, 0 }
+                    { 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6930), 1, null, null, "create", new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6950), 1, 0 },
+                    { 2, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6955), 1, null, null, "update", new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6956), 1, 0 },
+                    { 3, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6959), 1, null, null, "read", new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6960), 1, 0 },
+                    { 4, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6963), 1, null, null, "delete", new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(6964), 1, 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -593,19 +593,19 @@ namespace AuthenticationJWT.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "Name", "Status", "UpdateAt", "UpdatedBy", "Version" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4652), 1, null, null, "Admin", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4653), 1, 0 },
-                    { 2, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4655), 1, null, null, "User", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4656), 1, 0 },
-                    { 3, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4657), 1, null, null, "Product", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4658), 1, 0 },
-                    { 4, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4660), 1, null, null, "Resource", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4660), 1, 0 },
-                    { 5, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4662), 1, null, null, "Role", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4662), 1, 0 },
-                    { 6, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4664), 1, null, null, "Sale", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4664), 1, 0 },
-                    { 7, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4666), 1, null, null, "Guest", 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4666), 1, 0 }
+                    { 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7251), 1, null, null, "Admin", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7253), 1, 0 },
+                    { 2, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7258), 1, null, null, "User", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7259), 1, 0 },
+                    { 3, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7262), 1, null, null, "Product", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7264), 1, 0 },
+                    { 4, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7267), 1, null, null, "Resource", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7268), 1, 0 },
+                    { 5, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7271), 1, null, null, "Role", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7272), 1, 0 },
+                    { 6, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7274), 1, null, null, "Sale", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7275), 1, 0 },
+                    { 7, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7278), 1, null, null, "Guest", 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7280), 1, 0 }
                 });
 
             migrationBuilder.InsertData(
                 table: "User",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Email", "Expired", "Password", "Phone", "RefreshToken", "Status", "UpdateAt", "UpdatedBy", "Username", "Version" },
-                values: new object[] { 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4698), 0, null, "SA@gmail.com", null, "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK", null, null, 1, new DateTime(2024, 9, 27, 0, 5, 17, 969, DateTimeKind.Local).AddTicks(4700), 0, "SA", 0 });
+                values: new object[] { 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7351), 0, null, "SA@gmail.com", null, "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK", null, null, 1, new DateTime(2024, 9, 28, 19, 36, 0, 852, DateTimeKind.Local).AddTicks(7352), 0, "SA", 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_Code",
@@ -639,6 +639,9 @@ namespace AuthenticationJWT.Migrations
                 name: "Common");
 
             migrationBuilder.DropTable(
+                name: "CompanyPartner");
+
+            migrationBuilder.DropTable(
                 name: "Delivery");
 
             migrationBuilder.DropTable(
@@ -646,9 +649,6 @@ namespace AuthenticationJWT.Migrations
 
             migrationBuilder.DropTable(
                 name: "Feedback");
-
-            migrationBuilder.DropTable(
-                name: "ManuPublish");
 
             migrationBuilder.DropTable(
                 name: "MapAction");

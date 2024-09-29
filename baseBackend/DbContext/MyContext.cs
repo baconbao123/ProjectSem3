@@ -36,7 +36,7 @@ public class MyContext : DbContext
     public DbSet<FAQ> FAQ { get; set; }
     public DbSet<MapManu> MapManu { get; set; }
     public DbSet<MapPublish> MapPublish { get; set; }
-    public DbSet<ManuPublish> ManuPublish { get; set; }
+    public DbSet<CompanyPartner> CompanyPartner { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

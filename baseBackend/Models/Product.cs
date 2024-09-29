@@ -15,10 +15,7 @@ public class Product
     public int CategoryId { get; set; }
 
     [Required]
-    public int ManufactorId { get; set; }
-
-    [Required]
-    public int PublisherId { get; set; }
+    public int CompanyPartnerId { get; set; }
 
     [Required]
     public string Name { get; set; }
@@ -26,9 +23,9 @@ public class Product
     public string Description { get; set; }
 
 
-    public string? BasePrice { get; set; }
+    public double? BasePrice { get; set; }
 
-    public string? SellPrice { get; set; }
+    public double? SellPrice { get; set; }
 
     public float? Profit { get; set; }
 
