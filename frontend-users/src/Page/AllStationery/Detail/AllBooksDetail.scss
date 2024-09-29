@@ -1,0 +1,82 @@
+@import '../../../global.scss';
+
+// breadcrumb
+.breadcrumb-container {
+  display: flex;
+  align-items: center;
+  background-color: $bg-breadcrumb;
+
+  .p-breadcrumb {
+    display: contents;
+    font-size: 14px;
+
+    .p-breadcrumb-list {
+      padding-left: 0;
+      padding-top: 5px;
+    }
+
+    .p-menuitem-link {
+      text-decoration: none;
+
+      .p-menuitem-icon {
+        font-size: 14px;
+      }
+    }
+
+    .font-semibold {
+      text-decoration: none;
+      color: $text-link;
+      font-weight: 600;
+    }
+  }
+}
+
+.container-all-books {
+  background-color: $prime-bgColor-Pages;
+
+  .img-all-books {
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .container-all-books-content {
+    // Content
+    .all-products {
+      // Filter
+      .row-filter {
+        padding: 10px 20px;
+
+        .filter {
+          font-size: 14px;
+          display: flex;
+          justify-content: end;
+        }
+        .p-dropdown-label {
+          width: 100px;
+          font-size: 12px;
+        }
+      }
+      .row-pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+    }
+  }
+}
+
+// drop down
+
+.p-dropdown-items-wrapper {
+  border-radius: 5px !important;
+}
+
+.p-dropdown-items {
+  padding-left: 0rem !important;
+  border-radius: 5px !important;
+}
+
+.p-dropdown-item {
+  font-size: 12px;
+}

@@ -1,0 +1,110 @@
+@import '/global.scss';
+
+.container-canceled-details {
+  background-color: white;
+  border-radius: 10px;
+
+  .heading-order-detail {
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid gainsboro;
+
+    .heading-left-order {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      cursor: pointer;
+      color: gray;
+
+      i {
+        font-size: 12px;
+      }
+
+      .back {
+        text-decoration: none;
+        color: gray;
+      }
+    }
+
+    .heading-right-order {
+      font-size: 15px;
+
+      .status {
+        color: $prime-color;
+      }
+    }
+  }
+
+  .container-cancel-compeleted {
+    padding: 16px;
+    background-color: $prime-color;
+    background-color: #f0f6f5;
+
+    .cancel-compeleted {
+      font-size: 18px;
+      color: rgb(255, 47, 0);
+    }
+  }
+
+  .container-products {
+    padding: 14px 28px;
+    background-color: #fafafa;
+    .title-product {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .container-total-price {
+      padding-top: 14px;
+      display: flex;
+      justify-content: end;
+
+      .title {
+        font-size: 16px;
+      }
+      .order {
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .cancel-by {
+    background-color: $prime-bgColor-Pages2;
+    border: 1px dotted rgb(174, 174, 174);
+
+    .req-by,
+    .payment-method {
+      padding: 8px;
+      display: flex;
+      justify-content: end;
+      border-bottom: 1px dotted rgb(174, 174, 174);
+
+      .title-req {
+        padding-right: 14px;
+        width: 200px;
+        color: gray;
+        text-align: end;
+        border-right: 1px dotted rgb(174, 174, 174);
+      }
+
+      .by {
+        width: 250px;
+        padding-right: 20px;
+        text-align: end;
+      }
+    }
+
+    .payment-method {
+      border-bottom: none;
+    }
+  }
+
+  .reason {
+    font-size: 16px;
+    padding: 20px;
+    font-weight: 600;
+  }
+}

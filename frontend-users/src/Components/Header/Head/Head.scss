@@ -1,22 +1,45 @@
+@import '../../../../global.scss';
+
 .row-head {
   border-bottom: 1px solid gainsboro;
+  padding: 5px 0;
 
   .header-left {
-    padding: 3px 0;
+    // padding-top: 5px;
+
     color: gray;
 
-    .icon-phone {
-      padding-right: 10px;
+    .phone {
+      font-size: 16px;
+      .icon-phone {
+        padding-right: 10px;
+      }
     }
   }
 
-  .signIn {
-    padding: 3px 0;
-    text-align: right;
-    cursor: pointer;
+  .content {
+    // padding-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    color: gray;
 
-    &:hover {
-        color: #1CC0A0;
+    .signIn {
+      font-size: 15px;
+      text-align: right;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        color: #1cc0a0;
+      }
+    }
+
+    .url {
+      text-decoration: none;
+      color: gray;
+      &:hover {
+        color: #1cc0a0;
+      }
     }
   }
 }
