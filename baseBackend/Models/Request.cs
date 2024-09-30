@@ -199,6 +199,8 @@ public class ProductRequest()
     public int Version { get; set; }
     public List<IFormFile>? ProductImages { get; set; }
     public List<int>? AuthorIds { get; set; }
+    [Required(ErrorMessage = "Category is required.")]
+    public List<int> CategoryIds { get; set; }
 }
 
 // Request class cho bảng ProductImage

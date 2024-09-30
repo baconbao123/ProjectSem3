@@ -2,22 +2,15 @@
 
 namespace AuthenticationJWT.Models;
 
-public class Category
+public class ProductCategory
 {
     [Key]
     public int Id { get; set; }
     [Required]
-    public string CategoryCode { get; set; }
+    public int ProductId { get; set; }
     [Required]
-    public string Name { get; set; }
-    public string? Description { get; set; }
-    public int? ParentId { get; set; }
+    public int CategoryId { get; set; }
 
-    public int Status { get; set; }
-
-    public int Version { get; set; }
-
-    public int Level { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
     public int CreatedBy { get; set; }
@@ -25,7 +18,7 @@ public class Category
 
     public DateTime? DeletedAt { get; set; }
 
-    public Category()
+    public ProductCategory()
     {
         CreatedBy = 0;
         UpdatedBy = 0;
