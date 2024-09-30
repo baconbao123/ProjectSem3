@@ -54,6 +54,7 @@ public class UserRequestUpdate()
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
     public int Version { get; set; }
+    public IFormFile Avatar { get; set; }
 
 }
 
@@ -131,12 +132,6 @@ public class AuthorRequest()
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
     public int Version { get; set; }
-
-
-
-
-    public int Version { get; set; }
-
 
 }
 public class PasswordRequest()
