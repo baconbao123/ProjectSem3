@@ -396,7 +396,10 @@ const ResourceList : React.FC = () => {
                                                     if (field.key === "Avatar") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <Image src={item[field.key] ? item[field.key] : defaultImage} alt="Image" width="100" preview />
+                                                                <Image src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + item[field.key]} width="100"  onError={(e) => {
+                                                                    e.target.onerror = null; // Ngăn lặp lại lỗi
+                                                                    e.target.src = defaultImage; // Đổi sang ảnh mặc định
+                                                                }} preview />
                                                             </TableCell>
                                                         )
                                                     }

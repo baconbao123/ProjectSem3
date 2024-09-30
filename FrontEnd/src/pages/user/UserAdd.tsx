@@ -57,6 +57,11 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             if (res.data.data && (res.data.data.Version || res.data.data.Version === 0)) {
                 setVersion(res.data.data.Version)
             }
+            if (res.data.data && res.data.data.Avatar) {
+                setAvatar(res.data.data.Avatar)
+                setImageSrc((import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + res.data.data.Avatar))
+            }
+
             dispatch(setLoading(false))
 
         })
@@ -147,11 +152,14 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             Phone: phone,
             Role: dataRole? JSON.stringify(dataRole) : '',
             Status: status ? 1 : 0,
-            Version: version
+            Version: version,
+            Avatar: avatar
         }
         console.log('Check data ', dataForm)
         dispatch(setLoading(true))
-        $axios.put(`User/${id}`,dataForm).then(res => {
+        $axios.put(`User/${id}`,dataForm, {headers: {
+                'Content-Type': 'multipart/form-data'
+            }}).then(res => {
             console.log("check res", res)
             loadDataTable()
             dispatch(setToast({status: 'success', message: 'Success', data: 'Edit user successful'}))
@@ -213,7 +221,10 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                     <div className='label-form'>Avatar </div>
                     <div >
                         <input type='file' style={{ display: 'none' }}  ref={inputFileRef}   onChange={handleFileChange} />
-                        <Image   src={imageSrc || defaultImage} alt="Image" width="100"  className='image-avatar' onClick={handleClickImage} />
+                        <Image   src={imageSrc || defaultImage} alt="Image" width="100"  className='image-avatar' onClick={handleClickImage}  onError={(e) => {
+                            e.target.onerror = null; // Ngăn lặp lại lỗi
+                            e.target.src = defaultImage; // Đổi sang ảnh mặc định
+                        }}/>
                     </div>
                 </div>
             </div>
