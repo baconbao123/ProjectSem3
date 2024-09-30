@@ -1,16 +1,19 @@
-import React, { ReactNode } from 'react'
+import React from 'react'
 import { Header } from '../Components/Header/Header'
 import { Footer } from '../Components/Footer/Footer'
+import { Outlet } from 'react-router-dom'
 
-interface MainLayoutProps {
-  children: ReactNode
-}
+// interface MainLayoutProps {
+//   children: ReactNode
+// }
 
-export const MainLayouts: React.FC<MainLayoutProps> = ({children}) => {
+export const MainLayouts: React.FC = () => {
   return (
     <>
         <Header />
-        {children}
+        <main>
+          <Outlet />
+        </main>
         <Footer />
     </>
   )

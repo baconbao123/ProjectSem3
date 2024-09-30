@@ -1,0 +1,16 @@
+@import '/global.scss';
+
+.row-rating-card {
+  border-bottom: 1px solid gainsboro;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .custom-rating {
+    .MuiRating-icon {
+      font-size: 20px;
+      color: $btn-color;
+    }
+  }
+}

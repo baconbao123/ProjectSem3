@@ -6,9 +6,13 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import { Provider } from 'react-redux'
 import store from './Store/store.tsx'
-import Swal from 'sweetalert2/dist/sweetalert2.js'
+// import Swal from 'sweetalert2/dist/sweetalert2.js'
+
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+
 import 'sweetalert2/src/sweetalert2.scss'
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>

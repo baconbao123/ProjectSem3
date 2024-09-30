@@ -1,17 +1,25 @@
 @import '../../../../global.scss';
 
 .row-navigate {
+  font-family: 'Poppins', sans-serif !important;
+
   align-items: center;
 
   // Search
   .p-inputgroup {
     padding: 15px 0;
 
-
     .inputgroup {
-      width: 50%;
+      width: 55%;
+      font-size: 14px;
+
+      &:focus {
+        box-shadow: none;
+        border-color: $prime-color;
+      }
     }
 
+    // Dropdown
     .p-dropdown .p-dropdown-label {
       font-size: 14px;
       color: rgb(176, 176, 176);
@@ -21,6 +29,7 @@
       border-top-right-radius: 0.5rem; /* Bo tròn góc trên bên phải */
       border-bottom-right-radius: 0.5rem; /* Bo tròn góc dưới bên phải */
       background-color: $prime-color;
+      border-color: $prime-color;
 
       &:hover {
         background-color: $btn-bgColor-hover;
@@ -42,21 +51,29 @@
       flex-direction: row;
       gap: 20px;
 
-      .storesystem,
-      .account,
-      .orders,
-      .cart
-       {
-        color: black;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        cursor: pointer;
-        &:hover {
-          color: $prime-color;
+      .url {
+        text-decoration: none;
+
+        .storesystem,
+        .account,
+        .orders,
+        .cart {
+          color: black;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          cursor: pointer;
+          &:hover {
+            color: $prime-color;
+          }
         }
       }
     }
   }
+}
+
+.p-dropdown-items {
+  padding-left: 0 !important;
+  font-size: 12px;
 }

@@ -1,0 +1,89 @@
+@import '../../../../global.scss';
+
+.col-orderAction {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  .btn-action-rate {
+    border-radius: 5px;
+    background-color: $btn-color;
+    border-color: $btn-color;
+
+    &:hover {
+      background-color: $btn-bgColor-hover;
+      border-color: $btn-bgColor-hover;
+    }
+  }
+
+  .btn-action-more,
+  .btn-action {
+    border-radius: 5px;
+    background-color: white;
+    border-color: $btn-color;
+    color: $btn-color;
+
+    &:hover {
+      background-color: $btn-color;
+      color: white;
+    }
+  }
+
+  .btn-action-more {
+    height: 37px;
+    width: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border: 1px solid $btn-color;
+    font-weight: 600;
+  }
+}
+
+.h1Rating {
+  font-size: 30px;
+  font-weight: 600;
+  text-align: center;
+  color: $prime-color;
+}
+
+.total-order {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  font-size: 16px;
+}
+
+// Dialog Rating
+.p-rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.large-rating .p-rating-icon {
+  width: 20px;
+  height: 20px;
+  color: $btn-color;
+}
+
+// Dialog footer - Btn
+.p-dialog-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .p-button {
+    border-radius: 10px;
+    padding-right: 10px;
+    font-size: 14px;
+    background-color: $btn-color;
+    border-color: $btn-color;
+
+    &:hover {
+      background-color: $btn-bgColor-hover;
+    }
+  }
+}

@@ -1,0 +1,53 @@
+@import '../../../global.scss';
+
+.container-card {
+  font-size: 16px;
+  padding: 0 20px !important;
+  background-color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+
+  .heading-orders {
+    padding: 12px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    border-bottom: 1px solid gainsboro;
+    font-size: 15px;
+
+    .orderId {
+    }
+
+    .status {
+      color: $btn-bgColor-hover;
+      font-weight: 600;
+    }
+  }
+
+  .conatiner-items-order {
+    margin-bottom: 10px;
+
+    
+  }
+
+  .row-order-card {
+    border: none !important;
+    padding-bottom: 0;
+
+
+    .title {
+      font-size: 17px;
+    } 
+
+    .total {
+      font-size: 16px;
+    }
+  }
+}
+
+.container-orderActions {
+  padding: 10px 26px !important;
+  background-color: #f0f6f5;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}

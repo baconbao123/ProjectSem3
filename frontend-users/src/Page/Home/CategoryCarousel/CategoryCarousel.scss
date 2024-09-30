@@ -1,0 +1,67 @@
+.carousel-container {
+  position: relative; // Để đảm bảo các nút có thể được định vị tương đối
+}
+
+.slick-slide {
+  opacity: 0.7; // Mặc định các slide sẽ bị mờ
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slick-center {
+  opacity: 1 !important; // Slide ở giữa sẽ không bị mờ
+  transform: scale(1.1); // Slide ở giữa phóng to một chút
+  width: 419px !important;
+  z-index: 10;
+}
+
+.banner {
+    background-color: transparent;
+
+}
+.banner-overlay-category {
+  position: relative;
+
+  .banner-content {
+    text-align: center;
+  }
+}
+
+.carousel-buttons {
+  position: absolute;
+  top: 67px;
+  transform: translateY(-50%);
+  width: 100%;
+
+  .carousel-btn {
+    position: absolute;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 44px;
+    font-weight: 600;
+
+    // Nút bên trái
+    &.prev-btn {
+      left: 7px;
+    }
+
+    // Nút bên phải
+    &.next-btn {
+      right: 23px;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    &:hover {
+      color: gray;
+    }
+  }
+}

@@ -1,0 +1,266 @@
+@import '/global.scss';
+
+.container-product-details {
+  background-color: $prime-bgColor-Pages;
+  padding: 10px 0;
+
+  .col-img-galleria {
+    position: sticky;
+    top: 65px;
+    height: 100%;
+  }
+
+  .container-galleria {
+    background-color: white;
+    border-radius: 10px;
+
+    .p-galleria-thumbnail-container {
+      background-color: white;
+      border-bottom-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    .p-galleria-thumbnail-prev,
+    .p-galleria-thumbnail-next {
+      color: gray;
+    }
+
+    .p-galleria-item {
+      padding-top: 10px;
+      img {
+        height: 320px;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .container-details-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+
+    .details-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .div-rating {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      .rating-score {
+        font-size: 14px;
+        color: $btn-color;
+        text-decoration: underline;
+      }
+
+      .rating-img {
+        .p-rating-icon {
+          width: 14px;
+          height: 14px;
+          color: $btn-color;
+        }
+      }
+    }
+
+    .row-2 {
+      margin-top: 10px;
+      font-size: 14px;
+
+      .span-publishing,
+      .span-author {
+        font-weight: 600;
+      }
+    }
+
+    .row-3 {
+      margin-top: 10px;
+
+      .container-details-sale-price {
+        font-size: 14px;
+
+        .price-sale {
+          font-size: 24px;
+          font-weight: 600;
+          color: $btn-color;
+        }
+
+        .base-price {
+          text-decoration: line-through;
+        }
+      }
+
+      .container-details-base-price {
+        .base-price {
+          font-size: 24px;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .row-4 {
+      margin-top: 10px;
+      .container-amount {
+        color: gray;
+        font-size: 18px;
+        display: flex;
+        justify-content: flex-start;
+        justify-items: center;
+        align-items: center;
+
+        .div-amount {
+          display: inline-flex;
+          align-items: center;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          overflow: hidden;
+          margin-left: 40px;
+
+          input {
+            outline: none;
+
+            &.amount-input {
+              width: 50px;
+              text-align: center;
+              border: none;
+              padding: 1px;
+              font-size: 16px;
+            }
+
+            &.increment,
+            &.decrement {
+              width: 30px;
+              border: none;
+              background-color: white;
+              font-size: 18px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 1px;
+              user-select: none; // Disable text selection on button double click
+            }
+          }
+        }
+
+        .container-quantity {
+          font-size: 14px;
+          margin-left: 10px;
+        }
+      }
+    }
+
+    .row-5 {
+      margin-top: 30px;
+
+      .container-btn-buy {
+        .btn-add-to-cart {
+          border-radius: 5px;
+          font-size: 18px;
+          color: $btn-color;
+
+          &:focus {
+            box-shadow: none;
+          }
+        }
+
+        .btn-add-to-buy-now {
+          margin-left: 10px;
+          border-radius: 5px;
+          font-size: 18px;
+          background-color: $btn-color;
+          border-color: $btn-color;
+
+          &:focus {
+            box-shadow: none;
+          }
+
+          &:hover {
+            background-color: $btn-bgColor-hover;
+            border-color: $btn-bgColor-hover;
+          }
+        }
+      }
+    }
+  }
+
+  .container-details-product-content {
+    margin-top: 10px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+
+    .details-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .table {
+      margin-top: 10px;
+
+      .table-details {
+        border: none;
+        width: 100%;
+
+        th {
+          border-bottom: 1px solid gainsboro;
+          width: 25%;
+          color: gray;
+        }
+
+        td {
+          border-bottom: 1px solid gainsboro;
+          font-size: 14px;
+          font-weight: 500;
+          width: 75%;
+        }
+      }
+    }
+
+    .container-description-content {
+      margin-top: 10px;
+
+      .description-content {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.container-rating-block {
+  padding: 0px 120px;
+  background-color: $prime-bgColor-Pages;
+
+  .container-rating {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+
+    .rating-title {
+      max-width: 1125px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+
+  .card-rating {
+    border-bottom: 1px solid gainsboro;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.container-product-similar {
+  padding: 0px 120px;
+  padding-top: 10px;
+  background-color: $prime-bgColor-Pages;
+  padding-bottom: 10px;
+
+  .container-products-content {
+    background-color: white;
+    padding: 10px;
+  }
+}
