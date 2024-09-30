@@ -19,6 +19,7 @@ public class MyContext : DbContext
     public DbSet<Category> Category { get; set; }
     public DbSet<Author> Author { get; set; }
     public DbSet<AuthorProduct> AuthorProduct { get; set; }
+    public DbSet<ProductCategory> ProductCategory { get; set; }
     public DbSet<Delivery> Delivery { get; set; }
     public DbSet<Payment> Payment { get; set; }
     public DbSet<Common> Common { get; set; }

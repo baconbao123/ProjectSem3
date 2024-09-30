@@ -211,7 +211,7 @@ namespace AuthenticationJWT.Controllers
                 BasePrice = request.BasePrice,
                 SellPrice = request.SellPrice,
                 Quantity = request.Quantity,
-                CategoryId = request.CategoryId,
+
                 CompanyPartnerId = request.CompanyPartnerId,
                 Status = request.Status ?? 0,
                 Version = 0,
@@ -230,6 +230,32 @@ namespace AuthenticationJWT.Controllers
                     var fileNames = new HashSet<string>();
                     // 
                     // 
+                    var validCategoryIds = request.CategoryIds?.Where(id => id > 0).ToList();
+                    if (validCategoryIds != null && validCategoryIds.Any())
+                    {
+                        foreach (var categoryId in validCategoryIds)
+                        {
+
+                            var category1 = db.Category.FirstOrDefault(a => a.Id == categoryId);
+                            if (category1 == null)
+                            {
+                                return BadRequest(new { message = $"Category with Id {categoryId} not found." });
+                            }
+
+                            // Add to db if already have it
+                            var productCategory = new ProductCategory
+                            {
+                                ProductId = product.Id,
+                                CategoryId = category1.Id,
+                                CreatedAt = DateTime.UtcNow,
+                                UpdateAt = DateTime.UtcNow,
+                                UpdatedBy = userId,
+                                CreatedBy = userId
+                            };
+                            db.ProductCategory.Add(productCategory);
+                        }
+                        db.SaveChanges();
+                    }
                     var validAuthorIds = request.AuthorIds?.Where(id => id > 0).ToList();
                     if (validAuthorIds != null && validAuthorIds.Any())
                     {
@@ -242,7 +268,7 @@ namespace AuthenticationJWT.Controllers
                                 return BadRequest(new { message = $"Author with Id {authorId} not found." });
                             }
 
-
+                            // Add to db if already have it
                             var productAuthor = new AuthorProduct
                             {
                                 ProductId = product.Id,
