@@ -17,18 +17,40 @@ const Register = () => {
   const [usernameRegister, setUsernameRegister] = useState<string>('')
   const [emailRegister, setEmailRegister] = useState<string>('')
   const [passwordRegister, setPasswordRegister] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [isConfirmTouched, setIsConfirmTouched] = useState<boolean>(false)
+  const [passwordMatch, setPasswordMatch] = useState<boolean>(true)
 
   const navigate = useNavigate()
+
+  // Handle match Password
+  const handlePasswordRegister = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordRegister(e.target.value)
+    if (isConfirmTouched) {
+      setPasswordMatch(e.target.value === confirmPassword)
+    }
+  }
+
+  const handleConfirmPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setConfirmPassword(e.target.value)
+    setIsConfirmTouched(true)
+    setPasswordMatch(passwordRegister === value)
+  }
 
   // Handle form register
   const handleSubmitRegister = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
+    if (!passwordMatch) {
+      return
+    }
+
     const registerData: RegisterData = { Username: usernameRegister, Email: emailRegister, Password: passwordRegister }
     console.log(registerData)
 
     try {
-      const res = await $axios.post('User', registerData)
+      const res = await $axios.post('UserFe', registerData)
       console.log(res)
 
       if (res.status === 200) {
@@ -64,7 +86,7 @@ const Register = () => {
         <Row>
           <Col lg={6} className='d-flex justify-content-center align-items-center'>
             <video className='register-video' autoPlay muted loop playsInline preload='auto' key='register-video'>
-              <source src='/public/videos/register-video.mp4' type='video/mp4' />
+              <source src='/videos/register-video.mp4' type='video/mp4' />
             </video>
           </Col>
           <Col lg={6}>
@@ -99,12 +121,23 @@ const Register = () => {
                     type='password'
                     id='password'
                     value={passwordRegister}
-                    onChange={(e) => setPasswordRegister(e.target.value)}
+                    onChange={handlePasswordRegister}
                     placeholder='Enter Your Password'
                     required
                   />
                 </div>
-                {/* <button className='register-button'>Register</button> */}
+                <div className='form-group'>
+                  <label htmlFor='password'>Confirm Password</label>
+                  <input
+                    type='password'
+                    id='password'
+                    value={confirmPassword}
+                    onChange={handleConfirmPassword}
+                    placeholder='Enter Your Password'
+                    required
+                  />
+                  {!passwordMatch && <p style={{ color: 'red', fontSize: '14px' }}>Password Do Not Match</p>}
+                </div>
                 <Button label='Register' className='register-button' />
                 <p className='footer-text'>
                   Already have an account? &nbsp;

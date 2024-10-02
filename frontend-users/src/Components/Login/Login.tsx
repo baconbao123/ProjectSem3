@@ -75,7 +75,7 @@ const Login = () => {
         <Container className='container-login'>
           <div className='image-container'>
             <video className='login-video' autoPlay muted loop playsInline preload='auto' key='login-video'>
-              <source src='/public/videos/logo-video.mp4' type='video/MP4' />
+              <source src='/videos/logo-video.mp4' type='video/MP4' />
             </video>
           </div>
           {/* Form Container */}

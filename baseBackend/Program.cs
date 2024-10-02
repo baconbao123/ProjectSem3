@@ -1,3 +1,5 @@
+using AuthenticationJWT.DTO;
+using AuthenticationJWT.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -5,6 +7,10 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<UserFEService, UserFEServiceImpl>();
+builder.Services.AddAutoMapper(typeof(MyMapper));
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // Add services to the container.
 builder.Services.AddCors(options =>
