@@ -25,6 +25,7 @@ import CheckoutCompleted from './Page/Checkout/Compelete/CheckoutCompleted'
 import { useSelector } from 'react-redux'
 import { RootState } from './Store/store'
 import AllBooksDetail from './Page/AllBooks/Detail/AllBooksDetail'
+import Account from './Page/Accoount/Account'
 
 export const AppRouter: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.userId)
@@ -50,6 +51,7 @@ export const AppRouter: React.FC = () => {
           <Route path='all-books/:genres' element={<AllBooksDetail />} />
           <Route path='vouchers' element={<Vouchers />} />
           <Route path='member-benefits' element={<MemberBenefits />} />
+          <Route path='account' element={<Account />} />
           <Route path='checkout/cart' element={<Cart />} />
           {userId && <Route path='checkout' element={<Checkout />} />}
           {userId && <Route path='checkout/compeleted' element={<CheckoutCompleted />} />}

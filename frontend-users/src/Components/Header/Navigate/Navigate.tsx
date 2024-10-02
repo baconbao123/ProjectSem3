@@ -62,7 +62,7 @@ export const Navigate = () => {
                   <span style={{ fontSize: '12px' }}>Orders</span>
                 </div>
               </Link>
-              <Link to='' className='url'>
+              <Link to='/account' className='url'>
                 <div className='account'>
                   <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
                   <span style={{ fontSize: '12px' }}>Account</span>

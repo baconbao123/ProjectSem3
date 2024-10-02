@@ -117,8 +117,8 @@ const OrderActions: React.FC<CardOrderProps> = ({ order }) => {
             </>
           )}
         </Col>
-        <Col lg={6}></Col>
-        <Col lg={2} className='total-order'>
+        <Col lg={5}></Col>
+        <Col lg={3} className='total-order'>
           Total Order Price: &nbsp;
           <span style={{ fontWeight: '600' }}>$ {calculateTotalOrderPrice(order.Products).toFixed(2)}</span>
         </Col>
