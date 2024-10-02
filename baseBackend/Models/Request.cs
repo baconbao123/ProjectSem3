@@ -102,8 +102,8 @@ public class PermisionForm()
 
 public class CategoryRequest()
 {
-    [Required(ErrorMessage = "Name is required.")]
-    [StringLength(50, ErrorMessage = "Name cannot be longer than 50 characters.")]
+    //[Required(ErrorMessage = "Name is required.")]
+    //[StringLength(50, ErrorMessage = "Name cannot be longer than 50 characters.")]
     public string Name { get; set; }
     [StringLength(200, ErrorMessage = "Description cannot be longer than 200 characters.")]
     public string? Description { get; set; }
@@ -171,9 +171,6 @@ public class ProductRequest()
 {
 
 
-    [Required(ErrorMessage = "CategoryId is required.")]
-    public int CategoryId { get; set; }
-
     [Required(ErrorMessage = "Name is required.")]
     [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
     public string Name { get; set; }
@@ -197,6 +194,7 @@ public class ProductRequest()
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
     public int Version { get; set; }
+    [Required(ErrorMessage = "Image is required.")]
     public List<IFormFile>? ProductImages { get; set; }
     public List<int>? AuthorIds { get; set; }
     [Required(ErrorMessage = "Category is required.")]

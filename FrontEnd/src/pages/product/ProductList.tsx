@@ -14,13 +14,13 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import HomeIcon from '@mui/icons-material/Home';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
-
+import { Image } from 'primereact/image';
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import CategoryDetail from "./ProductDetail";
+import ProductDetail from "./ProductDetail";
 
 import {Link} from "react-router-dom";
-import CategoryAdd from "./ProductAdd";
+import ProductAdd from "./ProductAdd";
 const ProductList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -131,13 +131,13 @@ const ProductList : React.FC = () => {
 
     }
     const handleComponentAdd: React.FC =() => {
-        return  (<CategoryAdd loadDataTable={loadDataTable} form={'add'}/>)
+        return  (<ProductAdd loadDataTable={loadDataTable} form={'add'}/>)
     }
     const handleComponentEdit: React.FC =( ) => {
-        return  (<CategoryAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
+        return  (<ProductAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<CategoryDetail id={currentId} />)
+        return  (<ProductDetail id={currentId} />)
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
@@ -339,7 +339,8 @@ const ProductList : React.FC = () => {
                                     (itemFrom <= index && itemTo > index && currentPage !== 1 ) ||
                                     perPage === 'All'
                                 ) {
-                                    console.log(baseUrl+item.ProductImages[0].ImagePath); 
+                                    
+                                    const imagePath = item.ProductImages && item.ProductImages.length > 0 ? item.ProductImages[0].ImagePath : null;
                                     return (
                                         <TableRow key={crypto.randomUUID()}>
                                             {
@@ -356,8 +357,18 @@ const ProductList : React.FC = () => {
                                                     if (field.key === "ProductImages.ImagePath") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                               <img src={baseUrl+item.ProductImages[0].ImagePath} alt={item.Name} className="image-product" width={70}/>
-                                                            </TableCell>
+                                                            {imagePath? (
+                                                              <Image
+                                                                src={baseUrl + item.ProductImages[0].ImagePath}
+                                                                alt={item.Name}
+                                                                className="image-product"
+                                                                width="70"
+                                                                preview
+                                                              />
+                                                            ) : (
+                                                              <div>No Image</div>  // Hiển thị nếu không có hình ảnh
+                                                            )}
+                                                          </TableCell>
                                                         )
                                                     }
                                                     if (field.key === "Status") {
