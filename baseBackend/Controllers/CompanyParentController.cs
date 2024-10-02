@@ -1,4 +1,5 @@
-﻿using AuthenticationJWT.Models;
+﻿
+using AuthenticationJWT.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,9 +66,18 @@ public class CompanyPartnerController : ControllerBase
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
 
         var partners = new List<CompanyPartner>();
+        var existingEmails = db.CompanyPartner
+                              .Where(cp => requests.Select(r => r.Email).Contains(cp.Email))
+                              .Select(cp => cp.Email)
+                              .ToList();
 
         foreach (var request in requests)
         {
+            if (existingEmails.Contains(request.Email))
+            {
+                return BadRequest(new { message = $"Email {request.Email} exsist already." });
+            }
+
             var partner = new CompanyPartner
             {
                 Name = request.Name,
@@ -90,6 +100,7 @@ public class CompanyPartnerController : ControllerBase
         db.SaveChanges();
         return Ok(new { data = partners });
     }
+
 
 
     // PUT api/<CompanyPartnerController>/5

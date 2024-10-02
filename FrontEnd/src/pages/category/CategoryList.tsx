@@ -35,13 +35,13 @@ const CategoryList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({Name: '', Status: -1});
+    const [filter, setFilter] = useState({Name: '',Code:'', Status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
             {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "CategoryCode", label: "CategoryCode", class: "", sortable: true, sortValue: 'none'},
+            {key: "CategoryCode", label: "Category Code", class: "", sortable: true, sortValue: 'none'},
             {key: "ParentName", label: "Parent Category", class: ""},
             {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
@@ -87,7 +87,8 @@ const CategoryList : React.FC = () => {
         const result = data.filter(item => {
             for (const key in filter) {
                 let value = filter[key]
-
+                console.log("value"+value)
+                console.log("Key :" + key)
                 if (value === -1 || value === '') {
                     continue
                 }
@@ -99,11 +100,14 @@ const CategoryList : React.FC = () => {
                 if (key === 'Name' && !item[key].toLowerCase().includes(value.toLowerCase())) {
                     return false
                 }
+                if (key === 'CategoryCode' && !item[key].toLowerCase().includes(value.toLowerCase())) {
+                    return false
+                }
             }
 
             return true
         });
-
+        console.log(result)
         const sortTable = field.filter(item => item.sortValue !== 'none')[0]
         let sortResult
         if (sortTable) {
@@ -211,6 +215,10 @@ const CategoryList : React.FC = () => {
         const setChangeName = (e: any) => {
             setFilter(prev => ({...prev, Name: e.target.value}))
         }
+        const setChangeCode = (e: any) => {
+            setFilter(prev => ({...prev, Code: e.target.value}))
+        }
+      
         return (
             <div className='search-container'>
                 <div>
@@ -218,6 +226,12 @@ const CategoryList : React.FC = () => {
                       value={filter.Name}
                          onChange={e =>  setChangeName(e)}
                          className='form-control test-position' placeholder="Search name..."/>
+                </div>
+                <div>
+                  <input
+                      value={filter.Code}
+                         onChange={e =>  setChangeCode(e)}
+                         className='form-control test-position' placeholder="Search code category..."/>
                 </div>
             <Select
                 className="search-form width-200 custom-form"
