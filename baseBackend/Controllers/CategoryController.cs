@@ -1,6 +1,8 @@
 ﻿using AuthenticationJWT.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -200,7 +202,10 @@ public class CategoryController : ControllerBase
     // Generate a unique category code
     private string GenerateUniqueCategoryCode(string name, HashSet<string> existingCodes)
     {
-        string initialChar = name.Substring(0, 1).ToUpper();
+        // Convert Vietnamese characters to non-accented characters
+        string normalizedString = RemoveDiacritics(name);
+
+        string initialChar = normalizedString.Substring(0, 1).ToUpper(); // Get first character
         int number = 1;
         string categoryCode;
 
@@ -211,6 +216,24 @@ public class CategoryController : ControllerBase
         } while (existingCodes.Contains(categoryCode)); // Check against existing codes
 
         return categoryCode;
+    }
+
+    // Method to remove diacritical marks (accents) from Vietnamese characters
+    private string RemoveDiacritics(string text)
+    {
+        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        var stringBuilder = new StringBuilder();
+
+        foreach (var c in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
     }
 
     // PUT api/<CategoryController>/5
@@ -359,6 +382,7 @@ public class CategoryController : ControllerBase
 
         category.DeletedAt = DateTime.Now; // Or set the status to disabled instead of deleting
         category.UpdatedBy = int.Parse(userId);
+        category.Status = 0;
         db.SaveChanges();
 
         return Ok(new { data = category });
