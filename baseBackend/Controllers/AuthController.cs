@@ -93,7 +93,8 @@ public class AuthController : ControllerBase
             id = user.Id,
             name = user.Username,
             email = user.Email,
-            phone = user.Phone
+            phone = user.Phone,
+            avatar = user.Avatar,
         });
     }
 

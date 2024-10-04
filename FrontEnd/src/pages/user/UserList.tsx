@@ -12,16 +12,15 @@ import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
-import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
 import UserAdd from "@pages/user/UserAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import RoleDetail from "@pages/role/RoleDetail.tsx";
 import {Link} from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import {Tag} from "primereact/tag";
 import UserForgot from "@pages/user/UserForgot.tsx";
+import UserDetail   from "@pages/user/UserDetail.tsx";
 import {checkPermission} from "@src/Service/common.ts";
 import { Image } from 'primereact/image';
 import defaultImage from  '@src/images/default.png'
@@ -39,7 +38,7 @@ const ResourceList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({Name: '', Status: -1});
+    const [filter, setFilter] = useState({UserName: '', Status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
@@ -101,7 +100,7 @@ const ResourceList : React.FC = () => {
                     return false
                 }
 
-                if (key === 'Name' && !item[key].toLowerCase().includes(value.toLowerCase())) {
+                if (key === 'UserName' && !item[key].toLowerCase().includes(value.toLowerCase())) {
                     return false
                 }
             }
@@ -141,7 +140,7 @@ const ResourceList : React.FC = () => {
         return  (<UserForgot loadDataTable={loadDataTable}  id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<RoleDetail id={currentId} />)
+        return  (<UserDetail id={currentId} />)
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
@@ -162,7 +161,7 @@ const ResourceList : React.FC = () => {
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail role")
+        setComponentTitle("Detail user")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -221,13 +220,13 @@ const ResourceList : React.FC = () => {
             setFilter(prev => ({...prev, Status: e.target.value}))
         }
         const setChangeName = (e: any) => {
-            setFilter(prev => ({...prev, Name: e.target.value}))
+            setFilter(prev => ({...prev, UserName: e.target.value}))
         }
         return (
             <div className='search-container'>
                 <div>
                     <input
-                        value={filter.Name}
+                        value={filter.UserName}
                         onChange={e => setChangeName(e)}
                         className='form-control test-position' placeholder="Search name..."/>
                 </div>

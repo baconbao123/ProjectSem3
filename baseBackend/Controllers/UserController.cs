@@ -35,7 +35,8 @@ public class UserController : ControllerBase
                         user.Phone,
                         user.Status,
                         user.Version,
-                        user.Avatar
+                        user.Avatar,
+
                     } into groupedUsers
                     select new
                     {
@@ -67,6 +68,10 @@ public class UserController : ControllerBase
                     from mapRole in userRoles.DefaultIfEmpty()
                     join role in db.Role on mapRole.RoleId equals role.Id into roleGroups
                     from role in roleGroups.DefaultIfEmpty()
+                    join cu in db.User on user.CreatedBy equals cu.Id into cuGroups
+                    from cu in cuGroups.DefaultIfEmpty()
+                    join uu in db.User on user.UpdatedBy equals uu.Id into uuGroups
+                    from uu in uuGroups.DefaultIfEmpty()
                     where user.DeletedAt == null && user.Id == id && (role == null || role.DeletedAt == null) && (role == null || role.Status == 1) && (mapRole == null || mapRole.DeletedAt == null)
                     group role by new
                     {
@@ -76,7 +81,13 @@ public class UserController : ControllerBase
                         user.Phone,
                         user.Status,
                         user.Version,
-                        user.Avatar
+                        user.Avatar,
+                        cu = cu.Username,
+                        uu = uu.Username,
+                        user.CreatedBy,
+                        user.UpdatedBy,
+                        user.CreatedAt,
+                        user.UpdateAt,
                     } into groupedUsers
                     select new
                     {
@@ -87,6 +98,12 @@ public class UserController : ControllerBase
                         status = groupedUsers.Key.Status,
                         Version = groupedUsers.Key.Version,
                         Avatar = groupedUsers.Key.Avatar,
+                        CU = groupedUsers.Key.cu,
+                        UU = groupedUsers.Key.uu,
+                        CreatedBy = groupedUsers.Key.CreatedBy,
+                        UpdatedBy = groupedUsers.Key.UpdatedBy,
+                        CreatedAt = groupedUsers.Key.CreatedAt,
+                        UpdatedAt = groupedUsers.Key.UpdateAt,
                         role = groupedUsers
                                 .Where(r => r != null)
                                 .Select(r => new
@@ -148,7 +165,11 @@ public class UserController : ControllerBase
             Username = user.UserName,
             Phone = user.Phone,
             Status = (user.Status ?? 0),
-            Avatar = fileName
+            Avatar = fileName,
+            UpdatedBy = int.Parse(userId),
+            UpdateAt = DateTime.Now,
+            CreatedBy = int.Parse(userId),
+            CreatedAt = DateTime.Now,
         };
 
         db.User.Add(element);
@@ -167,18 +188,38 @@ public class UserController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, UserRequestUpdate request)
     {
-        List<string> validExtensions = new List<string> { ".jpg", ".png", ".gif" };
-        string extension = Path.GetExtension(request.Avatar.FileName);
-        if (!validExtensions.Contains(extension))
+        string? avatar = null;
+        if (request.Avatar != null)
         {
-            return BadRequest($"Phần mở rộng file không hợp lệ ({string.Join(",", validExtensions)})");
+            List<string> validExtensions = new List<string> { ".jpg", ".png", ".gif" };
+            string extension = Path.GetExtension(request.Avatar.FileName);
+            if (!validExtensions.Contains(extension))
+            {
+                return BadRequest($"Phần mở rộng file không hợp lệ ({string.Join(",", validExtensions)})");
+            }
+
+            long maxSize = 20 * 1024 * 1024;
+            if (request.Avatar.Length > maxSize)
+            {
+                return BadRequest("Kích thước file tối đa là 5MB");
+            }
+
+            string fileName = Guid.NewGuid().ToString() + extension;
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+            try
+            {
+                using (FileStream stream = new FileStream(path, FileMode.Create))
+                {
+                    await request.Avatar.CopyToAsync(stream);
+                    avatar = fileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Lỗi trong quá trình tải lên: {ex.Message}");
+            }
         }
 
-        long maxSize = 20 * 1024 * 1024;
-        if (request.Avatar.Length > maxSize)
-        {
-            return BadRequest("Kích thước file tối đa là 5MB");
-        }
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
         List<int> roleItems = JsonSerializer.Deserialize<List<int>>(request.Role);
         var user = db.User.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
@@ -190,19 +231,7 @@ public class UserController : ControllerBase
         {
             return BadRequest(new { type = "reload", message = "Data has change pls reload" });
         }
-        string fileName = Guid.NewGuid().ToString() + extension;
-        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
-        try
-        {
-            using (FileStream stream = new FileStream(path, FileMode.Create))
-            {
-                await request.Avatar.CopyToAsync(stream);
-            }
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Lỗi trong quá trình tải lên: {ex.Message}");
-        }
+
         user.Username = request.UserName;
         user.Email = request.Email;
         user.Phone = request.Phone;
@@ -210,7 +239,7 @@ public class UserController : ControllerBase
         user.Version = request.Version + 1;
         user.UpdateAt = DateTime.Now;
         user.UpdatedBy = int.Parse(userId);
-        user.Avatar = fileName;
+        user.Avatar = avatar ?? user.Avatar;
         db.SaveChanges();
         var listRole = (from map in db.MapRole where map.UserId == id select map).ToList();
         foreach (var role in listRole)

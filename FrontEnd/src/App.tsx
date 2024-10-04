@@ -40,6 +40,9 @@ const App = () => {
                 dispatch(setUserPhone(res.data.phone))
                 localStorage.setItem("phone", res.data.phone)
             }
+            if (res.data && res.data.avatar) {
+                localStorage.setItem("avatar", res.data.avatar)
+            }
             dispatch(setLoading(false))
             getPermission()
         })
