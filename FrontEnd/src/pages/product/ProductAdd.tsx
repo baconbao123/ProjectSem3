@@ -1,10 +1,10 @@
-
 import {
   FormControl,
   Switch,
   TextField,
   Chip,
   Autocomplete,
+  IconButton,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
@@ -18,6 +18,7 @@ import Cookies from "js-cookie";
 import { Editor, EditorTextChangeEvent } from "primereact/editor";
 import { Toast } from "primereact/toast";
 import { FileUpload } from "primereact/fileupload";
+import DeleteIcon from "@mui/icons-material/Delete"; // Thêm import biểu tượng xóa
 import "@assets/styles/product.scss";
 
 interface ProductAddProps {
@@ -43,6 +44,7 @@ interface Category {
 }
 
 const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
+  const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
   const [name, setName] = useState("");
   const [description, setDescription] = useState<string>("");
   const [status, setStatus] = useState(true);
@@ -58,7 +60,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
-
+  const [existingImages, setExistingImages] = useState<string[]>([]); // Hình ảnh hiện có
   const token = Cookies.get("token");
   const dispatch = useDispatch();
 
@@ -72,18 +74,35 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const loadData = async () => {
     dispatch(setLoading(true));
     try {
-      const res = await $axios.get(`/Product"${id}`);
-      const product = res.data.data.Product;
+      const res = await $axios.get(`Product/${id}`);
+      const product = res.data.data;
+      console.log("Test " + product[0].CompanyPartnerId);
+      console.log(product[0]);
       if (product) {
-        setName(product.Name || "");
-        setDescription(product.Description || "");
-        setStatus(product.Status === 1);
-        setBasePrice(product.BasePrice || 0);
-        setSellPrice(product.SellPrice || 0);
-        setQuantity(product.Quantity || 0);
-        setCompanyPartnerId(product.CompanyPartnerId || 0);
-        setAuthorIds(product.AuthorIds || []);
-        setCategoryIds(product.CategoryIds || []);
+        setName(product[0].Name || "");
+        setDescription(product[0].Description || "");
+        setStatus(product[0].Status === 1);
+        setBasePrice(product[0].BasePrice || 0);
+        setSellPrice(product[0].SellPrice || 0);
+        setQuantity(product[0].Quantity || 0);
+        setCompanyPartnerId(product[0].CompanyPartnerId || 0);
+
+        // Lấy tất cả các AuthorIds
+        const authorIds = product[0].Authors.map((author: Author) => author.Id);
+        setAuthorIds(authorIds);
+
+        // Lấy tất cả các CategoryIds
+        const categoryIds = product[0].Categories.map(
+          (category: Category) => category.Id
+        );
+        setCategoryIds(categoryIds);
+
+        // Xử lý hình ảnh hiện có
+        if (product[0].ProductImages) {
+          setExistingImages(
+            product[0].ProductImages.map((img) => img.ImagePath)
+          );
+        }
         setItem(product);
       }
     } catch (err) {
@@ -95,15 +114,28 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
   const fetchAuthorsAndCategories = async () => {
     try {
-      const [authorsResponse, categoriesResponse, companiesResponse] = await Promise.all([
-        $axios.get("Author"),
-        $axios.get("Category"),
-        $axios.get("CompanyPartner"),
-      ]);
+      const [authorsResponse, categoriesResponse, companiesResponse] =
+        await Promise.all([
+          $axios.get("Author"),
+          $axios.get("Category"),
+          $axios.get("CompanyPartner"),
+        ]);
 
-      setAuthors(authorsResponse.data.data.filter((author: Author) => author.Status === 1));
-      setCategories(categoriesResponse.data.data.filter((category: Category) => category.Status === 1));
-      setCompanies(companiesResponse.data.data.filter((company: Company) => company.Status === 1));
+      setAuthors(
+        authorsResponse.data.data.filter(
+          (author: Author) => author.Status === 1
+        )
+      );
+      setCategories(
+        categoriesResponse.data.data.filter(
+          (category: Category) => category.Status === 1
+        )
+      );
+      setCompanies(
+        companiesResponse.data.data.filter(
+          (company: Company) => company.Status === 1
+        )
+      );
     } catch (error) {
       console.error("Failed to fetch authors and categories", error);
     }
@@ -111,6 +143,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
   const handleFileSelect = (event: any) => {
     const selectedFiles: File[] = event.files;
+    // Kiểm tra kích thước và loại file nếu cần
     setProductImages((prevImages) => [...prevImages, ...selectedFiles]);
   };
 
@@ -118,6 +151,19 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     setCompanyPartnerId(Number(e.target.value));
   };
 
+  const handleRemoveImage = (index: number) => {
+    setProductImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+  const handleRemoveExistingImage = (index: number) => {
+    // Tạo bản sao của mảng existingImages để không thay đổi trực tiếp state
+    const updatedImages = [...existingImages];
+
+    // Xóa hình ảnh tại vị trí index
+    updatedImages.splice(index, 1);
+
+    // Cập nhật state với mảng mới sau khi xóa
+    setExistingImages(updatedImages);
+  };
   const addNewProduct = async () => {
     setError({});
     const formData = new FormData();
@@ -139,13 +185,20 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       loadDataTable();
-      dispatch(setToast({ status: "success", message: "Add new product successful" }));
+      dispatch(
+        setToast({ status: "success", message: "Add new product successful" })
+      );
       dispatch(setShowModal(false));
-    } catch (err :any) {
-      if (err.response?.data?.Errors) {
-        setError(err.response.data.Errors);
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
       }
-      dispatch(setToast({ status: "error", message: err.response?.data?.Errors || "Something went wrong" }));
+      dispatch(
+        setToast({
+          status: "error",
+          message: err.response?.data?.message || "Something went wrong",
+        })
+      );
     } finally {
       dispatch(setLoading(false));
     }
@@ -157,7 +210,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     formData.append("Name", name);
     formData.append("Description", description);
     formData.append("Status", status ? "1" : "0");
-    formData.append("Version", item.Version); // Assuming item.Version exists
+    formData.append("Version", item.Version);
+
+    // Thêm các trường khác nếu cần
 
     dispatch(setLoading(true));
     try {
@@ -165,13 +220,20 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       loadDataTable();
-      dispatch(setToast({ status: "success", message: "Edit product successful" }));
+      dispatch(
+        setToast({ status: "success", message: "Edit product successful" })
+      );
       dispatch(setShowModal(false));
-    } catch (err :any) {
+    } catch (err: any) {
       if (err.response?.data?.Errors) {
         setError(err.response.data.Errors);
       }
-      dispatch(setToast({ status: "error", message: err.response?.data?.Errors || "Something went wrong" }));
+      dispatch(
+        setToast({
+          status: "error",
+          message: err.response?.data?.Errors || "Something went wrong",
+        })
+      );
     } finally {
       dispatch(setLoading(false));
     }
@@ -188,7 +250,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         {/* Các trường Name, Status, Description */}
         <div className="col-6">
           <div>
-            <label className="label-form">Name <span className="text-danger">*</span></label>
+            <label className="label-form">
+              Name <span className="text-danger">*</span>
+            </label>
             <input
               value={name}
               className="form-control"
@@ -198,7 +262,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             <ShowError key="Name" />
           </div>
           <div className="mt-3">
-            <label className="label-form">Status <span className="text-danger">*</span></label>
+            <label className="label-form">
+              Status <span className="text-danger">*</span>
+            </label>
             <div className="form-check form-switch">
               <input
                 checked={status}
@@ -211,22 +277,12 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             <ShowError key="Status" />
           </div>
         </div>
-
-        <div className="col-6">
-          <div>
-            <label className="label-form">Description <span className="text-danger">*</span></label>
-            <Editor
-              value={description}
-              style={{ height: "150px" }}
-              onTextChange={(e: EditorTextChangeEvent) => setDescription(e.htmlValue || "")}
-            />
-            <ShowError key="Description" />
-          </div>
-        </div>
-
+        <div className="col-6"></div>
         {/* Các trường BasePrice, SellPrice, Quantity, Company Partner */}
-        <div className="col-6 mt-3">
-          <label className="label-form">Company Partner <span className="text-danger">*</span></label>
+        <div className="col-6">
+          <label className="label-form">
+            Company Partner <span className="text-danger">*</span>
+          </label>
           <select
             value={companyPartnerId}
             onChange={handleCompanyChange}
@@ -241,9 +297,11 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </select>
           <ShowError key="CompanyPartnerId" />
         </div>
-
-        <div className="col-6 mt-3">
-          <label className="label-form">Base Price <span className="text-danger">*</span></label>
+        <div className="col-6"></div>
+        <div className="col-4 mt-3">
+          <label className="label-form">
+            Base Price <span className="text-danger">*</span>
+          </label>
           <TextField
             value={basePrice}
             type="number"
@@ -255,8 +313,10 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           <ShowError key="BasePrice" />
         </div>
 
-        <div className="col-6 mt-3">
-          <label className="label-form">Sell Price <span className="text-danger">*</span></label>
+        <div className="col-4 mt-3">
+          <label className="label-form">
+            Sell Price <span className="text-danger">*</span>
+          </label>
           <TextField
             value={sellPrice}
             type="number"
@@ -268,8 +328,10 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           <ShowError key="SellPrice" />
         </div>
 
-        <div className="col-6 mt-3">
-          <label className="label-form">Quantity <span className="text-danger">*</span></label>
+        <div className="col-4 mt-3">
+          <label className="label-form">
+            Quantity <span className="text-danger">*</span>
+          </label>
           <TextField
             value={quantity}
             type="number"
@@ -281,34 +343,68 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           <ShowError key="Quantity" />
         </div>
 
+        <div className="col-12">
+          <div>
+            <label className="label-form">
+              Description <span className="text-danger">*</span>
+            </label>
+            <Editor
+              value={description}
+              style={{ height: "200px" }}
+              onTextChange={(e: EditorTextChangeEvent) =>
+                setDescription(e.htmlValue || "")
+              }
+            />
+            <ShowError key="Description" />
+          </div>
+        </div>
+
         {/* Các trường Author và Category */}
         <div className="col-6 mt-3">
-          <label className="label-form">Authors <span className="text-danger">*</span></label>
+          <label className="label-form">
+            Authors <span className="text-danger">*</span>
+          </label>
           <Autocomplete
             multiple
             options={authors}
+            value={authors.filter((author) => authorIds.includes(author.Id))}
             getOptionLabel={(option) => option.Name}
             onChange={(event, newValue) => {
               setAuthorIds(newValue.map((author) => author.Id));
             }}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" placeholder="Select authors" />
+              <TextField
+                {...params}
+                variant="outlined"
+                placeholder="Select authors"
+              />
             )}
           />
           <ShowError key="AuthorIds" />
         </div>
 
         <div className="col-6 mt-3">
-          <label className="label-form">Categories <span className="text-danger">*</span></label>
+          <label className="label-form">
+            Categories <span className="text-danger">*</span>
+          </label>
           <Autocomplete
             multiple
             options={categories}
-            getOptionLabel={(option) => "- ".repeat(option.Level) + " " + option.Name}
+            value={categories.filter((category) =>
+              categoryIds.includes(category.Id)
+            )}
+            getOptionLabel={(option) =>
+              "- ".repeat(option.Level) + " " + option.Name
+            }
             onChange={(event, newValue) => {
               setCategoryIds(newValue.map((category) => category.Id));
             }}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" placeholder="Select categories" />
+              <TextField
+                {...params}
+                variant="outlined"
+                placeholder="Select categories"
+              />
             )}
           />
           <ShowError key="CategoryIds" />
@@ -316,7 +412,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
         {/* Trường File Upload */}
         <div className="col-12 mt-3">
-          <label className="label-form">Product Images <span className="text-danger">*</span></label>
+          <label className="label-form">
+            Product Images <span className="text-danger">*</span>
+          </label>
           <FileUpload
             mode="basic"
             name="file"
@@ -329,10 +427,83 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           />
           <ShowError key="ProductImages" />
         </div>
+
+        {/* Phần Preview và Xóa Ảnh */}
+        {productImages.length > 0 && (
+          <div className="col-12 mt-3">
+            <label className="label-form">Image Preview:</label>
+            <div className="d-flex flex-wrap gap-3">
+              {productImages.map((file, index) => (
+                <div key={index} className="position-relative">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index}`}
+                    className="img-thumbnail"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemoveImage(index)}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      backgroundColor: "rgba(255, 255, 255, 0.7)",
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" color="error" />
+                  </IconButton>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Hình ảnh hiện có */}
+        {existingImages.length > 0 && (
+          <div className="col-12 mt-3">
+            <label className="label-form">Existing Images:</label>
+            <div className="d-flex flex-wrap gap-3">
+              {existingImages.map((imageUrl, index) => (
+                <div key={index} className="position-relative">
+                  <img
+                    src={baseUrl + imageUrl}
+                    alt={`Existing ${index}`}
+                    className="img-thumbnail"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  {/* Nút xóa hình ảnh hiện có */}
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemoveExistingImage(index)} // Hàm xóa hình ảnh cũ
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      backgroundColor: "rgba(255, 255, 255, 0.7)",
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" color="error" />
+                  </IconButton>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="modal-footer mt-3 d-flex gap-3">
-        <button className="btn btn-secondary" onClick={() => dispatch(setShowModal(false))}>
+        <button
+          className="btn btn-secondary"
+          onClick={() => dispatch(setShowModal(false))}
+        >
           Cancel
         </button>
         <button
