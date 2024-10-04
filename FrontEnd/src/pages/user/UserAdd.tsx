@@ -95,7 +95,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     const dispatch = useDispatch();
     const addNew = () => {
         setError({})
-        const dataRole = role.reduce((acc: any[] = [], item: any) => {
+        let dataRole = role.reduce((acc: any[] = [], item: any) => {
             acc.push(item.code);
             return acc; // Make sure to return the accumulator
         }, []);
@@ -103,12 +103,13 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             setError({Password: ["Password not match"], CPassword: ["Password not match"]})
             return
         }
+        if (dataRole.length === 0) dataRole = ''
         const dataForm = {
             Password: password,
             Email: email,
             UserName: name,
             Phone: phone,
-            Role: JSON.stringify(dataRole),
+            Role: dataRole? JSON.stringify(dataRole) : '',
             Status: status ? 1 : 0,
             Avatar: avatar
         }
@@ -225,6 +226,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                             e.target.onerror = null; // Ngăn lặp lại lỗi
                             e.target.src = defaultImage; // Đổi sang ảnh mặc định
                         }}/>
+                        {ShowError('Avatar')}
                     </div>
                 </div>
             </div>

@@ -54,7 +54,7 @@ public class UserRequestUpdate()
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
     public int Version { get; set; }
-    public IFormFile Avatar { get; set; }
+    public IFormFile? Avatar { get; set; }
 
 }
 
@@ -171,33 +171,33 @@ public class ProductRequest()
 {
 
 
-    [Required(ErrorMessage = "Name is required.")]
+
     [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
     public string Name { get; set; }
 
     public string? Description { get; set; }
-    [Required(ErrorMessage = "BasePrice is required.")]
+
     [Range(0, double.MaxValue, ErrorMessage = "BasePrice must be a positive number.")]
     public double BasePrice { get; set; }
 
-    [Required(ErrorMessage = "SellPrice is required.")]
+
     [Range(0, double.MaxValue, ErrorMessage = "SellPrice must be a positive number.")]
     public double SellPrice { get; set; }
 
-    [Required(ErrorMessage = "Quantity is required.")]
+
     [Range(0, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
     public int Quantity { get; set; }
 
-    [Required(ErrorMessage = "CompanyPartnerId is required.")]
+
     public int CompanyPartnerId { get; set; }
     [Required(ErrorMessage = "Status is required.")]
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
     public int Version { get; set; }
-    [Required(ErrorMessage = "Image is required.")]
+
     public List<IFormFile>? ProductImages { get; set; }
     public List<int>? AuthorIds { get; set; }
-    [Required(ErrorMessage = "Category is required.")]
+
     public List<int> CategoryIds { get; set; }
 }
 
