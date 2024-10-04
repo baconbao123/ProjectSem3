@@ -19,7 +19,7 @@ import {useNavigate} from 'react-router-dom';
 // @ts-ignore
 import Cookies from "js-cookie"
 import {useDispatch} from "react-redux";
-import {setLoading, setToast} from "@src/Store/Slinces/appSlice.ts";
+import {setLoading, setToast, setUserEmail, setUserId, setUserName, setUserPhone} from "@src/Store/Slinces/appSlice.ts";
 
 
 const Login: React.FC = () => {
@@ -39,13 +39,13 @@ const Login: React.FC = () => {
         $axios.post('Auth/login', {email, password, remember}).then(
             (res) => {
                 dispatch(setToast({status: "success", message: "Login successful"}))
-                navigate("/")
                 if (res.data.token) {
                     Cookies.set("token", res.data.token, {expires: 0.1});
                 }
                 if (res.data.refreshToken) {
                     Cookies.set('refreshToken', res.data.refreshToken, { expires: 7 });
                 }
+                location.replace('/')
             }
             )
             .catch((err) => {

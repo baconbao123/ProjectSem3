@@ -5,7 +5,7 @@ import { MenuTopBar } from "@components/admin/Nav.ts"
 import {Link, useNavigate} from "react-router-dom";
 import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
-
+import defaultImage from "@src/images/default.png";
 // @ts-ignore
 import logo from '@src/images/logo.png'
 // @ts-ignore
@@ -18,11 +18,13 @@ const TopBar : React.FC = () => {
     const  refInfo = useRef(null);
     const refAvatar = useRef(null);
     const [active, setActive] = useState<string>('');
-    const name = useSelector((state: any) => state.app.userName);
+    const [avatarImg, setAvatarImg] = useState(defaultImage);
+    const name = localStorage.getItem("name")
     const logout = () => {
         try {
             Cookies.remove("token");
             Cookies.remove("refreshToken");
+            localStorage.clear()
             navigate('/login')
         }
         catch (e) {
@@ -66,14 +68,14 @@ const TopBar : React.FC = () => {
               <div className="col-2 justify-content-end top-bar-item">
                   <div  ref={refAvatar} className='d-flex align-items-center gap-2 top-bar-item-info' onClick={() => setShowRightInfo(!showRightInfo)}>
                       {name ?  name: ''}
-                    <Avatar>N</Avatar>
+                    <Avatar  src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + localStorage.getItem('avatar')}  ></Avatar>
                   </div>
               </div>
           </div>
           <div ref={refInfo} className={'top-bar-content-left  ' + (showRightInfo ? 'show' : '')}>
               <div className="header">
                   <div className=' mt-2 d-flex justify-content-center '>
-                      <Avatar sx={{width: 100, height: 100}}>N</Avatar>
+                      <Avatar  src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + localStorage.getItem('avatar')} sx={{width: 100, height: 100}}></Avatar>
                   </div>
                   <div className=' mt-2 d-flex justify-content-center'>
                       <div>  {name ?  name: ''}</div>
