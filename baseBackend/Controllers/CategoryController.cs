@@ -1,6 +1,8 @@
 ﻿using AuthenticationJWT.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -103,7 +105,6 @@ public class CategoryController : ControllerBase
 
         return Ok(new { data = category });
     }
-
     // POST api/<CategoryController>
     [HttpPost]
     [Authorize]
@@ -127,6 +128,7 @@ public class CategoryController : ControllerBase
                 continue;
             }
 
+            int level = 0; // Default level is 0
             if (request.ParentId.HasValue)
             {
                 var parentCategory = db.Category.FirstOrDefault(c => c.Id == request.ParentId);
@@ -135,11 +137,20 @@ public class CategoryController : ControllerBase
                     errorMessages.Add(new { message = $"Parent category not found for category: {request.Name}" });
                     continue;
                 }
-
-
-
+                // Set the level based on the parent category's level
+                level = parentCategory.Level + 1;
             }
+            var nameCategory = db.Category.FirstOrDefault(c => c.Name == request.Name);
 
+            if (nameCategory != null)
+            {
+
+                errorMessages.Add(new { message = $"Name category {request.Name} already exists." });
+            }
+            if (request.Name == null)
+            {
+                errorMessages.Add(new { message = $"Name category is require." });
+            }
             string categoryCode;
             try
             {
@@ -158,6 +169,7 @@ public class CategoryController : ControllerBase
                 CategoryCode = categoryCode,
                 Description = request.Description,
                 ParentId = request.ParentId,
+                Level = level,
                 Status = request.Status ?? 0,
                 Version = 0,
                 UpdateAt = DateTime.Now,
@@ -190,7 +202,10 @@ public class CategoryController : ControllerBase
     // Generate a unique category code
     private string GenerateUniqueCategoryCode(string name, HashSet<string> existingCodes)
     {
-        string initialChar = name.Substring(0, 1).ToUpper();
+        // Convert Vietnamese characters to non-accented characters
+        string normalizedString = RemoveDiacritics(name);
+
+        string initialChar = normalizedString.Substring(0, 1).ToUpper(); // Get first character
         int number = 1;
         string categoryCode;
 
@@ -202,6 +217,25 @@ public class CategoryController : ControllerBase
 
         return categoryCode;
     }
+
+    // Method to remove diacritical marks (accents) from Vietnamese characters
+    private string RemoveDiacritics(string text)
+    {
+        var normalizedString = text.Normalize(NormalizationForm.FormD);
+        var stringBuilder = new StringBuilder();
+
+        foreach (var c in normalizedString)
+        {
+            var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            {
+                stringBuilder.Append(c);
+            }
+        }
+
+        return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+    }
+
     // PUT api/<CategoryController>/5
     [Authorize]
     [HttpPut("{id}")]
@@ -224,7 +258,16 @@ public class CategoryController : ControllerBase
         {
             return BadRequest(new { message = "Category cannot be its own parent." });
         }
-
+        // Nếu danh mục có Level = 0, không cho phép thay đổi ParentId
+        if (category.Level == 0 && request.ParentId.HasValue)
+        {
+            return BadRequest(new { message = "Cannot update a root category to become a subcategory." });
+        }
+        // Kiểm tra xem danh mục cha mới có phải là con của chính nó không
+        if (IsSubCategoryOf(category.Id, request.ParentId))
+        {
+            return BadRequest(new { message = "Cannot make a category a subcategory of its own subcategories." });
+        }
         if (category.Version != request.Version)
         {
             return BadRequest(new { type = "reload", message = "Data has changed, please reload." });
@@ -246,73 +289,81 @@ public class CategoryController : ControllerBase
             return BadRequest(new { message = $"Error generating category code for {request.Name}.", details = ex.Message });
         }
 
+        int newLevel = 0; // Default level is 0
+        if (request.ParentId.HasValue)
+        {
+            var parentCategory = db.Category.FirstOrDefault(c => c.Id == request.ParentId);
+            if (parentCategory == null)
+            {
+                return BadRequest(new { message = "Parent category not found." });
+            }
+            newLevel = parentCategory.Level + 1;
+        }
+
         // Update category properties
         category.Name = request.Name;
         category.Description = request.Description;
         category.CategoryCode = categoryCode;
         category.ParentId = request.ParentId;
+        category.Level = newLevel;
         category.Status = request.Status ?? 0;
         category.Version = request.Version + 1;
         category.UpdateAt = DateTime.Now;
         category.UpdatedBy = int.Parse(userId);
-
-
-        if (category.ParentId.HasValue)
-        {
-            var parentCategory = db.Category.FirstOrDefault(c => c.Id == category.ParentId);
-            if (parentCategory != null)
-            {
-                if (parentCategory.Status == 0)
-                {
-
-                    category.Status = 0;
-                    return BadRequest(new { message = "Cannot activate this category because its parent category is inactive." });
-                }
-                else
-                {
-
-                    category.Status = 1;
-                }
-            }
-            else
-            {
-                return BadRequest(new { message = "Parent category not found." });
-            }
-        }
-
-
-
+        // Disable all subcategories before deleting the category
         UpdateSubCategoryStatus(category.Id, category.Status);
-
+        // Update all subcategories with the new level
+        UpdateSubCategoryLevel(category.Id, newLevel);
 
         // Save changes to the database
         db.SaveChanges();
 
         return Ok(new { data = category });
     }
+    // Method to check if a category is a subcategory of another
+    private bool IsSubCategoryOf(int categoryId, int? parentId)
+    {
+        if (!parentId.HasValue) return false;
 
-    // Phương thức để cập nhật trạng thái của danh mục con
-    private void UpdateSubCategoryStatus(int parentId, int parentStatus)
+        var parentCategory = db.Category.FirstOrDefault(c => c.Id == parentId.Value && c.DeletedAt == null);
+        if (parentCategory == null) return false;
+
+        // Nếu parentId là categoryId hoặc một trong các subcategory của categoryId, trả về true
+        if (parentCategory.Id == categoryId)
+        {
+            return true;
+        }
+
+        // Kiểm tra tiếp tục xem danh mục cha này có phải là con của category hay không
+        return IsSubCategoryOf(categoryId, parentCategory.ParentId);
+    }
+    // Method to update subcategory levels recursively
+    private void UpdateSubCategoryLevel(int parentId, int parentLevel)
     {
         var subCategories = db.Category.Where(c => c.ParentId == parentId && c.DeletedAt == null).ToList();
         foreach (var subCategory in subCategories)
         {
-            // Cập nhật trạng thái cho danh mục con
-            subCategory.Status = parentStatus; // Gán trạng thái của danh mục cha cho danh mục con
-                                               // Gọi đệ quy để cập nhật các danh mục con của danh mục con
-            UpdateSubCategoryStatus(subCategory.Id, parentStatus);
+            subCategory.Level = parentLevel + 1;
+            UpdateSubCategoryLevel(subCategory.Id, subCategory.Level); // Recursively update the levels of subcategories
         }
     }
-    // Method to disable all subcategories
-    private void DisableSubCategories(int parentId)
+
+    // Method to activate or disable all subcategories
+    private void UpdateSubCategoryStatus(int parentId, int status)
     {
+        // Lấy tất cả danh mục con có parentId là danh mục cha và chưa bị xóa (DeletedAt == null)
         var subCategories = db.Category.Where(c => c.ParentId == parentId && c.DeletedAt == null).ToList();
+
         foreach (var subCategory in subCategories)
         {
-            subCategory.Status = 0; // Disable the subcategory
-            DisableSubCategories(subCategory.Id); // Recursively disable sub-subcategories if needed
+            // Cập nhật trạng thái của danh mục con
+            subCategory.Status = status;
+
+            // Đệ quy để cập nhật trạng thái cho tất cả các danh mục con cấp dưới
+            UpdateSubCategoryStatus(subCategory.Id, status);
         }
     }
+
 
     // DELETE api/<CategoryController>/5'
     [Authorize]
@@ -331,9 +382,23 @@ public class CategoryController : ControllerBase
 
         category.DeletedAt = DateTime.Now; // Or set the status to disabled instead of deleting
         category.UpdatedBy = int.Parse(userId);
+        category.Status = 0;
         db.SaveChanges();
 
         return Ok(new { data = category });
     }
+    private void DisableSubCategories(int parentId)
+    {
+        // Lấy tất cả danh mục con có parentId là danh mục cha và chưa bị xóa (DeletedAt == null)
+        var subCategories = db.Category.Where(c => c.ParentId == parentId && c.DeletedAt == null).ToList();
 
+        foreach (var subCategory in subCategories)
+        {
+
+            subCategory.Status = 0;
+
+
+            DisableSubCategories(subCategory.Id);
+        }
+    }
 }

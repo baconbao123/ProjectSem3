@@ -24,13 +24,12 @@ namespace AuthenticationJWT.Controllers
         [Authorize]
         public IActionResult Get()
         {
-
+            // Fetch product list with additional conditions for active categories
             var listData = (from item in db.Product
-                            join cate in db.Category on item.CategoryId equals cate.Id
                             join partner in db.CompanyPartner on item.CompanyPartnerId equals partner.Id
-                            where item.DeletedAt == null
-                                  && item.Status == 1
-                                  && cate.Status == 1
+                            where item.DeletedAt == null && item.Status == 1
+                                  && !db.ProductCategory.Any(pc => pc.ProductId == item.Id
+                                                                    && db.Category.Any(c => c.Id == pc.CategoryId && c.Status != 1))
                             orderby item.CreatedAt descending
                             select new
                             {
@@ -39,9 +38,9 @@ namespace AuthenticationJWT.Controllers
                                 item.Name,
                                 item.Description,
 
-                                CategoryName = cate.Name,
-
+                                // Fetch company partner name
                                 CompanyPartnerName = partner.Name,
+
                                 item.Status,
                                 item.BasePrice,
                                 item.SellPrice,
@@ -49,6 +48,18 @@ namespace AuthenticationJWT.Controllers
                                 item.CreatedAt,
                                 item.UpdateAt,
 
+                                // Fetch categories only if active
+                                Categories = (from pc in db.ProductCategory
+                                              join cate in db.Category on pc.CategoryId equals cate.Id
+                                              where pc.ProductId == item.Id && cate.Status == 1
+                                              select new
+                                              {
+                                                  cate.Id,
+                                                  cate.CategoryCode,
+                                                  cate.Description
+                                              }).ToList(),
+
+                                // Fetch authors of the product
                                 Authors = (from ap in db.AuthorProduct
                                            join author in db.Author on ap.AuthorId equals author.Id
                                            where ap.ProductId == item.Id
@@ -57,6 +68,7 @@ namespace AuthenticationJWT.Controllers
                                                author.Name
                                            }).ToList(),
 
+                                // Fetch images of the product
                                 ProductImages = db.ProductImage
                                     .Where(pi => pi.ProductId == item.Id)
                                     .Select(pi => new
@@ -66,24 +78,96 @@ namespace AuthenticationJWT.Controllers
                                     .ToList()
                             }).ToList();
 
-            return Ok(new { data = listData, total = listData.Count() });
-
+            return Ok(new { data = listData, total = listData.Count });
         }
+
+        // get products with category
+        [Authorize]
+        [HttpGet("category")]
+        public IActionResult GetAllCategoriesWithProducts()
+        {
+            // Fetch all active categories (both parent and child) that are not deleted
+            var categories = db.Category
+                .Where(c => c.Status == 1 && c.DeletedAt == null)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    c.ParentId,
+                    c.Level
+                })
+                .ToList();
+
+            if (!categories.Any())
+            {
+                return BadRequest(new { message = "No categories found." });
+            }
+
+            // Prepare a list to hold the categories with their products
+            var categoriesWithProducts = new List<object>();
+
+            foreach (var category in categories)
+            {
+                // Fetch products for the current category and its child categories
+                var categoryIds = db.Category
+                    .Where(c => c.Status == 1 && c.DeletedAt == null && (c.Id == category.Id || c.ParentId == category.Id))
+                    .Select(c => c.Id)
+                    .ToList();
+
+                // Fetch products across the category and its child categories, ensuring no duplicates
+                var products = (from pc in db.ProductCategory
+                                join p in db.Product on pc.ProductId equals p.Id
+                                where categoryIds.Contains(pc.CategoryId) && p.DeletedAt == null
+                                orderby p.CreatedAt descending
+                                select new
+                                {
+                                    p.Id,
+                                    p.Name,
+                                    //p.Description,
+                                    p.SellPrice,
+                                    //p.Quantity,
+                                    p.CreatedAt
+                                }).Distinct().ToList(); // Use Distinct() to ensure no duplicate products
+
+                // Add the category and its products to the result list
+                categoriesWithProducts.Add(new
+                {
+                    category.Id,
+                    category.Name,
+                    category.ParentId,
+                    category.Level,
+                    Products = products
+                });
+            }
+
+            return Ok(new { data = categoriesWithProducts, totalCategories = categoriesWithProducts.Count });
+        }
+
+
 
         [Authorize]
         [HttpGet("category/{categoryId}")]
-        public IActionResult GetProductByCategoty(int categoryId)
+        public IActionResult GetProductByCategory(int categoryId)
         {
             var category = db.Category.FirstOrDefault(c => c.Id == categoryId && c.Status == 1);
             if (category == null)
             {
                 return BadRequest(new { message = "Category not found or not active." });
             }
-            var products = db.Product
-                .Where(p => p.CategoryId == categoryId && p.DeletedAt == null)
-                .OrderByDescending(p => p.CreatedAt)
-                .ToList();
 
+            var products = (from pc in db.ProductCategory
+                            join p in db.Product on pc.ProductId equals p.Id
+                            where pc.CategoryId == categoryId && pc.DeletedAt == null && p.DeletedAt == null
+                            orderby p.CreatedAt descending
+                            select new
+                            {
+                                p.Id,
+                                p.Name,
+                                p.Description,
+                                p.SellPrice,
+                                p.Quantity,
+                                p.CreatedAt,
+                            }).ToList();
 
             if (!products.Any())
             {
@@ -94,71 +178,70 @@ namespace AuthenticationJWT.Controllers
         }
 
 
+
         // GET api/<ProductController>/5
         [Authorize]
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
 
-            var authorList = (from ap in db.AuthorProduct
-                              join a in db.Author on ap.AuthorId equals a.Id
-                              where ap.ProductId == id
-                              select new
-                              {
-                                  a.Id,
-                                  a.Name,
-                                  a.Biography,
-                                  a.Birth
-                              }).ToList();
-
-
-            var productImageList = (from pi in db.ProductImage
-                                    where pi.ProductId == id
-                                    select new
-                                    {
-                                        pi.ImagePath,
-                                    }).ToList();
-
-            var product = (from p in db.Product
-                           where p.DeletedAt == null && p.Id == id && p.Status == 1
-
-                           join category in db.Category on p.CategoryId equals category.Id into categoryGroup
-                           from category in categoryGroup.DefaultIfEmpty()
-
-                           join companyPartner in db.CompanyPartner on p.CompanyPartnerId equals companyPartner.Id into companyPartnerGroup
-                           from companyPartner in companyPartnerGroup.DefaultIfEmpty()
-                           join u in db.User on p.CreatedBy equals u.Id
-                           join u2 in db.User on p.UpdatedBy equals u2.Id
-                           where category.Status == 1
+            var product = (from item in db.Product
+                           join partner in db.CompanyPartner on item.CompanyPartnerId equals partner.Id
+                           where item.DeletedAt == null
+                                 && item.Status == 1
+                                 && item.Id == id
+                           orderby item.CreatedAt descending
                            select new
                            {
-                               p.Id,
-                               p.Code,
-                               p.Name,
-                               p.BasePrice,
-                               p.SellPrice,
-                               p.Quantity,
-                               p.CreatedAt,
-                               p.UpdateAt,
-                               UserCreated = u.Username,
-                               UserUpdated = u2.Username,
-                               Category = category != null ? new
-                               {
-                                   category.Id,
-                                   category.CategoryCode,
-                                   category.Description
-                               } : null,
-                               CompanyPartner = companyPartner != null ? new
-                               {
-                                   companyPartner.Id,
-                                   companyPartner.Name,
-                                   companyPartner.Address,
-                                   companyPartner.Phone,
-                                   companyPartner.Email
-                               } : null,
-                               Authors = authorList,
-                               ProductImages = productImageList
-                           }).FirstOrDefault();
+                               item.Id,
+                               item.Code,
+                               item.Name,
+                               item.Description,
+
+                               // Lấy tên đối tác công ty
+                               CompanyPartnerName = partner.Name,
+                               CompanyPartnerId = partner.Id,
+
+                               item.Status,
+                               item.BasePrice,
+                               item.SellPrice,
+                               item.Quantity,
+                               item.CreatedAt,
+                               item.UpdateAt,
+
+                               // Lấy danh sách các danh mục của sản phẩm
+                               Categories = (from pc in db.ProductCategory
+                                             join cate in db.Category on pc.CategoryId equals cate.Id
+                                             where pc.ProductId == item.Id && cate.Status == 1
+                                             select new
+                                             {
+                                                 cate.Id,
+                                                 cate.Name,
+                                                 cate.CategoryCode,
+                                                 cate.Description
+                                             }).ToList(),
+
+                               // Lấy danh sách tác giả của sản phẩm
+                               Authors = (from ap in db.AuthorProduct
+                                          join author in db.Author on ap.AuthorId equals author.Id
+                                          where ap.ProductId == item.Id
+                                          select new
+                                          {
+                                              author.Id,
+                                              author.Name
+                                          }).ToList(),
+
+                               // Lấy danh sách hình ảnh của sản phẩm
+                               ProductImages = db.ProductImage
+                                   .Where(pi => pi.ProductId == item.Id)
+                                   .Select(pi => new
+                                   {
+                                       pi.ImagePath
+                                   })
+                                   .ToList()
+                           }).ToList();
+
+
 
             if (product == null)
             {
@@ -178,17 +261,39 @@ namespace AuthenticationJWT.Controllers
                 return BadRequest(ModelState);
             }
 
-            var category = db.Category.FirstOrDefault(c => c.Id == request.CategoryId);
-            if (category == null)
+            // Kiểm tra trường Name
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
-                return BadRequest(new { message = "Category not found." });
+                return BadRequest(new { message = "Product name is required." });
             }
 
+            // Kiểm tra trường mô tả
+            if (string.IsNullOrWhiteSpace(request.Description))
+            {
+                return BadRequest(new { message = "Product description is required." });
+            }
+
+            // Kiểm tra danh mục (Category)
+            var validCategoryIds = request.CategoryIds?.Where(id => id > 0).ToList();
+            if (validCategoryIds == null || !validCategoryIds.Any())
+            {
+                return BadRequest(new { message = "At least one category is required." });
+            }
+
+            // Kiểm tra hình ảnh (Anh)
+            if (request.ProductImages == null || !request.ProductImages.Any())
+            {
+                return BadRequest(new { message = "At least one product image is required." });
+            }
+
+            // Kiểm tra đối tác công ty (Company)
             var company = db.CompanyPartner.FirstOrDefault(c => c.Id == request.CompanyPartnerId);
             if (company == null)
             {
                 return BadRequest(new { message = "Company partner not found." });
             }
+
+
 
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
             if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
@@ -196,7 +301,19 @@ namespace AuthenticationJWT.Controllers
                 return Unauthorized(new { message = "User not authenticated." });
             }
 
-            var categoryCode = category.CategoryCode;
+
+
+            // Tìm danh mục cha có level = 0 hoặc sử dụng chính danh mục đã chọn nếu nó là cha (level = 0)
+            var parentCategory = db.Category.FirstOrDefault(c =>
+                validCategoryIds.Contains(c.Id) && c.Level == 0)
+                ?? db.Category.FirstOrDefault(pc =>
+                    pc.Level == 0 && db.Category.Any(sub => validCategoryIds.Contains(sub.Id) && sub.ParentId == pc.Id));
+
+            if (parentCategory == null)
+            {
+                return BadRequest(new { message = "No parent category with level 0 found for the provided subcategories." });
+            }
+            var categoryCode = parentCategory.CategoryCode; // Lấy categoryCode của cha level 0
             var manufacturer = company.Name;
             int productCount = db.Product.Count(p => p.CompanyPartnerId == request.CompanyPartnerId) + 1;
 
@@ -211,7 +328,6 @@ namespace AuthenticationJWT.Controllers
                 BasePrice = request.BasePrice,
                 SellPrice = request.SellPrice,
                 Quantity = request.Quantity,
-
                 CompanyPartnerId = request.CompanyPartnerId,
                 Status = request.Status ?? 0,
                 Version = 0,
@@ -227,22 +343,17 @@ namespace AuthenticationJWT.Controllers
                 {
                     db.Product.Add(product);
                     db.SaveChanges();
-                    var fileNames = new HashSet<string>();
-                    // 
-                    // 
-                    var validCategoryIds = request.CategoryIds?.Where(id => id > 0).ToList();
+
                     if (validCategoryIds != null && validCategoryIds.Any())
                     {
                         foreach (var categoryId in validCategoryIds)
                         {
-
                             var category1 = db.Category.FirstOrDefault(a => a.Id == categoryId);
                             if (category1 == null)
                             {
                                 return BadRequest(new { message = $"Category with Id {categoryId} not found." });
                             }
 
-                            // Add to db if already have it
                             var productCategory = new ProductCategory
                             {
                                 ProductId = product.Id,
@@ -256,6 +367,7 @@ namespace AuthenticationJWT.Controllers
                         }
                         db.SaveChanges();
                     }
+                    //===============Author post====================================
                     var validAuthorIds = request.AuthorIds?.Where(id => id > 0).ToList();
                     if (validAuthorIds != null && validAuthorIds.Any())
                     {
@@ -281,6 +393,9 @@ namespace AuthenticationJWT.Controllers
                         }
                         db.SaveChanges();
                     }
+
+                    //============================Image post================================================
+                    var fileNames = new HashSet<string>();
                     if (request.ProductImages != null && request.ProductImages.Any())
                     {
                         foreach (var imageFile in request.ProductImages)
@@ -317,7 +432,7 @@ namespace AuthenticationJWT.Controllers
                                     var productImage = new ProductImage
                                     {
                                         ProductId = product.Id,
-                                        ImagePath = Path.Combine("uploads", "products", fileName),
+                                        ImagePath = Path.Combine("uploads", "products", fileName).Replace("\\", "/"),
                                         CreatedBy = userId,
                                         CreatedAt = DateTime.UtcNow,
                                         UpdateAt = DateTime.UtcNow,
@@ -342,13 +457,15 @@ namespace AuthenticationJWT.Controllers
                         db.SaveChanges();
                     }
 
+
+
                     transaction.Commit();
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    Console.WriteLine(ex.ToString()); // Replace with proper logging
-                    return StatusCode(500, new { message = "Error saving product and images.", error = ex.Message, innerError = ex.InnerException?.Message });
+                    Console.WriteLine(ex.ToString());
+                    return StatusCode(500, new { message = "Error saving product and categories.", error = ex.Message, innerError = ex.InnerException?.Message });
                 }
             }
 
@@ -366,6 +483,7 @@ namespace AuthenticationJWT.Controllers
 
             return productCode;
         }
+
 
         [Authorize]
         [HttpPut("{id}")]
@@ -387,11 +505,11 @@ namespace AuthenticationJWT.Controllers
             }
 
             // 
-            var category = db.Category.FirstOrDefault(c => c.Id == request.CategoryId);
-            if (category == null)
-            {
-                return BadRequest(new { message = "Category not found." });
-            }
+            //var category = db.Category.FirstOrDefault(c => c.Id == request.CategoryId);
+            //if (category == null)
+            //{
+            //    return BadRequest(new { message = "Category not found." });
+            //}
 
             // 
             var company = db.CompanyPartner.FirstOrDefault(c => c.Id == request.CompanyPartnerId);
@@ -401,15 +519,15 @@ namespace AuthenticationJWT.Controllers
             }
 
             // 
-            var categoryCode = category.CategoryCode;
+            //var categoryCode = category.CategoryCode;
             var manufacturer = company.Name;
             int productCount = db.Product.Count(p => p.CompanyPartnerId == request.CompanyPartnerId) + 1;
-            var productCode = GenerateProductCode(categoryCode, manufacturer, productCount);
+            //var productCode = GenerateProductCode(categoryCode, manufacturer, productCount);
 
             // Update product
             product.Name = request.Name;
-            product.Code = productCode;
-            product.CategoryId = request.CategoryId;
+            //product.Code = productCode;
+            //product.CategoryId = request.CategoryId;
             product.Description = request.Description;
             product.BasePrice = request.BasePrice;
             product.SellPrice = request.SellPrice;
@@ -538,6 +656,7 @@ namespace AuthenticationJWT.Controllers
                 return BadRequest(new { message = "Data not found" });
             }
             product.DeletedAt = DateTime.Now;
+            product.Status = 0;
             product.UpdatedBy = int.Parse(userId);
             db.SaveChanges();
             return Ok(new { data = product });

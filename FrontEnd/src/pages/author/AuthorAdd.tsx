@@ -142,6 +142,7 @@ const AuthorAdd : React.FC<AuthorAdd> = ({loadDataTable, form, id}) => {
                     <div className=''>
                         <div className='label-form'>Day of birth </div>
                         <input value={birth} className='form-control' placeholder='Enter name' type= "date" onChange={e => setBirth(e.target.value)}/>
+                        
                     </div>
                         {ShowError('Birth')}
                     <div className='mt-3'>

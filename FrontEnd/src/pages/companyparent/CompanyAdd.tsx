@@ -129,7 +129,7 @@ const CompanyAdd: React.FC<CompanyAdd> = ({ loadDataTable, form, id }) => {
       })
       .catch((err) => {
         const errorMessage =
-          err.response?.data?.error || "Something went wrong";
+          err.response?.data?.message || "Something went wrong";
         dispatch(
           setToast({
             status: "error",
@@ -218,7 +218,7 @@ const CompanyAdd: React.FC<CompanyAdd> = ({ loadDataTable, form, id }) => {
                 value={company.email}
                 className="form-control"
                 placeholder="Enter email"
-                onChange={(e) => handleChange(index, "address", e.target.value)}
+                onChange={(e) => handleChange(index, "email", e.target.value)}
               />
               <ShowError errorKey="Email" />
             </div>

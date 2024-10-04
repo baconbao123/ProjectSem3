@@ -1,0 +1,105 @@
+@import '/global.scss';
+
+.container-master-account {
+  background-color: $prime-bgColor-Pages;
+
+  .container-account {
+    background-color: white;
+    width: 1305px;
+    padding: 20px 20px 0px 20px;
+
+    .row-my-profile {
+      border-bottom: 1px solid gainsboro;
+
+      .myProfile {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .sub-myProfile {
+        font-size: 14px;
+        color: gray;
+        margin-bottom: 20px;
+      }
+    }
+
+    .row-my-profile-content {
+      margin-top: 10px;
+      font-size: 16px;
+      padding: 20px 0;
+      color: gray;
+
+      .col-profile-content {
+        border-right: 1px solid gainsboro;
+
+        .profile-group {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+
+          p {
+            text-align: end;
+            padding-right: 30px;
+            width: 200px;
+            font-size: 18px;
+            margin: 0;
+          }
+
+          .p-inputtext-sm {
+            width: 400px;
+            &:hover {
+              border-color: $prime-color;
+            }
+
+            &:focus {
+              box-shadow: 0 0 0 0.2rem rgba(28, 192, 160, 0.25); /* Hiệu ứng đổ bóng khi focus */
+              border-color: $prime-color;
+              outline: $prime-color;
+            }
+          }
+
+          .btn-save {
+            border-radius: 5px;
+          }
+        }
+      }
+
+      .col-avatar {
+        text-align: center;
+
+        .avatar-img {
+          width: 160px;
+          height: 160px;
+        }
+
+        .btn-avatar {
+          border-radius: 5px;
+          border-color: $prime-color;
+        }
+
+        .avatar-selected {
+          margin-top: 10px;
+
+          img {
+            width: 70px;
+            height: 80px;
+            margin-right: 10px;
+          }
+
+          .col-cancel-img {
+            display: flex;
+            justify-content: end;
+
+            .icon-cancel {
+              &:hover {
+                color: red;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
