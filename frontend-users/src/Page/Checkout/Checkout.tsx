@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Checkout.scss'
 import { Col, Container, Row } from 'react-bootstrap'
 import { IoLocationSharp } from 'react-icons/io5'
@@ -6,9 +6,24 @@ import CardCheckout from '../../Components/CardProduct/Checkout/CardCheckout'
 import { BiSolidDiscount } from 'react-icons/bi'
 import { Button } from 'primereact/button'
 import { Link } from 'react-router-dom'
+import { Dialog } from 'primereact/dialog'
+import CardAddressList from '../../Components/CardAddress/List/CardAddressList'
 
 const Checkout: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<string>('Paypal')
+  const [viewAddAddress, setViewAddAddress] = useState<boolean>(false)
+  const [selectedAddress, setSelectedAddress] = useState<any>(null)
+
+  useEffect(() => {
+    // Set default address on component mount
+    const defaultAddress = {
+      Id: '1',
+      Username: 'Le Thi Phuong Anh',
+      Phone: '0987654321',
+      Address: '474/2, Nguyễn Văn Công, Phường 3, Quận Gò Vấp, TP. Hồ Chí Minh'
+    }
+    setSelectedAddress(defaultAddress)
+  }, [])
 
   return (
     <div className='conatiner-checkout-products'>
@@ -24,20 +39,37 @@ const Checkout: React.FC = () => {
               <span>Delivery Address</span>
             </div>
             <div className='div-address-change'>
-              <span>Change</span>
+              <span onClick={() => setViewAddAddress(true)}>Change</span>
+              <Dialog
+                header='My Address'
+                visible={viewAddAddress}
+                style={{ width: '40vw' }}
+                onHide={() => {
+                  if (!viewAddAddress) return
+                  setViewAddAddress(false)
+                }}
+              >
+                <CardAddressList onAddressSelected={setSelectedAddress} />
+              </Dialog>
             </div>
           </div>
           <div className='row-address-content'>
             <Row>
-              <Col lg={3}>
-                <span className='name'>Phương Anh</span> &nbsp;
-              </Col>
-              <Col lg={2}>
-                <span className='phone'>098765432112</span>
-              </Col>
-              <Col lg={7}>
-                <span className='address'>474/2, Nguyễn Văn Công, Phường 3, Quận Gò Vấp, TP. Hồ Chí Minh</span>
-              </Col>
+              {selectedAddress ? (
+                <>
+                  <Col lg={3}>
+                    <span className='name'>{selectedAddress.Username}</span> &nbsp;
+                  </Col>
+                  <Col lg={2}>
+                    <span className='phone'>{selectedAddress.Phone}</span>
+                  </Col>
+                  <Col lg={7}>
+                    <span className='address'>{selectedAddress.Address}</span>
+                  </Col>
+                </>
+              ) : (
+                <span>No address selected</span>
+              )}
             </Row>
           </div>
         </Row>
@@ -120,16 +152,20 @@ const Checkout: React.FC = () => {
             <Row>
               <Col lg={6}></Col>
               <Col lg={6}>
-                <div className='bill-content'>
+                <div className='bill-content mt-5'>
                   <span>Total Order</span>
-                  <span>$ 123</span>
+                  <span>$ 0</span>
+                </div>
+                <div className='bill-content'>
+                  <span>Delivery fee</span>
+                  <span>$ 0</span>
                 </div>
                 <div className='bill-content-bottom'>
-                  <span>Total Order</span>
+                  <span>Total</span>
                   <span>$ 123</span>
                 </div>
                 <div className='btn-payment'>
-                  <Link to="/checkout/compeleted">
+                  <Link to='/checkout/compeleted'>
                     <Button label='Payment' className='btn-pay' />
                   </Link>
                 </div>

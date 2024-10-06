@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import axios from 'axios'
 import Breadcrumb from '../../Components/Breadcrumb/Breadcrumb'
 import './AllBooks.scss'
 import Product from '../../Interfaces/Product'
 import { CardProduct } from '../../Components/CardProduct/Home/CardProduct'
 import { Link } from 'react-router-dom'
 import Loading from '../../Components/Loading/Loading'
+import { $axios } from '../../axios'
 
 const items = [
   {
@@ -24,13 +24,11 @@ function AllBooks() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('https://bookstore123.free.mockoapp.net/all-products')
-        setProducts(res.data)
+        const res = await $axios.get('CategoriesFE')
+        setProducts(res.data.data)
       } catch (err) {
         console.log(err)
-      } finally {
-        setLoading(false)
-      }
+      } setLoading(false)
     }
 
     fetchProducts()
@@ -49,42 +47,48 @@ function AllBooks() {
           <div className='container-all-books-content'>
             <Container className='all-products' style={{ marginTop: '10px' }}>
               <Row>
-                {products.map((category: any, index: any) => (
+                {products?.map((category: any, index: any) => (
                   <div key={index}>
                     {/* Render each category (Book, Stationery, etc.) */}
-                    {Object.keys(category).map((categoryName, i) => (
-                      <div key={i}>
-                        {/* Category Books */}
-                        {categoryName === 'Book' && (
+                    {category.Level === 0 && (
+                      <>
+                        {category.Name === 'Book' && (
                           <>
-                            {category.Book.map((bookCategory: any, j: any) => (
-                              <div key={j} className='block'>
-                                <Container>
-                                  <div className='heading heading-flex mt-4'>
-                                    <div className='heading-left' style={{ zIndex: '1' }}>
-                                      <h2 className='title'>{bookCategory.CategoryName}</h2>
-                                    </div>
-                                    <div className='heading-right' style={{ zIndex: '1' }}>
-                                      <Link to={`${bookCategory.CategoryName}`} className='title-link'>
-                                        View more Products <i className='icon-long-arrow-right' />
-                                      </Link>
-                                    </div>
+                            {products
+                              .filter(
+                                (subCategory: any) => subCategory.Level === 1 && subCategory.ParentId === category.Id
+                              )
+                              .slice(0, 2)
+                              .map((subCategory: any, subIndex: any) => (
+                                <div key={subIndex} className='block'>
+                                  <div className='block-wrapper'>
+                                    <Container>
+                                      <div className='heading heading-flex mt-4'>
+                                        <div className='heading-left' style={{ zIndex: '1' }}>
+                                          <h2 className='title'>{subCategory.Name}</h2>
+                                        </div>
+                                        <div className='heading-right' style={{ zIndex: '1' }}>
+                                          <Link to={`${subCategory.Name}`} className='title-link'>
+                                            View more Products <i className='icon-long-arrow-right' />
+                                          </Link>
+                                        </div>
+                                      </div>
+                                      {/* Render the products for each subcategory */}
+                                      <Row>
+                                        {subCategory.Products?.slice(0, 6).map((product: any, productIndex: any) => (
+                                          <Col lg={2} key={productIndex}>
+                                            <CardProduct product={product} />
+                                          </Col>
+                                        ))}
+                                      </Row>
+                                    </Container>
                                   </div>
-                                  {/* Product */}
-                                  <Row style={{ paddingBottom: '20px' }}>
-                                    {bookCategory.Products.slice(0, 6).map((product: any, k: any) => (
-                                      <Col lg={2} key={k}>
-                                        <CardProduct product={product} />
-                                      </Col>
-                                    ))}
-                                  </Row>
-                                </Container>
-                              </div>
-                            ))}
+                                </div>
+                              ))}
                           </>
                         )}
-                      </div>
-                    ))}
+                      </>
+                    )}
                   </div>
                 ))}
               </Row>

@@ -9,6 +9,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<UserFEService, UserFEServiceImpl>();
+builder.Services.AddScoped<CategoriesFEService, CategoriesFEServiceImpl>();
+builder.Services.AddScoped<FAQService, FAQServiceImpl>();
 builder.Services.AddAutoMapper(typeof(MyMapper));
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
