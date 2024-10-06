@@ -218,9 +218,12 @@ public class CategoryController : ControllerBase
         return categoryCode;
     }
 
-    // Method to remove diacritical marks (accents) from Vietnamese characters
     private string RemoveDiacritics(string text)
     {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        // Chuẩn hóa chuỗi về FormD để tách dấu phụ
         var normalizedString = text.Normalize(NormalizationForm.FormD);
         var stringBuilder = new StringBuilder();
 
@@ -233,7 +236,13 @@ public class CategoryController : ControllerBase
             }
         }
 
-        return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+        // Chuẩn hóa lại về FormC sau khi loại bỏ dấu phụ
+        var result = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+
+        // Thay thế các ký tự đặc biệt trong tiếng Việt
+        result = result.Replace('đ', 'd').Replace('Đ', 'D');
+
+        return result;
     }
 
     // PUT api/<CategoryController>/5

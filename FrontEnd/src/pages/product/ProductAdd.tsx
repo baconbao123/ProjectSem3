@@ -76,7 +76,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     try {
       const res = await $axios.get(`Product/${id}`);
       const product = res.data.data;
-      console.log("Test " + product[0].CompanyPartnerId);
+    
       console.log(product[0]);
       if (product) {
         setName(product[0].Name || "");
@@ -103,7 +103,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             product[0].ProductImages.map((img) => img.ImagePath)
           );
         }
-        setItem(product);
+        setItem(product[0]);
       }
     } catch (err) {
       console.error(err);
@@ -211,8 +211,14 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     formData.append("Description", description);
     formData.append("Status", status ? "1" : "0");
     formData.append("Version", item.Version);
-
-    // Thêm các trường khác nếu cần
+    formData.append("BasePrice", basePrice.toString());
+    formData.append("SellPrice", sellPrice.toString());
+    formData.append("Quantity", quantity.toString());
+    formData.append("CompanyPartnerId", companyPartnerId.toString());
+    authorIds.forEach((id) => formData.append("AuthorIds", id.toString()));
+    categoryIds.forEach((id) => formData.append("CategoryIds", id.toString()));
+    productImages.forEach((file) => formData.append("ProductImages", file));
+console.log(item)
 
     dispatch(setLoading(true));
     try {

@@ -11,8 +11,6 @@ public class Product
 
     [Required]
     public string Code { get; set; }
-    [Required]
-    public int CategoryId { get; set; }
 
     [Required]
     public int CompanyPartnerId { get; set; }
@@ -30,7 +28,7 @@ public class Product
     public float? Profit { get; set; }
 
     public int Quantity { get; set; }
-
+    public string ImageThumbPath { get; set; }
     public int Version { get; set; }
     public int Status { get; set; }
 
