@@ -194,11 +194,13 @@ public class ProductRequest()
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
     public int Version { get; set; }
-
+    public IFormFile ImageThumbPath { get; set; }
     public List<IFormFile>? ProductImages { get; set; }
     public List<int>? AuthorIds { get; set; }
 
     public List<int> CategoryIds { get; set; }
+
+    public List<int> SaleIds { get; set; }
 }
 
 // Request class cho bảng ProductImage
@@ -210,3 +212,33 @@ public class ProductImageRequest()
 
 
 }
+
+
+
+public class SaleRequest
+{
+    [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
+    public string Name { get; set; }
+
+    [Required(ErrorMessage = "Discount is required.")]
+    public float Discount { get; set; }
+
+    [Required(ErrorMessage = "Type is required.")]
+
+    public int Type { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+    public DateTime? StartDate { get; set; }
+
+    [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+    [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+    public DateTime? EndDate { get; set; }
+
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+
+    public int Version { get; set; }
+}
+

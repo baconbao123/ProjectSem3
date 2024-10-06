@@ -11,6 +11,7 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import BusinessIcon from '@mui/icons-material/Business';
 import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import DiscountOutlinedIcon from '@mui/icons-material/DiscountOutlined';
 const MenuTopBar = [
     {link: '/admin', title: 'Administration', icon: BadgeIcon, code: 'admin'},
     {link: '/home', title: 'Home Page', icon: HomeIcon, code: 'home'},
@@ -26,6 +27,7 @@ const MenuSideBar = [
     {link: '/company', title: 'Company', icon: BusinessIcon,  code: 'company'},
 
     // {link: '/admin/about', title: 'About', icon: BadgeIcon,  code: 'admin2'},
+     {link: '/discount', title: 'Discount', icon: DiscountOutlinedIcon  , code: 'discount'},
      {link: '/product', title: 'Product', icon: Inventory2OutlinedIcon  , code: 'product'},
     // {link: '/admin/stock', title: 'Stock', icon: WarehouseOutlinedIcon,  code: 'admin4'},
     // {link: '/admin/setting', title: 'Setting', icon: SettingsOutlinedIcon,  code: 'admin5'},
