@@ -13,6 +13,7 @@ import AuthorList from "@pages/author/AuthorList"
 import UserList from "@pages/user/UserList.tsx";
 import CompanyList from "@pages/companyparent/ComanyPartnerList"
 import ProductList from "@pages/product/ProductList"
+import SaleList from "@pages/sale/SaleList"
 
 export  default  createBrowserRouter([
     {
@@ -62,6 +63,11 @@ export  default  createBrowserRouter([
             {
                 path: 'company',
                 element: (<CompanyList/>),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
+            {
+                path: 'discount',
+                element: (<SaleList/>),
                 errorElement: (<ErrorPage error="'Error page"/>),
             },
             {

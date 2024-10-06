@@ -40,7 +40,7 @@ namespace AuthenticationJWT.Controllers
 
                                 // Fetch company partner name
                                 CompanyPartnerName = partner.Name,
-
+                                item.Version,
                                 item.Status,
                                 item.BasePrice,
                                 item.SellPrice,
@@ -127,7 +127,7 @@ namespace AuthenticationJWT.Controllers
                                     p.SellPrice,
                                     //p.Quantity,
                                     p.CreatedAt
-                                }).Distinct().ToList(); // Use Distinct() to ensure no duplicate products
+                                }).Distinct().ToList();
 
                 // Add the category and its products to the result list
                 categoriesWithProducts.Add(new
@@ -197,7 +197,7 @@ namespace AuthenticationJWT.Controllers
                                item.Code,
                                item.Name,
                                item.Description,
-
+                               item.Version,
                                // Lấy tên đối tác công ty
                                CompanyPartnerName = partner.Name,
                                CompanyPartnerId = partner.Id,
@@ -261,32 +261,31 @@ namespace AuthenticationJWT.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Kiểm tra trường Name
+
             if (string.IsNullOrWhiteSpace(request.Name))
             {
                 return BadRequest(new { message = "Product name is required." });
             }
 
-            // Kiểm tra trường mô tả
+
             if (string.IsNullOrWhiteSpace(request.Description))
             {
                 return BadRequest(new { message = "Product description is required." });
             }
 
-            // Kiểm tra danh mục (Category)
             var validCategoryIds = request.CategoryIds?.Where(id => id > 0).ToList();
             if (validCategoryIds == null || !validCategoryIds.Any())
             {
                 return BadRequest(new { message = "At least one category is required." });
             }
 
-            // Kiểm tra hình ảnh (Anh)
+
             if (request.ProductImages == null || !request.ProductImages.Any())
             {
                 return BadRequest(new { message = "At least one product image is required." });
             }
 
-            // Kiểm tra đối tác công ty (Company)
+
             var company = db.CompanyPartner.FirstOrDefault(c => c.Id == request.CompanyPartnerId);
             if (company == null)
             {
