@@ -156,7 +156,6 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             Version: version,
             Avatar: avatar
         }
-        console.log('Check data ', dataForm)
         dispatch(setLoading(true))
         $axios.put(`User/${id}`,dataForm, {headers: {
                 'Content-Type': 'multipart/form-data'

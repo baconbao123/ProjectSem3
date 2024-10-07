@@ -19,6 +19,8 @@ import _ from 'lodash';
 import RoleDetail from "@pages/role/RoleDetail.tsx";
 import {Link} from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
+import {checkPermission} from "@src/Service/common.ts";
+import ErrorPage from "@pages/common/ErrorPage.tsx";
 const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -232,9 +234,12 @@ const ResourceList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
-                <div onClick={ showModalAdd} className="btn btn-general">Add new </div>
+                {checkPermission('Role', 'create') ? (
+                    <div onClick={showModalAdd} className="btn btn-general">Add new</div>
+                ) : ''}
+
             </div>
-        )
+    )
     }
 
     const content: React.FC = () => {
@@ -364,13 +369,22 @@ const ResourceList : React.FC = () => {
                                                     if (field.key === "Action") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'read') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Role', 'read') && showModalDetail(item)}
+                                                                   >
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Role', 'update') && showModalEdit(item)}
+                                                                  >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'delete') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Role', 'delete') && deleteItem(item)}
+                                                                    >
                                                                     <DeleteOutlineOutlinedIcon  />
                                                                 </span>
                                                             </TableCell>
