@@ -19,6 +19,15 @@ $axios.interceptors.response.use(
         return response;
     },
     (error) => {
+        const errorStatus = [403,500, 400, 401]
+        if (error.response && error.response.status === 403) {
+            location.href = '/403'
+        }
+        else if (error.response && error.response.status === 500) {
+            location.href = '/500'
+        }
+        else if (error.response && error.response.status === 400) {
+        }
         if (error.response && error.response.status === 401 && window.location.pathname  !== '/login' )
         {
             if (Cookies.get("refreshToken")) {
@@ -32,15 +41,16 @@ $axios.interceptors.response.use(
                         window.location.reload();
                     })
                     .catch((err) => {
-                        if (window.location.pathname !== '/login') {
-                                window.location.href = '/login'
-                        }
+                        window.location.href = '/login'
                         console.log("Error ", err)
                     })
             }
             else {
                 window.location.href = '/login'
             }
+        }
+        else if ( window.location.pathname  !== '/error' && !errorStatus.includes(error.response.status)) {
+            location.href = '/error'
         }
         return Promise.reject(error);
     }

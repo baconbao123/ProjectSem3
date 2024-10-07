@@ -16,12 +16,11 @@ interface SaleAdd {
 }
 const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
   const [name, setName] = useState("");
-  const [biography, setBiography] = useState("");
+  
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [type, setType] = useState<number>(1);
-  const [discount, setDiscount] = useState("");
-  const [birth, setBirth] = useState("");
+  const [discount, setDiscount] = useState<number>(0);
   const [status, setStatus] = useState(false);
   const [error, setError] = useState({});
   const [item, setItem] = useState({});
@@ -31,28 +30,36 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
     if (form === "edit") {
       loadData();
     }
-    console.log("check", name, status, biography, birth, item);
   }, []);
   const loadData = () => {
     dispatch(setLoading(true));
 
     $axios
-      .get(`Author/${id}`)
+      .get(`Sale/${id}`)
       .then((res) => {
-        if (res.data.data && res.data.data.Author.Name) {
-          setName(res.data.data.Author.Name);
+        if (res.data.data && res.data.data.Sale.Name) {
+          setName(res.data.data.Sale.Name);
         }
-        if (res.data.data && res.data.data.Author.Birth) {
-          setBirth(dayjs(res.data.data.Author.Birth).format("YYYY-MM-DD"));
+        if (res.data.data && res.data.data.Sale.Type) {
+          setType(res.data.data.Sale.Type);
         }
-        if (res.data.data && res.data.data.Author.Biography) {
-          setBiography(res.data.data.Author.Biography);
+        if (res.data.data && res.data.data.Sale.StartDate) {
+          setStartDate(
+            dayjs(res.data.data.Sale.StartDate).format("YYYY-MM-DDTHH:mm")
+          );
         }
-        if (res.data.data && res.data.data.Author.Status) {
-          setStatus(res.data.data.Author.Status);
+        if (res.data.data && res.data.data.Sale.EndDate) {
+          setEndDate(dayjs(res.data.data.Sale.EndDate).format("YYYY-MM-DDTHH:mm"));
         }
-        if (res.data.data.Author) {
-          setItem(res.data.data.Author);
+        if (res.data.data && res.data.data.Sale.Discount) {
+          setDiscount(res.data.data.Sale.Discount * 100);
+        }
+
+        if (res.data.data && res.data.data.Sale.Status) {
+          setStatus(res.data.data.Sale.Status);
+        }
+        if (res.data.data.Sale) {
+          setItem(res.data.data.Sale);
         }
       })
       .catch((err) => {
@@ -67,9 +74,11 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
     setError({});
 
     const formattedStartDate = startDate
-      ? dayjs(startDate).format("YYYY-MM-DD")
-      : "";
-    const formattedEndDate = endDate ? dayjs(endDate).format("YYYY-MM-DD") : "";
+    ? dayjs(startDate).format("YYYY-MM-DDTHH:mm")
+    : "";
+  const formattedEndDate = endDate
+    ? dayjs(endDate).format("YYYY-MM-DDTHH:mm")
+    : "";
 
     const dataForm = {
       Name: name,
@@ -116,14 +125,16 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
     setError({});
     const dataForm = {
       Name: name,
-      Biography: biography,
-      DateOfBirth: birth,
+      Discount: discount,
+      StartDate: startDate, // Chỉ thêm DateOfBirth nếu có giá trị
+      EndDate: endDate, // Chỉ thêm DateOfBirth nếu có giá trị
+      Type: type,
       Status: status ? 1 : 0,
       Version: item.Version,
     };
     dispatch(setLoading(true));
     $axios
-      .put(`Author/${id}`, dataForm)
+      .put(`Sale/${id}`, dataForm)
       .then((res) => {
         console.log("check res", res);
         loadDataTable();
@@ -131,7 +142,7 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
           setToast({
             status: "success",
             message: "Success",
-            data: "Edit Author successful",
+            data: "Edit Sale successful",
           })
         );
         dispatch(setShowModal(false));
@@ -165,8 +176,48 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
       });
   };
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setType(Number(e.target.value))
-}
+    setType(Number(e.target.value));
+  };
+
+  const validateDates = () => {
+    if (startDate && endDate) {
+      const start = dayjs(startDate);
+      const end = dayjs(endDate);
+      if (end.isBefore(start)) {
+        setError((prev) => ({
+          ...prev,
+          EndDate: ["End date cannot be before start date."],
+        }));
+        return false;
+      } else {
+        setError((prev) => {
+          const newError = { ...prev };
+          delete newError.EndDate;
+          return newError;
+        });
+        return true;
+      }
+    }
+    return true;
+  };
+
+  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setStartDate(e.target.value);
+    setError((prev) => ({ ...prev, StartDate: [] }));
+    // Re-validate dates
+    setTimeout(() => {
+      validateDates();
+    }, 0);
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEndDate(e.target.value);
+    setError((prev) => ({ ...prev, EndDate: [] }));
+    // Re-validate dates
+    setTimeout(() => {
+      validateDates();
+    }, 0);
+  };
   const ShowError: React.FC = (key) => {
     let data = [];
     if (error[key] && error[key].length > 0) {
@@ -174,6 +225,7 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
     }
     return <div className="text-danger mt-1">{data[0] ? data[0] : ""} </div>;
   };
+
   return (
     <div className="container-fluid">
       <div className="row  ">
@@ -192,30 +244,32 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
           {ShowError("Name")}
           <div className="">
             <div className="label-form">
-              Start date <span className="text-danger">*</span>
+              Start date and time <span className="text-danger">*</span>
             </div>
             <input
               value={startDate}
               className="form-control"
-              placeholder="Enter name"
-              type="date"
-              onChange={(e) => setStartDate(e.target.value)}
+              type="datetime-local"
+              
+              onChange={handleStartDateChange}
             />
           </div>
           {ShowError("StartDate")}
+
           <div className="">
             <div className="label-form">
-              End date <span className="text-danger">*</span>
+              End date and time <span className="text-danger">*</span>
             </div>
             <input
               value={endDate}
               className="form-control"
-              placeholder="Enter name"
-              type="date"
-              onChange={(e) => setEndDate(e.target.value)}
+              type="datetime-local"
+
+              onChange={handleEndDateChange}
             />
           </div>
           {ShowError("EndDate")}
+
           <div className="mt-3">
             <div className="label-form">
               Status <span className="text-danger">*</span>
@@ -249,23 +303,23 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
             </select>
           </div>
           {ShowError("Type")}
-  <div className="">
           <div className="">
-            <div className="label-form">
-              Discount <span className="text-danger">*</span>
+            <div className="">
+              <div className="label-form">
+                Discount <span className="text-danger">*</span>
+              </div>
+              <input
+                value={discount}
+                type="number"
+                className="form-control"
+                placeholder="Enter discount %"
+                onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+              />
             </div>
-            <input
-              value={discount}
-              type="number"
-              className="form-control"
-              placeholder="Enter discount %"
-              onChange={(e) => setDiscount(e.target.value)}
-            />
+            {ShowError("Discount")}
           </div>
-          {ShowError("Discount")}
         </div>
-        </div>
-        
+
         <div className=" group-btn">
           <button
             onClick={() => dispatch(setShowModal(false))}

@@ -37,7 +37,7 @@ namespace AuthenticationJWT.Controllers
                                 item.Code,
                                 item.Name,
                                 item.Description,
-
+                                item.ImageThumbPath,
                                 // Fetch company partner name
                                 CompanyPartnerName = partner.Name,
                                 item.Version,
@@ -48,34 +48,28 @@ namespace AuthenticationJWT.Controllers
                                 item.CreatedAt,
                                 item.UpdateAt,
 
-                                // Fetch categories only if active
-                                Categories = (from pc in db.ProductCategory
-                                              join cate in db.Category on pc.CategoryId equals cate.Id
-                                              where pc.ProductId == item.Id && cate.Status == 1
-                                              select new
-                                              {
-                                                  cate.Id,
-                                                  cate.CategoryCode,
-                                                  cate.Description
-                                              }).ToList(),
 
-                                // Fetch authors of the product
-                                Authors = (from ap in db.AuthorProduct
-                                           join author in db.Author on ap.AuthorId equals author.Id
-                                           where ap.ProductId == item.Id
-                                           select new
-                                           {
-                                               author.Name
-                                           }).ToList(),
+                                //// Fetch categories only if active
+                                //Categories = (from pc in db.ProductCategory
+                                //              join cate in db.Category on pc.CategoryId equals cate.Id
+                                //              where pc.ProductId == item.Id && cate.Status == 1
+                                //              select new
+                                //              {
+                                //                  cate.Id,
+                                //                  cate.CategoryCode,
+                                //                  cate.Description
+                                //              }).ToList(),
 
-                                // Fetch images of the product
-                                ProductImages = db.ProductImage
-                                    .Where(pi => pi.ProductId == item.Id)
-                                    .Select(pi => new
-                                    {
-                                        pi.ImagePath
-                                    })
-                                    .ToList()
+                                //// Fetch authors of the product
+                                //Authors = (from ap in db.AuthorProduct
+                                //           join author in db.Author on ap.AuthorId equals author.Id
+                                //           where ap.ProductId == item.Id
+                                //           select new
+                                //           {
+                                //               author.Name
+                                //           }).ToList(),
+
+
                             }).ToList();
 
             return Ok(new { data = listData, total = listData.Count });
@@ -114,20 +108,28 @@ namespace AuthenticationJWT.Controllers
                     .Select(c => c.Id)
                     .ToList();
 
-                // Fetch products across the category and its child categories, ensuring no duplicates
                 var products = (from pc in db.ProductCategory
                                 join p in db.Product on pc.ProductId equals p.Id
+                                join partner in db.CompanyPartner on p.CompanyPartnerId equals partner.Id
                                 where categoryIds.Contains(pc.CategoryId) && p.DeletedAt == null
                                 orderby p.CreatedAt descending
                                 select new
                                 {
                                     p.Id,
                                     p.Name,
-                                    //p.Description,
                                     p.SellPrice,
-                                    //p.Quantity,
+                                    p.ImageThumbPath,
+                                    CompanyPartnerName = partner.Name,
+                                    // Fetch images of the product and materialize them with ToList()
+                                    //ProductImages = db.ProductImage
+                                    //                 .Where(pi => pi.ProductId == p.Id)
+                                    //                 .Select(pi => pi.ImagePath)
+                                    //                 .ToList(),
                                     p.CreatedAt
-                                }).Distinct().ToList();
+                                }).ToList();
+
+                // Remove duplicates after the query execution (if needed)
+                var distinctProducts = products.GroupBy(p => p.Id).Select(g => g.First()).ToList();
 
                 // Add the category and its products to the result list
                 categoriesWithProducts.Add(new
@@ -136,7 +138,7 @@ namespace AuthenticationJWT.Controllers
                     category.Name,
                     category.ParentId,
                     category.Level,
-                    Products = products
+                    Products = distinctProducts
                 });
             }
 
@@ -163,6 +165,7 @@ namespace AuthenticationJWT.Controllers
                             {
                                 p.Id,
                                 p.Name,
+
                                 p.Description,
                                 p.SellPrice,
                                 p.Quantity,
@@ -201,7 +204,7 @@ namespace AuthenticationJWT.Controllers
                                // Lấy tên đối tác công ty
                                CompanyPartnerName = partner.Name,
                                CompanyPartnerId = partner.Id,
-
+                               item.ImageThumbPath,
                                item.Status,
                                item.BasePrice,
                                item.SellPrice,
@@ -231,14 +234,10 @@ namespace AuthenticationJWT.Controllers
                                               author.Name
                                           }).ToList(),
 
-                               // Lấy danh sách hình ảnh của sản phẩm
                                ProductImages = db.ProductImage
-                                   .Where(pi => pi.ProductId == item.Id)
-                                   .Select(pi => new
-                                   {
-                                       pi.ImagePath
-                                   })
-                                   .ToList()
+                                                     .Where(pi => pi.ProductId == item.Id)
+                                                     .Select(pi => pi.ImagePath)
+                                                     .ToList(),
                            }).ToList();
 
 
@@ -251,7 +250,6 @@ namespace AuthenticationJWT.Controllers
         }
 
 
-        // POST: api/Product
         // POST: api/Product
         [HttpPost]
         [Authorize]
@@ -355,7 +353,11 @@ namespace AuthenticationJWT.Controllers
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    return StatusCode(500, new { message = "Error saving product.", error = ex.Message });
+                    return StatusCode(500, new
+                    {
+                        message = "Error saving product.",
+                        error = ex.InnerException?.Message ?? ex.Message
+                    });
                 }
             }
 
@@ -490,7 +492,6 @@ namespace AuthenticationJWT.Controllers
 
             await db.SaveChangesAsync();
         }
-
         private string GenerateProductCode(string categoryCode, string manufacturer, int productCount)
         {
             string manufacturerCode = manufacturer.Length >= 3 ?
@@ -500,113 +501,227 @@ namespace AuthenticationJWT.Controllers
             string productNumber = productCount.ToString("D2");
             string productCode = $"{categoryCode}{manufacturerCode}{productNumber}";
 
+            // Ensure the generated code is unique
+            while (db.Product.Any(p => p.Code == productCode))
+            {
+                productCount++;
+                productNumber = productCount.ToString("D2");
+                productCode = $"{categoryCode}{manufacturerCode}{productNumber}";
+            }
+
             return productCode;
         }
 
 
         [Authorize]
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromForm] ProductRequest request)
+        public async Task<IActionResult> Put(int id, [FromForm] ProductRequest request)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+            // Lấy userId từ claims
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Invalid user." });
+            }
 
-            // 
-            var product = db.Product.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+            // Tìm sản phẩm cần cập nhật
+            var product = await db.Product.FirstOrDefaultAsync(c => c.Id == id && c.DeletedAt == null);
             if (product == null)
             {
                 return BadRequest(new { message = "Data not found" });
             }
 
-            // 
+            // Kiểm tra phiên bản để đảm bảo tính đồng bộ
             if (product.Version != request.Version)
             {
                 return BadRequest(new { type = "reload", message = "Data has changed, please reload" });
             }
 
-            // 
-            //var category = db.Category.FirstOrDefault(c => c.Id == request.CategoryId);
-            //if (category == null)
-            //{
-            //    return BadRequest(new { message = "Category not found." });
-            //}
-
-            // 
-            var company = db.CompanyPartner.FirstOrDefault(c => c.Id == request.CompanyPartnerId);
+            // Kiểm tra CompanyPartnerId
+            var company = await db.CompanyPartner.FirstOrDefaultAsync(c => c.Id == request.CompanyPartnerId);
             if (company == null)
             {
                 return BadRequest(new { message = "Company partner not found." });
             }
+            var validCategoryIds = request.CategoryIds?.Where(id => id > 0).ToList();
+            if (validCategoryIds == null || !validCategoryIds.Any())
+            {
+                return BadRequest(new { message = "At least one category is required." });
+            }
+            // Tìm danh mục cha có level = 0
+            var parentCategory = db.Category.FirstOrDefault(c =>
+                validCategoryIds.Contains(c.Id) && c.Level == 0)
+                ?? db.Category.FirstOrDefault(pc =>
+                    pc.Level == 0 && db.Category.Any(sub => validCategoryIds.Contains(sub.Id) && sub.ParentId == pc.Id));
 
-            // 
-            //var categoryCode = category.CategoryCode;
+            if (parentCategory == null)
+            {
+                return BadRequest(new { message = "No parent category with level 0 found for the provided subcategories." });
+            }
+            var categoryCode = parentCategory.CategoryCode;
             var manufacturer = company.Name;
             int productCount = db.Product.Count(p => p.CompanyPartnerId == request.CompanyPartnerId) + 1;
-            //var productCode = GenerateProductCode(categoryCode, manufacturer, productCount);
-
-            // Update product
+            // Cập nhật thông tin sản phẩm
             product.Name = request.Name;
-            //product.Code = productCode;
-            //product.CategoryId = request.CategoryId;
+
+            product.Code = GenerateProductCode(categoryCode, manufacturer, productCount);
             product.Description = request.Description;
             product.BasePrice = request.BasePrice;
             product.SellPrice = request.SellPrice;
+            product.Quantity = request.Quantity;
             product.Status = request.Status ?? 0;
-            product.Version = request.Version + 1;
+            product.Version += 1;
             product.UpdateAt = DateTime.Now;
-            product.UpdatedBy = int.Parse(userId);
+            product.UpdatedBy = userId;
 
-            using (var transaction = db.Database.BeginTransaction())
+            using (var transaction = await db.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    // add new author
-                    var validAuthorIds = request.AuthorIds?.Where(id => id > 0).ToList();
-                    if (validAuthorIds != null && validAuthorIds.Any())
+                    // Quản lý Authors
+                    if (request.AuthorIds != null)
                     {
-                        foreach (var authorId in validAuthorIds)
+                        // Lấy các Author hiện tại liên kết với sản phẩm
+                        var existingAuthorIds = await db.AuthorProduct
+                                                        .Where(ap => ap.ProductId == id)
+                                                        .Select(ap => ap.AuthorId)
+                                                        .ToListAsync();
+
+                        // Các Author cần thêm
+                        var newAuthorIds = request.AuthorIds.Except(existingAuthorIds).ToList();
+                        foreach (var authorId in newAuthorIds)
                         {
-                            var author = db.Author.FirstOrDefault(a => a.Id == authorId);
+                            var author = await db.Author.FindAsync(authorId);
                             if (author == null)
                             {
                                 return BadRequest(new { message = $"Author with Id {authorId} not found." });
                             }
 
-
-                            var productAuthorExists = db.AuthorProduct.Any(ap => ap.ProductId == product.Id && ap.AuthorId == authorId);
-                            if (!productAuthorExists)
+                            db.AuthorProduct.Add(new AuthorProduct
                             {
-
-                                db.AuthorProduct.Add(new AuthorProduct
-                                {
-                                    ProductId = product.Id,
-                                    AuthorId = author.Id,
-                                    CreatedAt = DateTime.UtcNow,
-                                    UpdateAt = DateTime.UtcNow,
-                                    UpdatedBy = int.Parse(userId)
-                                });
-                            }
+                                ProductId = id,
+                                AuthorId = authorId,
+                                CreatedAt = DateTime.UtcNow,
+                                UpdateAt = DateTime.UtcNow,
+                                UpdatedBy = userId
+                            });
                         }
 
-                        db.SaveChanges();
-                    }
-
-
-                    var existingImages = db.ProductImage.Where(pi => pi.ProductId == id).ToList();
-                    if (existingImages.Any())
-                    {
-                        foreach (var image in existingImages)
+                        // Các Author cần xóa
+                        var removeAuthorIds = existingAuthorIds.Except(request.AuthorIds).ToList();
+                        foreach (var authorId in removeAuthorIds)
                         {
-                            var imagePath = Path.Combine(_environment.WebRootPath, image.ImagePath);
-                            if (System.IO.File.Exists(imagePath))
+                            var authorProduct = await db.AuthorProduct
+                                                        .FirstOrDefaultAsync(ap => ap.ProductId == id && ap.AuthorId == authorId);
+                            if (authorProduct != null)
                             {
-                                System.IO.File.Delete(imagePath); // Delete file 
+                                db.AuthorProduct.Remove(authorProduct);
                             }
-                            db.ProductImage.Remove(image); //
                         }
-                        db.SaveChanges();
                     }
 
-                    // add new img
+                    // Quản lý Categories
+                    if (request.CategoryIds != null)
+                    {
+                        // Lấy các Category hiện tại liên kết với sản phẩm
+                        var existingCategoryIds = await db.ProductCategory
+                                                            .Where(cp => cp.ProductId == id)
+                                                            .Select(cp => cp.CategoryId)
+                                                            .ToListAsync();
+
+                        // Các Category cần thêm
+                        var newCategoryIds = request.CategoryIds.Except(existingCategoryIds).ToList();
+                        foreach (var categoryId in newCategoryIds)
+                        {
+                            var category = await db.Category.FindAsync(categoryId);
+                            if (category == null)
+                            {
+                                return BadRequest(new { message = $"Category with Id {categoryId} not found." });
+                            }
+
+                            db.ProductCategory.Add(new ProductCategory
+                            {
+                                ProductId = id,
+                                CategoryId = categoryId,
+                                CreatedAt = DateTime.UtcNow,
+                                UpdateAt = DateTime.UtcNow,
+                                UpdatedBy = userId
+                            });
+                        }
+
+                        // Các Category cần xóa
+                        var removeCategoryIds = existingCategoryIds.Except(request.CategoryIds).ToList();
+                        foreach (var categoryId in removeCategoryIds)
+                        {
+                            var categoryProduct = await db.ProductCategory
+                                                        .FirstOrDefaultAsync(cp => cp.ProductId == id && cp.CategoryId == categoryId);
+                            if (categoryProduct != null)
+                            {
+                                db.ProductCategory.Remove(categoryProduct);
+                            }
+                        }
+                    }
+
+                    //// Quản lý hình ảnh đã bị xóa
+                    //if (request.DeletedImages != null && request.DeletedImages.Any())
+                    //{
+                    //    foreach (var imagePath in request.DeletedImages)
+                    //    {
+                    //        var productImage = await db.ProductImage
+                    //                                    .FirstOrDefaultAsync(pi => pi.ProductId == id && pi.ImagePath.Equals(imagePath, StringComparison.OrdinalIgnoreCase));
+                    //        if (productImage != null)
+                    //        {
+                    //            var fullPath = Path.Combine(_environment.WebRootPath, imagePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    //            if (System.IO.File.Exists(fullPath))
+                    //            {
+                    //                System.IO.File.Delete(fullPath);
+                    //            }
+                    //            db.ProductImage.Remove(productImage);
+                    //        }
+                    //    }
+                    //}
+
+                    // Quản lý Thumbnail
+                    if (request.ImageThumbPath != null && request.ImageThumbPath.Length > 0)
+                    {
+                        // Xóa thumbnail cũ nếu có
+                        if (!string.IsNullOrEmpty(product.ImageThumbPath))
+                        {
+                            var oldThumbPath = Path.Combine(_environment.WebRootPath, product.ImageThumbPath.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                            if (System.IO.File.Exists(oldThumbPath))
+                            {
+                                System.IO.File.Delete(oldThumbPath);
+                            }
+                        }
+
+                        // Lưu thumbnail mới
+                        var thumbFile = request.ImageThumbPath;
+                        var validThumbExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+                        var thumbExtension = Path.GetExtension(thumbFile.FileName).ToLowerInvariant();
+
+                        if (!validThumbExtensions.Contains(thumbExtension))
+                        {
+                            return BadRequest(new { message = $"Invalid thumbnail file type: {thumbExtension}. Only .jpg, .jpeg, .png, and .webp are allowed." });
+                        }
+
+                        var thumbUploads = Path.Combine(_environment.WebRootPath, "uploads", "thumbProduct");
+                        if (!Directory.Exists(thumbUploads))
+                        {
+                            Directory.CreateDirectory(thumbUploads);
+                        }
+
+                        var thumbFileName = $"{Guid.NewGuid()}{thumbExtension}";
+                        var thumbFilePath = Path.Combine(thumbUploads, thumbFileName);
+
+                        using (var stream = new FileStream(thumbFilePath, FileMode.Create))
+                        {
+                            await thumbFile.CopyToAsync(stream);
+                        }
+
+                        product.ImageThumbPath = Path.Combine("uploads", "thumbProduct", thumbFileName).Replace("\\", "/");
+                    }
+
+                    // Quản lý hình ảnh sản phẩm mới
                     if (request.ProductImages != null && request.ProductImages.Any())
                     {
                         foreach (var imageFile in request.ProductImages)
@@ -632,30 +747,29 @@ namespace AuthenticationJWT.Controllers
 
                                 using (var stream = new FileStream(filePath, FileMode.Create))
                                 {
-                                    imageFile.CopyTo(stream);
+                                    await imageFile.CopyToAsync(stream);
                                 }
 
                                 var productImage = new ProductImage
                                 {
-                                    ProductId = product.Id,
-                                    ImagePath = Path.Combine("uploads", "products", fileName),
+                                    ProductId = id,
+                                    ImagePath = Path.Combine("uploads", "products", fileName).Replace("\\", "/"),
                                     CreatedAt = DateTime.UtcNow,
-                                    UpdatedBy = int.Parse(userId)
+                                    UpdatedBy = userId
                                 };
 
                                 db.ProductImage.Add(productImage);
                             }
                         }
-
-                        db.SaveChanges();
                     }
 
-                    db.SaveChanges();
-                    transaction.Commit();
+                    // Lưu các thay đổi vào cơ sở dữ liệu
+                    await db.SaveChangesAsync();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback(); // Return if error
+                    await transaction.RollbackAsync();
                     return StatusCode(500, new { message = "Error updating product and images.", error = ex.Message });
                 }
             }
