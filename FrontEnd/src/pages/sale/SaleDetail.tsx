@@ -4,15 +4,21 @@ import {useDispatch} from "react-redux";
 import $axios, {authorization} from "@src/axios.ts";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
-interface AuthorAdd {
+interface SaleAdd {
 
     id: any,
 
 }
-const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
+const SaleDetail : React.FC<SaleAdd> = ({id}) => {
     const [name, setName] = useState('')
-    const [biography, setBiography] = useState('')
-    const [birth, setBirth] = useState('')
+
+
+  
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [type, setType] = useState<number>(1);
+    const [discount, setDiscount] = useState<number>(0);
+ 
     const [status, setStatus] = useState(false)
     const [createdBy, setCreatedBy] = useState('')
     const [updatedBy, setUpdatedBy] = useState('')
@@ -27,25 +33,35 @@ const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
     const loadData = ()  => {
         dispatch(setLoading(true))
 
-        $axios.get(`Author/${id}`).then(res => {
+        $axios.get(`Sale/${id}`).then(res => {
 
-            if (res.data.data && res.data.data.Author.Name) {
-                  setName( res.data.data.Author.Name)
+            if (res.data.data && res.data.data.Sale.Name) {
+                setName(res.data.data.Sale.Name);
+              }
+              if (res.data.data && res.data.data.Sale.Type) {
+                setType(res.data.data.Sale.Type);
+              }
+              if (res.data.data && res.data.data.Sale.StartDate) {
+                setStartDate(
+                  dayjs(res.data.data.Sale.StartDate).format("YYYY-MM-DDTHH:mm")
+                );
+              }
+              if (res.data.data && res.data.data.Sale.EndDate) {
+                setEndDate(dayjs(res.data.data.Sale.EndDate).format("YYYY-MM-DDTHH:mm"));
+              }
+              if (res.data.data && res.data.data.Sale.Discount) {
+                setDiscount(res.data.data.Sale.Discount * 100);
+              }
+      
+              if (res.data.data && res.data.data.Sale.Status) {
+                setStatus(res.data.data.Sale.Status);
+              }
+           
+            if (res.data.data && res.data.data.Sale.UpdateAt) {
+                setUpdateAt( dayjs(res.data.data.Sale.UpdateAt).format('YYYY-MM-DD HH:mm:ss'))
             }
-            if (res.data.data && res.data.data.Author.Biography) {
-                setBiography(res.data.data.Author.Biography)
-            }
-            if (res.data.data && res.data.data.Author.Birth) {
-                setBirth(dayjs(res.data.data.Author.Birth).format('YYYY-MM-DD')) 
-            }
-            if (res.data.data && res.data.data.Author.Status) {
-                setStatus(res.data.data.Author.Status)
-            }
-            if (res.data.data && res.data.data.Author.UpdateAt) {
-                setUpdateAt( dayjs(res.data.data.Author.UpdateAt).format('YYYY-MM-DD HH:mm:ss'))
-            }
-            if (res.data.data && res.data.data.Author.CreatedAt) {
-                setCreatedAt(dayjs(res.data.data.Author.CreatedAt).format('YYYY-MM-DD HH:mm:ss'))
+            if (res.data.data && res.data.data.Sale.CreatedAt) {
+                setCreatedAt(dayjs(res.data.data.Sale.CreatedAt).format('YYYY-MM-DD HH:mm:ss'))
             }
            
             if (res.data.data && res.data.data.UserCreate) {
@@ -64,7 +80,12 @@ const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
             })
     }
     const dispatch = useDispatch();
-
+    const typeLabels: { [key: number]: string } = {
+        1: "Free ship",
+        2: "Discount by order",
+        3: "Discount by category"
+      };
+      
     return (
         <div className='container-fluid'>
             <div className='row  '>
@@ -78,21 +99,32 @@ const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
                     </div>
                     <div>
                         <span className='label-form me-3 fs-6'>
-                            Date of birth:
+                           Start date
                         </span>
-                        <span className="fs-5 text-success"> {birth ? dayjs(birth).format("DD-MM-YYYY") : '-'}</span>
+                        <span className="fs-5 text-success"> {startDate ? dayjs(startDate).format("DD-MM-YYYY - HH:mm") : '-'}</span>
                     </div>
-
-
-                </div>
-                <div className='col-6'>
                     <div>
-                        <span className='label-form me-3'>
-                            Biography:
+                        <span className='label-form me-3 fs-6'>
+                           End date
                         </span>
-                        <span> {biography? biography : '-'}</span>
+                        <span className="fs-5 text-success"> {endDate ? dayjs(endDate).format("DD-MM-YYYY - HH:mm") : '-'}</span>
                     </div>
+                    <div>
+                    <span className='label-form me-3 fs-6'>
+                           Discount
+                        </span>
+
+                        <span className="fs-5 text-success"> {discount ? discount + " %" : '-'}</span>
+                    </div>
+                    <div>
+                    <span className='label-form me-3 fs-6'>
+                           Type
+                        </span>
+                        <span className="fs-5 text-success">  {typeLabels[type] || "-"}</span>
+                    </div>
+
                 </div>
+              
                 <div className='mt-3 col-6'>
                     <div>
                         <span className='label-form me-3'>Status:</span>
@@ -108,9 +140,6 @@ const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
                             )
                         }
                     </div>
-
-                </div>
-                <div className='col-6 mt-3'>
                     <div>
                         <span className='label-form me-3'>
                             Created by:
@@ -136,7 +165,9 @@ const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
                         </span>
                         <span> {updatedAt ? dayjs(updatedAt).format("DD-MM-YYYY | HH:mm:ss")  : '-'}</span>
                     </div>
+
                 </div>
+               
                 <div className=' group-btn'>
                     <button onClick={() => dispatch(setShowModal(false))} type="button"
                             className="btn btn-outline-secondary">Close
@@ -147,4 +178,4 @@ const AuthorAdd : React.FC<AuthorAdd> = ({id}) => {
     )
 }
 
-export default AuthorAdd
+export default SaleDetail

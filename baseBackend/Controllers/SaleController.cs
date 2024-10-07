@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AuthenticationJWT.Controllers;
 [Route("api/[controller]")]
@@ -34,13 +33,13 @@ public class SaleController : ControllerBase
     [HttpGet("{id}")]
     public IActionResult Get(int id)
     {
-        var author = (from r in db.Author
-                      join u in db.User on r.CreatedBy equals u.Id
-                      join u2 in db.User on r.UpdatedBy equals u2.Id
-                      where r.Id == id && r.DeletedAt == null
+        var author = (from s in db.Sale
+                      join u in db.User on s.CreatedBy equals u.Id
+                      join u2 in db.User on s.UpdatedBy equals u2.Id
+                      where s.Id == id && s.DeletedAt == null
                       select new
                       {
-                          Author = r,
+                          Sale = s,
                           UserCreate = u.Username,
                           UserUpdate = u2.Username,
 
@@ -58,16 +57,16 @@ public class SaleController : ControllerBase
     [Authorize]
     public IActionResult Post([FromBody] SaleRequest request)
     {
-        // Kiểm tra tính hợp lệ của dữ liệu gửi lên
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        // Lấy userId từ claim
+
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
 
-        // Tạo một đối tượng Sale mới
+
         var sale = new Sale
         {
             Name = request.Name,
@@ -83,11 +82,11 @@ public class SaleController : ControllerBase
             UpdatedBy = int.Parse(userId)
         };
 
-        // Lưu đối tượng Sale vào cơ sở dữ liệu
+
         db.Sale.Add(sale);
         db.SaveChanges();
 
-        // Trả về dữ liệu đã tạo
+
         return Ok(new { data = sale });
     }
 
@@ -99,23 +98,25 @@ public class SaleController : ControllerBase
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
 
-        var sale = db.Author.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
-        //if (author == null)
-        //{
-        //    return BadRequest(new { message = "Data not found" });
-        //}
-        //if (author.Version != request.Version)
-        //{
-        //    return BadRequest(new { type = "reload", message = "Data has change please reload" });
-        //}
-        //author.Name = request.Name;
-        //author.Birth = request.DateOfBirth;
-        //author.Biography = request.Biography;
-        //author.Status = request.Status ?? 0;
-        //author.Version = request.Version + 1;
-        //author.UpdateAt = DateTime.Now;
-        //author.UpdatedBy = int.Parse(userId);
-        //db.SaveChanges();
+        var sale = db.Sale.FirstOrDefault(c => c.Id == id && c.DeletedAt == null);
+        if (sale == null)
+        {
+            return BadRequest(new { message = "Data not found" });
+        }
+        if (sale.Version != request.Version)
+        {
+            return BadRequest(new { type = "reload", message = "Data has change please reload" });
+        }
+        sale.Name = request.Name;
+        sale.StartDate = request.StartDate ?? DateTime.MinValue;
+        sale.EndDate = request.EndDate ?? DateTime.MinValue;
+        sale.Discount = request.Discount / 100;
+        sale.Type = request.Type;
+        sale.Status = request.Status ?? 0;
+        sale.Version = request.Version + 1;
+        sale.UpdateAt = DateTime.Now;
+        sale.UpdatedBy = int.Parse(userId);
+        db.SaveChanges();
         return Ok(new { data = sale });
     }
 

@@ -18,7 +18,7 @@ import Cookies from "js-cookie";
 import { Editor, EditorTextChangeEvent } from "primereact/editor";
 import { Toast } from "primereact/toast";
 import { FileUpload } from "primereact/fileupload";
-import DeleteIcon from "@mui/icons-material/Delete"; // Thêm import biểu tượng xóa
+import DeleteIcon from "@mui/icons-material/Delete";
 import "@assets/styles/product.scss";
 
 interface ProductAddProps {
@@ -54,15 +54,19 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const [sellPrice, setSellPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [companyPartnerId, setCompanyPartnerId] = useState<number>(0);
-  const [productImages, setProductImages] = useState<File[]>([]); // Lưu trữ các File
+  const [productImages, setProductImages] = useState<File[]>([]); // Hình ảnh mới
+  const [selectedThumb, setSelectedThumb] = useState<File | null>(null); // Thumbnail mới
   const [authorIds, setAuthorIds] = useState<number[]>([]);
   const [categoryIds, setCategoryIds] = useState<number[]>([]);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]); // Hình ảnh hiện có
+  const [deletedImages, setDeletedImages] = useState<string[]>([]); // Hình ảnh bị xóa
   const token = Cookies.get("token");
   const dispatch = useDispatch();
+
+  console.log(error);
 
   useEffect(() => {
     if (form === "edit" && id) {
@@ -76,7 +80,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     try {
       const res = await $axios.get(`Product/${id}`);
       const product = res.data.data;
-    
+
       console.log(product[0]);
       if (product) {
         setName(product[0].Name || "");
@@ -100,7 +104,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         // Xử lý hình ảnh hiện có
         if (product[0].ProductImages) {
           setExistingImages(
-            product[0].ProductImages.map((img) => img.ImagePath)
+            product[0].ProductImages.map((img: any) => img.ImagePath)
           );
         }
         setItem(product[0]);
@@ -141,9 +145,17 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     }
   };
 
-  const handleFileSelect = (event: any) => {
+  // Hàm xử lý chọn Thumbnail
+  const handleThumbnailSelect = (event: any) => {
     const selectedFiles: File[] = event.files;
-    // Kiểm tra kích thước và loại file nếu cần
+    if (selectedFiles && selectedFiles.length > 0) {
+      setSelectedThumb(selectedFiles[0]);
+    }
+  };
+
+  // Hàm xử lý chọn hình ảnh sản phẩm
+  const handleProductImagesSelect = (event: any) => {
+    const selectedFiles: File[] = event.files;
     setProductImages((prevImages) => [...prevImages, ...selectedFiles]);
   };
 
@@ -154,16 +166,13 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const handleRemoveImage = (index: number) => {
     setProductImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
+
   const handleRemoveExistingImage = (index: number) => {
-    // Tạo bản sao của mảng existingImages để không thay đổi trực tiếp state
-    const updatedImages = [...existingImages];
-
-    // Xóa hình ảnh tại vị trí index
-    updatedImages.splice(index, 1);
-
-    // Cập nhật state với mảng mới sau khi xóa
-    setExistingImages(updatedImages);
+    const imageToRemove = existingImages[index];
+    setDeletedImages((prev) => [...prev, imageToRemove]);
+    setExistingImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
+
   const addNewProduct = async () => {
     setError({});
     const formData = new FormData();
@@ -179,6 +188,15 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     categoryIds.forEach((id) => formData.append("CategoryIds", id.toString()));
     productImages.forEach((file) => formData.append("ProductImages", file));
 
+    if (selectedThumb) {
+      formData.append("ImageThumbPath", selectedThumb);
+    }
+
+    // Nếu API yêu cầu SaleIds, hãy thêm trường này
+    // Ví dụ:
+    // const saleIds = [/* các ID sale */];
+    // saleIds.forEach((id) => formData.append("SaleIds", id.toString()));
+
     dispatch(setLoading(true));
     try {
       await $axios.post("Product", formData, {
@@ -190,8 +208,8 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
       );
       dispatch(setShowModal(false));
     } catch (err: any) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
+      if (err.response?.data?.errors) {
+        setError(err.response.data.errors);
       }
       dispatch(
         setToast({
@@ -215,10 +233,22 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     formData.append("SellPrice", sellPrice.toString());
     formData.append("Quantity", quantity.toString());
     formData.append("CompanyPartnerId", companyPartnerId.toString());
+
     authorIds.forEach((id) => formData.append("AuthorIds", id.toString()));
     categoryIds.forEach((id) => formData.append("CategoryIds", id.toString()));
     productImages.forEach((file) => formData.append("ProductImages", file));
-console.log(item)
+
+    if (selectedThumb) {
+      formData.append("ImageThumbPath", selectedThumb);
+    }
+
+    // Gửi danh sách các hình ảnh đã bị xóa
+    deletedImages.forEach((imgPath) => formData.append("DeletedImages", imgPath));
+
+    // Nếu API yêu cầu SaleIds, hãy thêm trường này
+    // Ví dụ:
+    // const saleIds = [/* các ID sale */];
+    // saleIds.forEach((id) => formData.append("SaleIds", id.toString()));
 
     dispatch(setLoading(true));
     try {
@@ -231,13 +261,13 @@ console.log(item)
       );
       dispatch(setShowModal(false));
     } catch (err: any) {
-      if (err.response?.data?.Errors) {
-        setError(err.response.data.Errors);
+      if (err.response?.data?.errors) {
+        setError(err.response.data.errors);
       }
       dispatch(
         setToast({
           status: "error",
-          message: err.response?.data?.Errors || "Something went wrong",
+          message: err.response?.data?.message || "Something went wrong",
         })
       );
     } finally {
@@ -253,7 +283,7 @@ console.log(item)
   return (
     <div className="container-fluid">
       <div className="row">
-        {/* Các trường Name, Status, Description */}
+        {/* Các trường Name, Status */}
         <div className="col-6">
           <div>
             <label className="label-form">
@@ -416,25 +446,72 @@ console.log(item)
           <ShowError key="CategoryIds" />
         </div>
 
-        {/* Trường File Upload */}
+        {/* Trường File Upload Thumbnail */}
+        <div className="col-12 mt-3">
+          <label className="label-form">
+            Thumbnail Product <span className="text-danger">*</span>
+          </label>
+          <FileUpload
+            mode="basic"
+            name="thumbnail"
+            accept="image/*"
+            maxFileSize={1000000000}
+            onSelect={handleThumbnailSelect}
+            chooseLabel="Select Thumbnail"
+            className="file-upload"
+            customUpload
+            uploadHandler={() => {}} // Nếu không sử dụng uploadHandler tự túc
+          />
+          <ShowError key="ImageThumbPath" />
+          {selectedThumb && (
+            <div className="mt-2 position-relative d-inline-block">
+              <img
+                src={URL.createObjectURL(selectedThumb)}
+                alt="Thumbnail Preview"
+                className="img-thumbnail"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  objectFit: "cover",
+                }}
+              />
+              <IconButton
+                size="small"
+                onClick={() => setSelectedThumb(null)}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  backgroundColor: "rgba(255, 255, 255, 0.7)",
+                }}
+              >
+                <DeleteIcon fontSize="small" color="error" />
+              </IconButton>
+            </div>
+          )}
+        </div>
+
+        {/* Trường File Upload Product Images */}
         <div className="col-12 mt-3">
           <label className="label-form">
             Product Images <span className="text-danger">*</span>
           </label>
           <FileUpload
             mode="basic"
-            name="file"
+            name="productImages"
             accept="image/*"
-            maxFileSize={1000000}
-            onSelect={handleFileSelect}
+            maxFileSize={1000000000}
+            onSelect={handleProductImagesSelect}
             chooseLabel="Select Images"
             className="file-upload"
             multiple
+            customUpload
+            uploadHandler={() => {}} // Nếu không sử dụng uploadHandler tự túc
           />
           <ShowError key="ProductImages" />
         </div>
 
-        {/* Phần Preview và Xóa Ảnh */}
+        {/* Phần Preview và Xóa Ảnh Mới */}
         {productImages.length > 0 && (
           <div className="col-12 mt-3">
             <label className="label-form">Image Preview:</label>
@@ -468,6 +545,7 @@ console.log(item)
             </div>
           </div>
         )}
+
         {/* Hình ảnh hiện có */}
         {existingImages.length > 0 && (
           <div className="col-12 mt-3">
@@ -488,7 +566,7 @@ console.log(item)
                   {/* Nút xóa hình ảnh hiện có */}
                   <IconButton
                     size="small"
-                    onClick={() => handleRemoveExistingImage(index)} // Hàm xóa hình ảnh cũ
+                    onClick={() => handleRemoveExistingImage(index)}
                     style={{
                       position: "absolute",
                       top: 0,

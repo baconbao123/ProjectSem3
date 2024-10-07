@@ -1,0 +1,32 @@
+/* Trạng thái còn hạn */
+.countdown-normal {
+    color: #28a745; /* Màu xanh lá cây */
+    font-weight: bold;
+    background-color: #e6f7e6; /* Màu nền nhẹ */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: inline-block;
+}
+
+/* Trạng thái sắp hết hạn */
+.countdown-warning {
+    color: #e29b00; /* Màu vàng */
+    font-weight: bold;
+    background-color: #fff3cd; /* Màu nền vàng nhạt */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: inline-block;
+}
+
+/* Trạng thái hết hạn */
+.countdown-expired {
+    color: #ff4d4d; /* Màu đỏ */
+    font-weight: bold;
+    background-color: #f8d7da; /* Màu nền đỏ nhạt */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: inline-block;
+}

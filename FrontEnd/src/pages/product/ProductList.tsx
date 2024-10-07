@@ -41,7 +41,7 @@ const ProductList : React.FC = () => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
-            {key: "ProductImages.ImagePath", label: "Image", class: ""},
+            {key: "ImageThumbPath", label: "Image", class: ""},
             {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "Code", label: "Product code", class: "", sortable: true, sortValue: 'none'},
             {key: "CompanyPartnerName", label: "Company partner", class: ""},
@@ -341,6 +341,7 @@ const ProductList : React.FC = () => {
                                 ) {
                                     
                                     const imagePath = item.ProductImages && item.ProductImages.length > 0 ? item.ProductImages[0].ImagePath : null;
+                                    const imageThumbPath = item.ImageThumbPath && item.ImageThumbPath.length > 0 ? item.ImageThumbPath : null;
                                     return (
                                         <TableRow key={crypto.randomUUID()}>
                                             {
@@ -354,12 +355,13 @@ const ProductList : React.FC = () => {
                                                         )
                                                     }
 
-                                                    if (field.key === "ProductImages.ImagePath") {
+                                                    if (field.key === "ImageThumbPath") {
+                                                       
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                            {imagePath? (
+                                                            {imageThumbPath? (
                                                               <Image
-                                                                src={baseUrl + item.ProductImages[0].ImagePath}
+                                                                src={baseUrl + item.ImageThumbPath}
                                                                 alt={item.Name}
                                                                 className="image-product"
                                                                 width="70"
