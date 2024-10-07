@@ -1,67 +1,54 @@
-interface CardVoucherState {
-  type: 'Freeship' | 'discountByOrder' | 'discountByCategory'
+export interface InitVoucherState {
+  Type: number
   name: 'FREESHIP' | 'VOUCHER'
   icon: 'pi pi-truck' | 'pi pi-box' | 'pi pi-book'
-  desc: 'On Orders Over' | 'On Category'
-  id?: string
-  discount: string
+  desc?: 'On Category'
+  Id?: string
+  Discount: string
   status: string
   quantity: string
-  userId?: string
   subCate?: string
-  totalOrder?: string
 }
 
-export function createVoucher(
-  id: string,
-  type: 'Freeship' | 'discountByOrder' | 'discountByCategory',
-  discount: string,
-  status: string,
-  quantity: string,
-  userId: string = '',
-  subCate: string = '',
-  totalOrder: string = ''
-): CardVoucherState {
-  switch (type) {
-    case 'Freeship':
+export function createVoucher(initVoucher: InitVoucherState): InitVoucherState {
+  const { Id, Type, Discount, status, quantity, subCate } = initVoucher
+
+  switch (Type) {
+    case 1:
       return {
-        id,
-        type,
+        Id,
+        Type,
         name: 'FREESHIP',
         icon: 'pi pi-truck',
-        desc: 'On Orders Over',
-        userId,
         quantity,
-        discount,
-        status,
-        totalOrder
+        Discount,
+        status
       }
-    case 'discountByOrder':
+    case 2:
       return {
-        id,
-        type,
+        Id,
+        Type,
         name: 'VOUCHER',
         icon: 'pi pi-box',
-        desc: 'On Orders Over',
-        userId,
         quantity,
-        discount,
-        status,
-        totalOrder
+        Discount,
+        status
       }
-    case 'discountByCategory':
+    case 3:
       return {
-        id,
-        type,
+        Id,
+        Type,
         name: 'VOUCHER',
         icon: 'pi pi-book',
         desc: 'On Category',
-        userId,
         quantity,
-        discount,
+        Discount,
         status,
-        subCate,
-        totalOrder
+        subCate
       }
+    default:
+      throw new Error(`InvalId voucher Type: ${Type}`)
   }
 }
+
+export default createVoucher

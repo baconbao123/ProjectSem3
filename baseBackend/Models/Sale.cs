@@ -12,6 +12,7 @@ public class Sale
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public int Type { get; set; }
+
     public int Version { get; set; }
 
     public int Status { get; set; }

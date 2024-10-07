@@ -10,15 +10,12 @@
     border-right: 1px solid $prime-voucher-f;
   }
 
-  .card-btn {
-    .btnGet,
-    .btnUse {
-      background-color: $prime-voucher-f;
-      border-color: $prime-voucher-f;
+  .btnGet {
+    background-color: $prime-voucher-f;
+    border-color: $prime-voucher-f;
 
-      &:hover {
-        background-color: $prime-voucher-f-hover;
-      }
+    &:hover {
+      background-color: $prime-voucher-f-hover;
     }
   }
 }
@@ -30,15 +27,12 @@
     border-right: 1px solid $prime-voucher-o;
   }
 
-  .card-btn {
-    .btnGet,
-    .btnUse {
-      background-color: $prime-voucher-o;
-      border-color: $prime-voucher-o;
+  .btnGet {
+    background-color: $prime-voucher-o;
+    border-color: $prime-voucher-o;
 
-      &:hover {
-        background-color: $prime-voucher-o-hover;
-      }
+    &:hover {
+      background-color: $prime-voucher-o-hover;
     }
   }
 }
@@ -50,15 +44,12 @@
     border-right: 1px solid $prime-voucher-c;
   }
 
-  .card-btn {
-    .btnGet,
-    .btnUse {
-      background-color: $prime-voucher-c;
-      border-color: $prime-voucher-c;
+  .btnGet {
+    background-color: $prime-voucher-c;
+    border-color: $prime-voucher-c;
 
-      &:hover {
-        background-color: $prime-voucher-c-hover;
-      }
+    &:hover {
+      background-color: $prime-voucher-c-hover;
     }
   }
 }
@@ -88,12 +79,21 @@
   }
 
   .card-right {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
     padding: 18px;
     font-size: 15px;
     font-weight: 600;
 
     .text {
       font-weight: 400;
+    }
+
+    .btnGet {
+      border-radius: 5px;
+      width: 50px;
+      font-size: 14px;
     }
   }
 
@@ -104,11 +104,6 @@
     align-items: center;
 
     // GET
-    .btnGet {
-      border-radius: 5px;
-      width: 50px;
-      font-size: 14px;
-    }
 
     .claimed {
       font-size: 14px;

@@ -1,4 +1,5 @@
 using AuthenticationJWT.DTO;
+using AuthenticationJWT.middleware;
 using AuthenticationJWT.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,10 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<UserFEService, UserFEServiceImpl>();
+builder.Services.AddScoped<FAQService, FAQServiceImpl>();
+builder.Services.AddScoped<UserAddressFEService, UserAddressFEImplService>();
+builder.Services.AddScoped<OrderService, OrderServiceImpl>();
+builder.Services.AddScoped<UserSaleFEService, UserSaleFEServiceImpl>();
 builder.Services.AddAutoMapper(typeof(MyMapper));
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -91,7 +96,6 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 
 
-
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseStaticFiles();
@@ -100,4 +104,5 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseMiddleware<PermissionMiddleware>();
 app.Run();

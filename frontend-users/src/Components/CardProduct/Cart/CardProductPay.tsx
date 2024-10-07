@@ -3,8 +3,9 @@ import { Col, Row } from 'react-bootstrap'
 import './CardProductPay.scss'
 import Product from '../../../Interfaces/Product'
 import { calculateTotalPrice, sliceText } from '../../../utils'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { clearProductInCart } from '../../../Store/cartSlice'
+import { RootState } from '../../../Store/store'
 
 export interface CardProductPayProps {
   product: Product
@@ -14,23 +15,32 @@ export interface CardProductPayProps {
 }
 
 const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChecked, updateTotal }) => {
-  const [localChcked, setLocalChecked] = useState<boolean>(isChecked)
+  const [localChecked, setLocalChecked] = useState<boolean>(isChecked)
   const [amount, setAmount] = useState<number>(1)
+  const userId = useSelector((state: RootState) => state.auth.userId)
 
   const dispatch = useDispatch()
 
   // Handle Click Increase and Decrease
   const handleDecrease = () => {
     if (amount > 1) {
-      setAmount(amount - 1)
+      setAmount((prev) => {
+        const newAmount = prev - 1
+        updateLocalStorage(localChecked, newAmount)
+        return newAmount
+      })
     }
   }
 
   const handleIncrease = () => {
-    setAmount(amount + 1)
+    setAmount((prev) => {
+      const newAmount = prev + 1
+      updateLocalStorage(localChecked, newAmount)
+      return newAmount
+    })
   }
 
-  // hanle checked
+  // Handle checked state
   useEffect(() => {
     setLocalChecked(isChecked)
   }, [isChecked])
@@ -40,13 +50,41 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
     setLocalChecked(checked)
     onCheck(product.Id, checked)
 
-    if(checked) {
+    // Only update the total based on the checkbox state
+    if (checked) {
       updateTotal(totalPrice)
     } else {
       updateTotal(-totalPrice)
     }
+
+    // Update localStorage
+    updateLocalStorage(checked)
   }
 
+  // Retrieve existing checked products from localStorage
+  const getCheckedProducts = () => {
+    const storeProducts = localStorage.getItem(`productChecked_${userId}`)
+    return storeProducts ? JSON.parse(storeProducts) : []
+  }
+
+  // Update localStorage when the checkbox is changed
+  const updateLocalStorage = (checked: boolean, updatedAmount: number = amount) => {
+    let storedProducts = getCheckedProducts()
+
+    if (checked) {
+      const exists = storedProducts.some((p: any) => p.Id === product.Id)
+
+      if (!exists) {
+        storedProducts.push({ ...product, quantity: updatedAmount })
+      } else {
+        storedProducts = storedProducts.map((p: any) => (p.Id === product.Id ? { ...p, quantity: updatedAmount } : p))
+      }
+    } else {
+      storedProducts = storedProducts.filter((p: any) => p.Id !== product.Id)
+    }
+
+    localStorage.setItem(`productChecked_${userId}`, JSON.stringify(storedProducts))
+  }
 
   // Total Price By Item
   const totalPrice = product.SellPrice
@@ -68,23 +106,22 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
     }
   }, [amount, isChecked, totalPrice, updateTotal])
 
-    // Handle remove a product
-    const handleRemoveAPoduct = (productId: number) => {
-      dispatch(clearProductInCart(productId))
-    }
+  // Handle remove a product
+  const handleRemoveAPoduct = (productId: number) => {
+    dispatch(clearProductInCart(productId))
+  }
 
-    const handleDeleteClick = (e:  React.MouseEvent<HTMLElement>) => {
-      e.stopPropagation()
-      handleRemoveAPoduct(product.Id)
-    }
-  
+  const handleDeleteClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    handleRemoveAPoduct(product.Id)
+  }
 
   return (
     <Row>
       <Col lg={3}>
         <div className='div-left'>
-          <input type='checkbox' className='check-items' checked={localChcked} onChange={handleCheckboxChange} />
-          <img src={product.ProductImage[0]} className='img-card' />
+          <input type='checkbox' className='check-items' checked={localChecked} onChange={handleCheckboxChange} />
+          <img src='https://itbook.store/img/books/9781617291609.png' className='img-card' />
         </div>
       </Col>
       <Col lg={5} className='content-books'>
@@ -115,7 +152,7 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
         {totalPrice.toFixed(1)}
       </Col>
       <Col lg={1} className='container-trash'>
-        <i className='pi pi-trash' onClick={handleDeleteClick}/>
+        <i className='pi pi-trash' onClick={handleDeleteClick} />
       </Col>
     </Row>
   )
