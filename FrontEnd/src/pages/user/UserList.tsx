@@ -24,6 +24,7 @@ import UserDetail   from "@pages/user/UserDetail.tsx";
 import {checkPermission} from "@src/Service/common.ts";
 import { Image } from 'primereact/image';
 import defaultImage from  '@src/images/default.png'
+import ErrorPage from "@pages/common/ErrorPage.tsx";
 const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -395,7 +396,7 @@ const ResourceList : React.FC = () => {
                                                     if (field.key === "Avatar") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <Image src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + item[field.key]} width="100"  onError={(e) => {
+                                                                <Image src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + item[field.key]} height="100"  onError={(e) => {
                                                                     e.target.onerror = null; // Ngăn lặp lại lỗi
                                                                     e.target.src = defaultImage; // Đổi sang ảnh mặc định
                                                                 }} preview />

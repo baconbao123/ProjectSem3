@@ -1,4 +1,5 @@
 using AuthenticationJWT.DTO;
+using AuthenticationJWT.middleware;
 using AuthenticationJWT.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -91,7 +92,6 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 
 
-
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseStaticFiles();
@@ -100,4 +100,5 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseMiddleware<PermissionMiddleware>();
 app.Run();

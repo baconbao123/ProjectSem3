@@ -18,19 +18,15 @@ const MenuTopBar = [
 ]
 
 const MenuSideBar = [
-    {link: '/user', title: 'User', icon: PersonOutlineOutlinedIcon,  code: 'user'},
-    {link: '/resource', title: 'Resource', icon: CollectionsBookmarkOutlinedIcon,  code: 'resource'},
-    {link: '/role', title: 'Role', icon: AddModeratorOutlinedIcon,  code: 'role'},
-    {link: '/permission', title: 'Permission', icon: ShieldOutlinedIcon,  code: 'permission'},
-    {link: '/category', title: 'Category', icon: ClassOutlinedIcon,  code: 'category'},
-    {link: '/author', title: 'Author', icon: RecentActorsOutlinedIcon,  code: 'author'},
-    {link: '/company', title: 'Company', icon: BusinessIcon,  code: 'company'},
-
-    // {link: '/admin/about', title: 'About', icon: BadgeIcon,  code: 'admin2'},
-     {link: '/discount', title: 'Discount', icon: DiscountOutlinedIcon  , code: 'discount'},
-     {link: '/product', title: 'Product', icon: Inventory2OutlinedIcon  , code: 'product'},
-    // {link: '/admin/stock', title: 'Stock', icon: WarehouseOutlinedIcon,  code: 'admin4'},
-    // {link: '/admin/setting', title: 'Setting', icon: SettingsOutlinedIcon,  code: 'admin5'},
+    {link: '/user', title: 'User', icon: PersonOutlineOutlinedIcon,  code: 'User'},
+    {link: '/product', title: 'Product', icon: Inventory2OutlinedIcon  , code: 'Product'},
+    {link: '/category', title: 'Category', icon: ClassOutlinedIcon,  code: 'Category'},
+    {link: '/author', title: 'Author', icon: RecentActorsOutlinedIcon,  code: 'Author'},
+    {link: '/company', title: 'Company', icon: BusinessIcon,  code: 'Company'},
+    {link: '/discount', title: 'Discount', icon: DiscountOutlinedIcon  , code: 'Discount'},
+    {link: '/role', title: 'Role', icon: AddModeratorOutlinedIcon,  code: 'Role'},
+    {link: '/permission', title: 'Permission', icon: ShieldOutlinedIcon,  code: 'Permission'},
+    {link: '/resource', title: 'Resource', icon: CollectionsBookmarkOutlinedIcon,  code: 'Resource', hide: false},
 ]
 
 export  {

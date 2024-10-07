@@ -31,9 +31,22 @@ const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
+        checkToken()
     }, []);
 
+    const checkToken = () => {
+        dispatch(setLoading(true))
+        $axios.get('/Auth').then(res => {
+            window.history.go(-1)
+        })
+            .catch(err => {
+                console.log(err)
+                Cookies.remove("token")
+                Cookies.remove("refreshToken")
+                dispatch(setLoading(false))
+            })
 
+    }
     const login = () =>  {
         dispatch(setLoading(true))
         $axios.post('Auth/login', {email, password, remember}).then(
