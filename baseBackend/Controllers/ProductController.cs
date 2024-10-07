@@ -252,21 +252,20 @@ namespace AuthenticationJWT.Controllers
 
 
         // POST: api/Product
+        // POST: api/Product
         [HttpPost]
         [Authorize]
-        public IActionResult Post([FromForm] ProductRequest request)
+        public async Task<IActionResult> Post([FromForm] ProductRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-
             if (string.IsNullOrWhiteSpace(request.Name))
             {
                 return BadRequest(new { message = "Product name is required." });
             }
-
 
             if (string.IsNullOrWhiteSpace(request.Description))
             {
@@ -279,12 +278,10 @@ namespace AuthenticationJWT.Controllers
                 return BadRequest(new { message = "At least one category is required." });
             }
 
-
             if (request.ProductImages == null || !request.ProductImages.Any())
             {
                 return BadRequest(new { message = "At least one product image is required." });
             }
-
 
             var company = db.CompanyPartner.FirstOrDefault(c => c.Id == request.CompanyPartnerId);
             if (company == null)
@@ -292,17 +289,13 @@ namespace AuthenticationJWT.Controllers
                 return BadRequest(new { message = "Company partner not found." });
             }
 
-
-
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
             if (userIdClaim == null || !int.TryParse(userIdClaim, out var userId))
             {
                 return Unauthorized(new { message = "User not authenticated." });
             }
 
-
-
-            // Tìm danh mục cha có level = 0 hoặc sử dụng chính danh mục đã chọn nếu nó là cha (level = 0)
+            // Tìm danh mục cha có level = 0
             var parentCategory = db.Category.FirstOrDefault(c =>
                 validCategoryIds.Contains(c.Id) && c.Level == 0)
                 ?? db.Category.FirstOrDefault(pc =>
@@ -312,12 +305,21 @@ namespace AuthenticationJWT.Controllers
             {
                 return BadRequest(new { message = "No parent category with level 0 found for the provided subcategories." });
             }
-            var categoryCode = parentCategory.CategoryCode; // Lấy categoryCode của cha level 0
+
+            var categoryCode = parentCategory.CategoryCode;
             var manufacturer = company.Name;
             int productCount = db.Product.Count(p => p.CompanyPartnerId == request.CompanyPartnerId) + 1;
 
             var productCode = GenerateProductCode(categoryCode, manufacturer, productCount);
 
+            // Upload ảnh thumbnail
+            string imageFileName1 = await UploadThumbnailAsync(request.ImageThumbPath, "thumbProduct");
+            if (imageFileName1 == null)
+            {
+                return BadRequest(new { message = "Error uploading thumbnail image." });
+            }
+
+            // Tạo sản phẩm
             var product = new Product
             {
                 Name = request.Name,
@@ -328,6 +330,7 @@ namespace AuthenticationJWT.Controllers
                 SellPrice = request.SellPrice,
                 Quantity = request.Quantity,
                 CompanyPartnerId = request.CompanyPartnerId,
+                ImageThumbPath = Path.Combine("uploads", "thumbProduct", imageFileName1).Replace("\\", "/"),
                 Status = request.Status ?? 0,
                 Version = 0,
                 CreatedAt = DateTime.UtcNow,
@@ -343,132 +346,149 @@ namespace AuthenticationJWT.Controllers
                     db.Product.Add(product);
                     db.SaveChanges();
 
-                    if (validCategoryIds != null && validCategoryIds.Any())
-                    {
-                        foreach (var categoryId in validCategoryIds)
-                        {
-                            var category1 = db.Category.FirstOrDefault(a => a.Id == categoryId);
-                            if (category1 == null)
-                            {
-                                return BadRequest(new { message = $"Category with Id {categoryId} not found." });
-                            }
-
-                            var productCategory = new ProductCategory
-                            {
-                                ProductId = product.Id,
-                                CategoryId = category1.Id,
-                                CreatedAt = DateTime.UtcNow,
-                                UpdateAt = DateTime.UtcNow,
-                                UpdatedBy = userId,
-                                CreatedBy = userId
-                            };
-                            db.ProductCategory.Add(productCategory);
-                        }
-                        db.SaveChanges();
-                    }
-                    //===============Author post====================================
-                    var validAuthorIds = request.AuthorIds?.Where(id => id > 0).ToList();
-                    if (validAuthorIds != null && validAuthorIds.Any())
-                    {
-                        foreach (var authorId in validAuthorIds)
-                        {
-
-                            var author = db.Author.FirstOrDefault(a => a.Id == authorId);
-                            if (author == null)
-                            {
-                                return BadRequest(new { message = $"Author with Id {authorId} not found." });
-                            }
-
-                            // Add to db if already have it
-                            var productAuthor = new AuthorProduct
-                            {
-                                ProductId = product.Id,
-                                AuthorId = author.Id,
-                                CreatedAt = DateTime.UtcNow,
-                                UpdateAt = DateTime.UtcNow,
-                                UpdatedBy = userId
-                            };
-                            db.AuthorProduct.Add(productAuthor);
-                        }
-                        db.SaveChanges();
-                    }
-
-                    //============================Image post================================================
-                    var fileNames = new HashSet<string>();
-                    if (request.ProductImages != null && request.ProductImages.Any())
-                    {
-                        foreach (var imageFile in request.ProductImages)
-                        {
-                            if (imageFile.Length > 0)
-                            {
-                                // path save file
-                                var uploads = Path.Combine(_environment.WebRootPath, "uploads", "products");
-                                if (!Directory.Exists(uploads))
-                                {
-                                    Directory.CreateDirectory(uploads);
-                                }
-
-                                //List file valied
-                                var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-
-                                // get extension file
-                                var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-
-                                // Isextension file
-                                if (validExtensions.Contains(fileExtension))
-                                {
-                                    //file only
-                                    var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                                    var filePath = Path.Combine(uploads, fileName);
-
-                                    // Save file to server
-                                    using (var stream = new FileStream(filePath, FileMode.Create))
-                                    {
-                                        imageFile.CopyTo(stream);
-                                    }
-
-                                    // Save path file to DB
-                                    var productImage = new ProductImage
-                                    {
-                                        ProductId = product.Id,
-                                        ImagePath = Path.Combine("uploads", "products", fileName).Replace("\\", "/"),
-                                        CreatedBy = userId,
-                                        CreatedAt = DateTime.UtcNow,
-                                        UpdateAt = DateTime.UtcNow,
-                                        UpdatedBy = userId
-
-                                    };
-
-                                    db.ProductImage.Add(productImage);
-                                }
-                                else
-                                {
-
-                                    return BadRequest(new { message = $"Invalid file type: {fileExtension}. Only .jpg, .jpeg, .png, and .webp are allowed." });
-                                }
-                                if (!fileNames.Add(imageFile.FileName))
-                                {
-                                    return BadRequest(new { message = $"Duplicate file name detected: {imageFile.FileName}. Each file must have a unique name." });
-                                }
-                            }
-                        }
-
-                        db.SaveChanges();
-                    }
-
-
+                    await AddProductCategoriesAsync(product.Id, validCategoryIds, userId);
+                    await AddProductAuthorsAsync(product.Id, request.AuthorIds, userId);
+                    await UploadProductImagesAsync(product.Id, request.ProductImages, userId);
 
                     transaction.Commit();
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    Console.WriteLine(ex.ToString());
-                    return StatusCode(500, new { message = "Error saving product and categories.", error = ex.Message, innerError = ex.InnerException?.Message });
+                    return StatusCode(500, new { message = "Error saving product.", error = ex.Message });
                 }
             }
 
             return Ok(new { data = product });
+        }
+
+        // Phương thức upload thumbnail
+        private async Task<string> UploadThumbnailAsync(IFormFile file, string folderName)
+        {
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", folderName);
+
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
+            if (file != null)
+            {
+                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (validExtensions.Contains(fileExtension))
+                {
+                    var fileName = $"{Guid.NewGuid()}{fileExtension}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    return fileName;
+                }
+            }
+
+            return null;
+        }
+
+        // Phương thức thêm danh mục sản phẩm
+        private async Task AddProductCategoriesAsync(int productId, List<int> categoryIds, int userId)
+        {
+            foreach (var categoryId in categoryIds)
+            {
+                var category = db.Category.FirstOrDefault(c => c.Id == categoryId);
+                if (category == null)
+                {
+                    throw new Exception($"Category with Id {categoryId} not found.");
+                }
+
+                var productCategory = new ProductCategory
+                {
+                    ProductId = productId,
+                    CategoryId = category.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdateAt = DateTime.UtcNow,
+                    UpdatedBy = userId,
+                    CreatedBy = userId
+                };
+
+                db.ProductCategory.Add(productCategory);
+            }
+
+            await db.SaveChangesAsync();
+        }
+
+        // Phương thức thêm tác giả cho sản phẩm
+        private async Task AddProductAuthorsAsync(int productId, List<int> authorIds, int userId)
+        {
+            if (authorIds != null && authorIds.Any())
+            {
+                foreach (var authorId in authorIds)
+                {
+                    var author = db.Author.FirstOrDefault(a => a.Id == authorId);
+                    if (author == null)
+                    {
+                        throw new Exception($"Author with Id {authorId} not found.");
+                    }
+
+                    var productAuthor = new AuthorProduct
+                    {
+                        ProductId = productId,
+                        AuthorId = author.Id,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdateAt = DateTime.UtcNow,
+                        UpdatedBy = userId,
+                        CreatedBy = userId
+                    };
+
+                    db.AuthorProduct.Add(productAuthor);
+                }
+
+                await db.SaveChangesAsync();
+            }
+        }
+
+        // Phương thức upload hình ảnh sản phẩm
+        private async Task UploadProductImagesAsync(int productId, IEnumerable<IFormFile> productImages, int userId)
+        {
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads", "products");
+
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
+            foreach (var imageFile in productImages)
+            {
+                var fileExtension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                if (validExtensions.Contains(fileExtension))
+                {
+                    var fileName = $"{Guid.NewGuid()}{fileExtension}";
+                    var filePath = Path.Combine(uploadsPath, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    var productImage = new ProductImage
+                    {
+                        ProductId = productId,
+                        ImagePath = Path.Combine("uploads", "products", fileName).Replace("\\", "/"),
+                        CreatedBy = userId,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdateAt = DateTime.UtcNow,
+                        UpdatedBy = userId
+                    };
+
+                    db.ProductImage.Add(productImage);
+                }
+            }
+
+            await db.SaveChangesAsync();
         }
 
         private string GenerateProductCode(string categoryCode, string manufacturer, int productCount)

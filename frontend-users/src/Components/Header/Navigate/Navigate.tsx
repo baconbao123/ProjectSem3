@@ -6,6 +6,8 @@ import 'primeicons/primeicons.css'
 import { useState } from 'react'
 import './Navigate.scss'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../Store/store'
 interface MenuItem {
   id: number
   name: string
@@ -13,6 +15,7 @@ interface MenuItem {
 
 export const Navigate = () => {
   const [selectItem, setSelectItem] = useState<MenuItem | null>(null)
+  const userId = useSelector((state: RootState) => state.auth.userId)
 
   const items: MenuItem[] = [
     { id: 1, name: 'van hoc' },
@@ -62,12 +65,22 @@ export const Navigate = () => {
                   <span style={{ fontSize: '12px' }}>Orders</span>
                 </div>
               </Link>
-              <Link to='/account' className='url'>
-                <div className='account'>
-                  <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
-                  <span style={{ fontSize: '12px' }}>Account</span>
-                </div>
-              </Link>
+              {userId ? (
+                <Link to={`/account/${userId}`} className='url'>
+                  <div className='account'>
+                    <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
+                    <span style={{ fontSize: '12px' }}>Account</span>
+                  </div>
+                </Link>
+              ) : (
+                <Link to='/account' className='url'>
+                  <div className='account'>
+                    <i className='pi pi-user icon' style={{ fontSize: '1.8rem' }}></i>
+                    <span style={{ fontSize: '12px' }}>Account</span>
+                  </div>
+                </Link>
+              )}
+
               <Link to='/checkout/cart' className='url'>
                 <div className='cart'>
                   <i className='pi pi-shopping-cart icon' style={{ fontSize: '1.8rem' }}></i>

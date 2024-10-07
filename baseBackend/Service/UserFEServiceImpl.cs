@@ -69,11 +69,11 @@ public class UserFEServiceImpl : UserFEService
                 user.Avatar = fileName;
             }
 
-
             user.Username = string.IsNullOrEmpty(userDto.Username) ? user.Username : userDto.Username;
             user.Email = string.IsNullOrEmpty(userDto.Email) ? user.Email : userDto.Email;
             user.Phone = string.IsNullOrEmpty(userDto.Phone) ? user.Phone : userDto.Phone;
             user.UpdateAt = DateTime.Now;
+
 
             if (!string.IsNullOrEmpty(userDto.Password))
             {
@@ -84,7 +84,6 @@ public class UserFEServiceImpl : UserFEService
         }
         else
         {
-
             return false;
         }
     }

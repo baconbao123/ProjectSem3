@@ -26,6 +26,8 @@ import { useSelector } from 'react-redux'
 import { RootState } from './Store/store'
 import AllBooksDetail from './Page/AllBooks/Detail/AllBooksDetail'
 import Account from './Page/Accoount/Account'
+import AllStationeryDetail from './Page/AllStationery/Detail/AllStationeryDetail'
+import AllCDsDetail from './Page/AllCD/Detail/AllCDsDetail'
 
 export const AppRouter: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.userId)
@@ -46,12 +48,14 @@ export const AppRouter: React.FC = () => {
           <Route path='home' element={<Home />} />
           <Route path='store' element={<StoreSystem />} />
           <Route path='all-stationery' element={<AllStationery />} />
+          <Route path='all-stationery/:genres' element={<AllStationeryDetail />} />
           <Route path='all-cds' element={<AllCD />} />
+          <Route path='all-cds/:genres' element={<AllCDsDetail />} />
           <Route path='all-books' element={<AllBooks />} />
           <Route path='all-books/:genres' element={<AllBooksDetail />} />
           <Route path='vouchers' element={<Vouchers />} />
           <Route path='member-benefits' element={<MemberBenefits />} />
-          <Route path='account' element={<Account />} />
+          {userId ? <Route path='account/:id' element={<Account />} /> : <Route path='account' element={<Account />} />}
           <Route path='checkout/cart' element={<Cart />} />
           {userId && <Route path='checkout' element={<Checkout />} />}
           {userId && <Route path='checkout/compeleted' element={<CheckoutCompleted />} />}

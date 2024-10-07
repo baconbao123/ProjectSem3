@@ -9,7 +9,6 @@ public class Orders
     [Required]
     public int UserId { get; set; }
     [Required]
-
     public int AddressId { get; set; }
 
     public string BasePrice { get; set; }
@@ -17,7 +16,6 @@ public class Orders
 
     public int Status { get; set; }
     public int Version { get; set; }
-
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }

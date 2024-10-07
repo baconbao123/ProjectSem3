@@ -200,7 +200,7 @@ public class ProductRequest()
 
     public List<int> CategoryIds { get; set; }
 
-    public List<int> SaleIds { get; set; }
+    //public List<int> SaleIds { get; set; }
 }
 
 // Request class cho bảng ProductImage

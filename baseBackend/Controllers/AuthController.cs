@@ -11,7 +11,6 @@ using System.Text;
 [ApiController]
 public class AuthController : ControllerBase
 {
-
     private readonly IConfiguration _configuration;
     private MyContext db;
 
