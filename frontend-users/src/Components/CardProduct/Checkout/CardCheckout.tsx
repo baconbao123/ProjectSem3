@@ -2,21 +2,28 @@ import React from 'react'
 import { Col, Row } from 'react-bootstrap'
 import './CardCheckout.scss'
 
-const CardCheckout: React.FC = () => {
+interface CardCheckoutProps {
+  product: any
+}
+
+const CardCheckout: React.FC<CardCheckoutProps> = ({ product }) => {
   return (
     <Row className='row-card-checkout'>
-      <Col lg={1}>Avatar</Col>
+      <Col lg={1}>
+        {/* <img alt='Card' src={product.ProductImage[0]} className='img-card' /> */}
+        <img alt='Card' src='https://itbook.store/img/books/9781617291609.png' className='img-card' />
+      </Col>
       <Col lg={5} className='name-card-checkout'>
-        Name
+        {product.Name}
       </Col>
       <Col lg={2} className='price-card-checkout' style={{ textAlign: 'center' }}>
-        $40
+        ${product.SellPrice}
       </Col>
       <Col lg={2} className='quantity-card-checkout' style={{ textAlign: 'center' }}>
-        1
+        {product.quantity}
       </Col>
       <Col lg={2} className='totalPrice-card-checkout' style={{ textAlign: 'center' }}>
-        $40
+        ${parseFloat(product.SellPrice) * (product.quantity)}
       </Col>
     </Row>
   )

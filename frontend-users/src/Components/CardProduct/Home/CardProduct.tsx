@@ -47,7 +47,8 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
   const header = (
     <div className='header-img'>
       <Link to={`/products/details/${product.Id}`}>
-        <img alt='Card' src={product.ProductImage[0]} className='img-card' />
+        {/* <img alt='Card' src={product.ProductImage[0]} className='img-card' /> */}
+        <img alt='Card' src="https://itbook.store/img/books/9781617291609.png" className='img-card' />
         {product.special && <span className='badge'>{product.special}</span>}
       </Link>
     </div>
@@ -67,8 +68,9 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
   return (
     <div className='card-product'>
       <Card
-        title={<Link to={`/products/details/${product.Id}`}>{sliceText(product.Name, 45)}</Link>}
-        subTitle={product.Manufactor}
+        title={<Link to={`/products/details/${product.Id}`}>{sliceText(product.Name, 35)}</Link>}
+        // subTitle={product.CompanyPartnerName}
+        subTitle="NXB Thanh nien"
         footer={footer}
         header={header}
       >

@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator'
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
-import axios from 'axios'
 import Product from '../../../Interfaces/Product'
 import { CardProduct } from '../../../Components/CardProduct/Home/CardProduct'
 import Breadcrumb from '../../../Components/Breadcrumb/Breadcrumb'
 import GenresSidebar from '../../../Components/GenresSidebar/GenresSidebar'
 import './AllBooksDetail.scss'
 import { useParams } from 'react-router-dom'
+import { $axios } from '../../../axios'
+import Loading from '../../../Components/Loading/Loading'
 
 const items = [
   {
@@ -55,15 +56,47 @@ function AllBooksDetail() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get<Product[]>('https://bookstore123.free.mockoapp.net/all-products-books')
-        setProducts(res.data)
-        setFilteredProduct(res.data)
+        const res = await $axios.get('CategoriesFE')
 
-        const categoryNames: string[] = Array.from(
-          new Set(res.data.map((product: Product) => product.CategoryName))
-        ).sort((a, b) => a.localeCompare(b)) // Sắp xếp theo bảng chữ cái
+        const levelZeroCategories = res.data.data.filter(
+          (category: any) => category.Level === 0 && category.Name === 'Book'
+        )
 
-        setCategories(categoryNames)
+        const allProducts: Product[] = []
+
+        const productSet = new Set<number>()
+
+        levelZeroCategories.forEach((category: any) => {
+          // Add products from the parent category
+          category.Products.forEach((product: Product) => {
+            if (!productSet.has(product.Id)) {
+              allProducts.push(product)
+              productSet.add(product.Id) // Mark the product as added
+            }
+          })
+
+          const subcategories = res.data.data.filter((sub: any) => sub.ParentId === category.Id)
+
+          // Add products from each subcategory, ensuring no duplicates
+          subcategories.forEach((subcategory: any) => {
+            subcategory.Products.forEach((product: Product) => {
+              if (!productSet.has(product.Id)) {
+                allProducts.push(product)
+                productSet.add(product.Id) // Mark the product as added
+              }
+            })
+          })
+        })
+
+        setSelectFilter('newest')  
+        setProducts(allProducts)
+        // setFilteredProduct('allBookProducts')
+
+        // const categoryNames: string[] = Array.from(
+        //   new Set(res.data.map((product: Product) => product.CategoryName))
+        // ).sort((a, b) => a.localeCompare(b))
+
+        // setCategories(categoryNames)
       } catch (err) {
         console.log(err)
       } finally {
@@ -77,21 +110,16 @@ function AllBooksDetail() {
   useEffect(() => {
     let sortedProducts = [...products]
 
-    const parseDate = (dateString: string) => {
-      const [day, month, year] = dateString.split('/').map(Number)
-      return new Date(year, month - 1, day)
+    const toTimestamp = (dateString: string) => {
+      return new Date(dateString).getTime()
     }
 
     switch (selectFilter) {
       case 'newest':
-        sortedProducts = sortedProducts.sort(
-          (a, b) => parseDate(b.CreateAt).getTime() - parseDate(a.CreateAt).getTime()
-        )
+        sortedProducts = sortedProducts.sort((a, b) => toTimestamp(b.CreatedAt) - toTimestamp(a.CreatedAt))
         break
       case 'oldest':
-        sortedProducts = sortedProducts.sort(
-          (a, b) => parseDate(a.CreateAt).getTime() - parseDate(b.CreateAt).getTime()
-        )
+        sortedProducts = sortedProducts.sort((a, b) => toTimestamp(a.CreatedAt) - toTimestamp(b.CreatedAt))
         break
       case 'priceHighToLow':
         sortedProducts = sortedProducts.sort((a, b) => {
@@ -122,50 +150,55 @@ function AllBooksDetail() {
       <div className='container-all-books'>
         {/* <img src='/images/banner-books.png' className='img-all-books' /> */}
 
-        <div className='container-all-books-content'>
-          <Container className='all-products' >
-            <Row>
-              {/* Sidebar */}
-              <Col lg={3} style={{ marginTop: '3px' }}>
-                <GenresSidebar genres={genres || ''} categoryNames={categories} />
-              </Col>
-              <Col lg={9} style={{ paddingTop: '10px', backgroundColor: 'white' }}>
-                <Row className='row-filter'>
-                  {/* Filter */}
-                  <div className='filter'>
-                    <Dropdown
-                      value={selectFilter}
-                      onChange={(e: DropdownChangeEvent) => setSelectFilter(e.value)}
-                      options={filterItems}
-                      optionLabel='name'
-                      optionValue='value'
-                      className=''
+        {loading ? (
+          <Loading />
+        ) : (
+          <div className='container-all-books-content'>
+            <Container className='all-products'>
+              <Row>
+                {/* Sidebar */}
+                <Col lg={3} style={{ marginTop: '3px' }}>
+                  <GenresSidebar genres={genres || ''} categoryNames={categories} />
+                </Col>
+                <Col lg={9} style={{ paddingTop: '10px', backgroundColor: 'white' }}>
+                  <Row className='row-filter'>
+                    {/* Filter */}
+                    <div className='filter'>
+                      <Dropdown
+                        value={selectFilter}
+                        onChange={(e: DropdownChangeEvent) => setSelectFilter(e.value)}
+                        options={filterItems}
+                        optionLabel='name'
+                        optionValue='value'
+                        className=''
+                      />
+                    </div>
+                  </Row>
+                  <Row style={{ padding: '10px 20px' }}>
+                    {/* Products */}
+
+                    {paginatedProducts.map((product, index) => (
+                      <Col lg={3} key={index} className={index >= 4 ? 'mt-4' : ''}>
+                        <CardProduct product={product} />
+                      </Col>
+                    ))}
+                  </Row>
+                  <Row className='row-pagination'>
+                    {/* Pagination */}
+                    <Paginator
+                      first={first}
+                      rows={rows}
+                      totalRecords={products.length}
+                      rowsPerPageOptions={[12, 20, 24]}
+                      onPageChange={onPageChange}
+                      style={{ fontSize: '14px' }}
                     />
-                  </div>
-                </Row>
-                <Row style={{ padding: '10px 20px' }}>
-                  {/* Products */}
-                  {paginatedProducts.map((product, index) => (
-                    <Col lg={3} key={index} className={index >= 4 ? 'mt-4' : ''}>
-                      <CardProduct product={product} />
-                    </Col>
-                  ))}
-                </Row>
-                <Row className='row-pagination'>
-                  {/* Pagination */}
-                  <Paginator
-                    first={first}
-                    rows={rows}
-                    totalRecords={products.length}
-                    rowsPerPageOptions={[12, 20, 24]}
-                    onPageChange={onPageChange}
-                    style={{ fontSize: '14px' }}
-                  />
-                </Row>
-              </Col>
-            </Row>
-          </Container>
-        </div>
+                  </Row>
+                </Col>
+              </Row>
+            </Container>
+          </div>
+        )}
       </div>
     </>
   )

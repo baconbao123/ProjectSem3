@@ -10,6 +10,10 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<UserFEService, UserFEServiceImpl>();
+builder.Services.AddScoped<FAQService, FAQServiceImpl>();
+builder.Services.AddScoped<UserAddressFEService, UserAddressFEImplService>();
+builder.Services.AddScoped<OrderService, OrderServiceImpl>();
+builder.Services.AddScoped<UserSaleFEService, UserSaleFEServiceImpl>();
 builder.Services.AddAutoMapper(typeof(MyMapper));
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";

@@ -1,0 +1,30 @@
+@import '/global.scss';
+
+.card-address-list {
+  border-bottom: 1px solid gainsboro;
+  padding: 10px 0;
+}
+
+.div-add-address {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+
+  .btn-add-address {
+    border-radius: 5px;
+    background-color: $btn-color;
+    border-color: $btn-color;
+    font-size: 12px;
+
+    &:hover {
+      background-color: $btn-bgColor-hover;
+    }
+
+    
+  }
+
+  .row-address-3 {
+    display: flex;
+    justify-content: center;
+  }
+}

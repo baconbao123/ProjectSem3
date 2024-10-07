@@ -1,48 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import CardVoucher, { CardVoucherProps } from '../../Components/CardVoucher/CardVoucher'
+import CardVoucher from '../../Components/CardVoucher/CardVoucher'
 import './Voucher.scss'
-import axios from 'axios'
 import Breadcrumb from '../../Components/Breadcrumb/Breadcrumb'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from '../../Store/store'
-import { addVouchers, setUserId } from '../../Store/voucherSlice'
+// import { addVouchers, setUserId } from '../../Store/voucherSlice'
 import Swal from 'sweetalert2'
 import Loading from '../../Components/Loading/Loading'
+import { $axios } from '../../axios'
 
 const Vouchers: React.FC = () => {
-  const [vouchers, setVouchers] = useState<CardVoucherProps[]>([])
+  const [vouchers, setVouchers] = useState<any | []>([])
   const [loading, setLoading] = useState<boolean>(true)
   const items = [{ label: 'Vouchers', url: '/vouchers', page: true }]
   const home = { icon: 'pi pi-home', url: '/home' }
   const userId = useSelector((state: RootState) => state.auth.userId)
-  const dispatch = useDispatch()
+  const [claimed, setClaimed] = useState<string>('')
+  // const dispatch = useDispatch()
 
-  useEffect(() => {
-    if (userId) {
-      dispatch(setUserId(userId))
-    }
-  }, [userId, dispatch])
+  // useEffect(() => {
+  //   if (userId) {
+  //     dispatch(setUserId(userId))
+  //   }
+  // }, [userId, dispatch])
 
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
-        const res = await axios.get('https://bookstore123.free.mockoapp.net/vouchers')
-        let fetchedVouchers = res.data
-
-        // Lấy voucher đã CLAIMED từ localStorage
-        const claimedVouchers = localStorage.getItem(`voucherClaimed_${userId}`)
-        if (claimedVouchers) {
-          const claimedVouchersArray = JSON.parse(claimedVouchers)
-
-          // Cập nhật trạng thái các voucher đã CLAIMED
-          fetchedVouchers = fetchedVouchers.map((voucher: CardVoucherProps) => {
-            const isClaimed = claimedVouchersArray.some((claimed: CardVoucherProps) => claimed.id === voucher.id)
-            return isClaimed ? { ...voucher, status: 'CLAIMED' } : voucher
-          })
-        }
-
-        setVouchers(fetchedVouchers)
+        const res = await $axios.get('SaleFE')
+        // let fetchedVouchers = res.data.data
+        setVouchers(res.data.data)
       } catch (err) {
         console.log(err)
       } finally {
@@ -53,35 +41,23 @@ const Vouchers: React.FC = () => {
     fetchVouchers()
   }, [userId])
 
-  const handleStatusGet = (id: string) => {
+  const handleStatusGet = async (saleId: string) => {
     if (!userId) {
       Swal.fire('Please register or sign in to collect the voucher!')
       return
     }
 
-    setVouchers((prev) => {
-      const updatedVouchers = prev.map((v) => (v.id === id && v.status === 'GET' ? { ...v, status: 'CLAIMED' } : v))
+    try {
+      console.log(saleId)
 
-      // Lưu voucher đã CLAIMED vào localStorage
-      const claimedVouchers = updatedVouchers.filter((v) => v.status === 'CLAIMED')
-
-      // Chuyển trạng thái CLAIMED thành BELONG cho claimedVouchers
-      const claimedVouchersBelong = claimedVouchers.map((v) => ({
-        ...v,
-        status: 'BELONG'
-      }))
-
-      localStorage.setItem(`voucherClaimed_${userId}`, JSON.stringify(claimedVouchersBelong))
-
-      // Lưu toàn bộ voucher
-      const allVouchersKey = `voucher_${userId}`
-      localStorage.setItem(allVouchersKey, JSON.stringify(updatedVouchers))
-
-      return updatedVouchers
-    })
-
-    if (userId) {
-      dispatch(addVouchers({ userId, vouchers }))
+      const res = await $axios.post('UserSaleFE', {
+        UserId: userId,
+        SaleId: parseInt(saleId)
+      })
+      setClaimed(res.data)
+      
+    } catch {
+      Swal.fire('Failed to collect voucher!')
     }
   }
 
@@ -116,10 +92,10 @@ const Vouchers: React.FC = () => {
                 </Row>
                 <Row>
                   {vouchers
-                    .filter((v) => v.type === 'Freeship' && (v.status === 'GET' || v.status === 'CLAIMED'))
-                    .map((voucher, index) => (
+                    .filter((v: any) => v.Type === 1)
+                    .map((voucher: any, index: any) => (
                       <Col lg={4} key={index} className={index >= 3 ? 'mt-3' : ''}>
-                        <CardVoucher {...voucher} handleStatusGet={handleStatusGet} />
+                        <CardVoucher initVoucher={voucher} handleStatusGet={handleStatusGet} />
                       </Col>
                     ))}
                 </Row>
@@ -135,10 +111,10 @@ const Vouchers: React.FC = () => {
                 </Row>
                 <Row>
                   {vouchers
-                    .filter((v) => v.type === 'discountByOrder' && (v.status === 'GET' || v.status === 'CLAIMED'))
-                    .map((voucher, index) => (
+                    .filter((v: any) => v.Type === 2)
+                    .map((voucher: any, index: any) => (
                       <Col lg={4} key={index} className={index >= 3 ? 'mt-3' : ''}>
-                        <CardVoucher {...voucher} handleStatusGet={handleStatusGet} />
+                        <CardVoucher initVoucher={voucher} handleStatusGet={handleStatusGet} />
                       </Col>
                     ))}
                 </Row>
@@ -154,10 +130,10 @@ const Vouchers: React.FC = () => {
                 </Row>
                 <Row>
                   {vouchers
-                    .filter((v) => v.type === 'discountByCategory' && (v.status === 'GET' || v.status === 'CLAIMED'))
-                    .map((voucher, index) => (
+                    .filter((v: any) => v.Type === 3)
+                    .map((voucher: any, index: any) => (
                       <Col lg={4} key={index} className={index >= 3 ? 'mt-3' : ''}>
-                        <CardVoucher {...voucher} handleStatusGet={handleStatusGet} />
+                        <CardVoucher initVoucher={voucher} handleStatusGet={handleStatusGet} />
                       </Col>
                     ))}
                 </Row>

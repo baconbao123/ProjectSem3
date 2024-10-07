@@ -11,7 +11,7 @@ export default interface Product {
   Author: string
   ProductImage: string[]
   CategoryName: string
-  CreateAt: string
+  CreatedAt: string
   //   Thêm
   special?: string
 }
