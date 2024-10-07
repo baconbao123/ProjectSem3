@@ -140,7 +140,7 @@ public class CategoryController : ControllerBase
                 // Set the level based on the parent category's level
                 level = parentCategory.Level + 1;
             }
-            var nameCategory = db.Category.FirstOrDefault(c => c.Name == request.Name);
+            var nameCategory = db.Category.FirstOrDefault(c => c.Name == request.Name && c.DeletedAt == null);
 
             if (nameCategory != null)
             {

@@ -15,7 +15,8 @@ public class Sale
     public int Version { get; set; }
 
     public int Status { get; set; }
-
+    public int Quantity { get; set; }
+    public int CategoryId { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
     public int CreatedBy { get; set; }
