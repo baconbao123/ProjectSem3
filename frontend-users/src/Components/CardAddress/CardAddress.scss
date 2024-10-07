@@ -1,0 +1,73 @@
+@import '/global.scss';
+
+.container-card-address-master {
+  .name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .phone {
+    margin-left: 5px;
+    font-size: 16px;
+  }
+
+  .update {
+    color: $prime-color;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .address {
+    font-size: 12px;
+  }
+}
+
+.row-address-1 {
+  display: flex;
+
+  .input-address-group {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    input {
+      width: 18vw;
+      font-size: 16px;
+    }
+  }
+}
+
+.row-address-2 {
+  display: flex;
+
+  .input-address-group {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    input {
+      width: 37.3vw;
+      font-size: 16px;
+    }
+  }
+}
+
+.row-address-3 {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+
+  .save {
+    width: 100px;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: $btn-color;
+    border-color: $btn-color;
+
+    &:hover {
+      background-color: $btn-bgColor-hover;
+    }
+  }
+}

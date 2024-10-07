@@ -93,65 +93,10 @@ const Cart: React.FC = () => {
     }
   }, [userIdAuth])
 
-  const handleStatusBelong = (id: string, type: string) => {
-    setVouchers((prev) => {
-      console.log('Previous vouchers:', prev) // Debug log
-
-      return prev.map((v) => {
-        console.log('userId voucher:', v.userId) // Debug log
-        console.log('User Id Now:', userIdAuth) // Debug log
-        if (v.id === id && v.userId === userIdAuth) {
-          // Toggle the status of the clicked voucher
-
-          if (v.status === 'USED') {
-            setTotal((prevTotal) => prevTotal + parseFloat(v.discount)) // Add discount back to total
-
-            return { ...v, status: 'BELONG', isDisabled: false }
-          } else {
-            setTotal((prevTotal) => prevTotal - parseFloat(v.discount)) // Subtract discount from total
-
-            return { ...v, status: 'USED', isDisabled: false }
-          }
-        }
-
-        // Disable only other vouchers of the same type
-        if (v.type === type && v.userId === userIdAuth && v.id !== id) {
-          return { ...v, isDisabled: v.status !== 'USED' } // Disable if not 'USED'
-        }
-
-        return v
-      })
-    })
-  }
-
-  const handleCancel = (id: string, type: string) => {
-    setVouchers((prev) => {
-      return prev.map((v) => {
-        if (v.id === id && v.userId === userIdAuth) {
-          // the clicked status, voucher back to 'BELONG'
-
-          setTotal((prevTotal) => prevTotal + parseFloat(v.discount)) // Add the discount back to total
-
-          return { ...v, status: 'BELONG', isDisabled: false }
-        }
-
-        // Re-enable only other vouchers of the same type
-        if (v.type === type && v.userId === userIdAuth && v.id !== id) {
-          return { ...v, isDisabled: false }
-        }
-
-        return v
-      })
-    })
-  }
-
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
-
     currency: 'USD',
-
     minimumIntegerDigits: 1,
-
     maximumFractionDigits: 1
   }).format(total)
 
@@ -224,34 +169,24 @@ const Cart: React.FC = () => {
                         style={{ width: '30vw' }}
                         breakpoints={{ '960px': '75vw', '641px': '100vw' }}
                       >
-                        {vouchers
-                          .filter((v: any) => v.status === 'BELONG' || v.status === 'USED')
-                          .map((v: any, index: any) => (
-                            <div className='mt-4' key={index}>
-                              <CardVoucher
-                                key={v.id}
-                                {...v}
-                                handleStatusBelong={handleStatusBelong}
-                                handleCancel={handleCancel}
-                                productCategory={uniqueCategory}
-                                total={total}
-                                userId={userIdAuth}
-                              />
-                            </div>
-                          ))}
+                        {vouchers.map((v: any, index: any) => (
+                          <div className='mt-4' key={index}>
+                            <CardVoucher key={v.Id} initVoucher={v} />
+                          </div>
+                        ))}
                       </Dialog>
                     </div>
 
                     <div className='solid'></div>
 
                     <div className='show-vouchers'>
-                      {vouchers
+                      {/* {vouchers
                         .filter((v) => v.status === 'USED')
                         .map((v, index) => (
                           <div className='mt-4' key={index}>
-                            <CardVoucher key={v.id} {...v} handleCancel={handleCancel} />
+                            <CardVoucher key={v.id}  />
                           </div>
-                        ))}
+                        ))} */}
                     </div>
                   </Row>
                   {/* End Select Voucher */}
