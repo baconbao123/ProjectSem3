@@ -169,7 +169,7 @@ input:focus {
   padding: 2px 10px;
   border-radius: 15px;
   text-align: center;
-  width: 70px;
+  width: fit-content;
 }
 .status-disable {
   background-color: $gray-600;
@@ -178,8 +178,27 @@ input:focus {
   padding: 2px 10px;
   border-radius: 15px;
   text-align: center;
-  width: 70px;
+  width: fit-content;
 }
+.status-danger {
+  background-color: $danger;
+  color: #fff;
+  border: 1px solid #ccc;
+  padding: 2px 10px;
+  border-radius: 15px;
+  text-align: center;
+  width: fit-content;
+}
+.status-process {
+  background-color: $yellow;
+  color: #fff;
+  border: 1px solid #ccc;
+  padding: 2px 10px;
+  border-radius: 15px;
+  text-align: center;
+  width: fit-content;
+}
+
 
 .css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline {
   border: $default-color solid 1px!important;
