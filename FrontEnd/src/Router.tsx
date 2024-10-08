@@ -14,6 +14,7 @@ import UserList from "@pages/user/UserList.tsx";
 import CompanyList from "@pages/companyparent/ComanyPartnerList"
 import ProductList from "@pages/product/ProductList"
 import SaleList from "@pages/sale/SaleList"
+import OrderList from "@pages/order/OrderList"
 // import FAQList from "@pages/FAQ/FAQList"
 
 export  default  createBrowserRouter([
@@ -79,6 +80,11 @@ export  default  createBrowserRouter([
             {
                 path: 'about',
                 element: (<AboutAdmin />),
+                errorElement: (<ErrorPage error="other"/>),
+            },
+            {
+                path: 'order',
+                element: (<OrderList />),
                 errorElement: (<ErrorPage error="other"/>),
             },
             {
