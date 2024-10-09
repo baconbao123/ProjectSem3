@@ -5,5 +5,8 @@ namespace AuthenticationJWT.Service;
 public interface FAQService
 {
     public List<FAQDTO> GetFAQs();
-    public bool PostFAQ(FAQDTO faqDTO);
+    public bool PostFAQs(IEnumerable<FAQDTO> faqDTOs);
+    public FAQDTO GetFAQById(int id);
+    public bool PutFAQ(FAQDTO faqDTO, int id);
+    public bool DeleteFAQ(int id);
 }

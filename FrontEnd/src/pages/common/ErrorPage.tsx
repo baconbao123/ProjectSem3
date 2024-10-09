@@ -1,10 +1,10 @@
 import React from "react";
 import defaultImage from  '@src/images/default.png'
-import image404 from  '@src/images/404.png'
-import image403 from  '@src/images/403.png'
-import image401 from  '@src/images/401.png'
-import image500 from  '@src/images/500.png'
-import image400 from  '@src/images/400.png'
+import image404 from  '@src/images/404-1.png'
+import image403 from  '@src/images/403-1.png'
+import image401 from  '@src/images/401-1.png'
+import image500 from  '@src/images/500-1.png'
+import image400 from  '@src/images/400-1.png'
 import other from  '@src/images/other.png'
 interface Props {
     error?: string
