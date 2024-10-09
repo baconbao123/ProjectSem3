@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useState} from "react";
 import MainLayOut from "@pages/common/MainLayOut.tsx";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
 import Modal from "@pages/common/Modal.tsx";
-import {Breadcrumbs, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Breadcrumbs, Chip, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
@@ -11,17 +11,17 @@ import KeyboardDoubleArrowRightOutlinedIcon from "@mui/icons-material/KeyboardDo
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import HomeIcon from '@mui/icons-material/Home';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
-import { Image } from 'primereact/image';
+import RoleAdd from "@pages/role/RoleAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import ProductDetail from "./ProductDetail";
-
+import RoleDetail from "@pages/role/RoleDetail.tsx";
 import {Link} from "react-router-dom";
-import ProductAdd from "./ProductAdd";
-const ProductList : React.FC = () => {
+import HomeIcon from "@mui/icons-material/Home";
+import {checkPermission} from "@src/Service/common.ts";
+import ErrorPage from "@pages/common/ErrorPage.tsx";
+const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
 
     const [field, setField] = React.useState<any>([]);
@@ -35,21 +35,16 @@ const ProductList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({Name: '', Status: -1});
-    const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
+    const [filter, setFilter] = useState({Name: '', status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
-            {key: "ImageThumbPath", label: "Image", class: ""},
-            {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "Code", label: "Product code", class: "", sortable: true, sortValue: 'none'},
-            {key: "CompanyPartnerName", label: "Company partner", class: ""},
-           
-            {key: "Quantity", label: "Quantity", class: ""},
-            {key: "BasePrice", label: "Base price", class: ""},
-            {key: "SellPrice", label: "Sell price", class: ""},
-            {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
+            {key: "user_name", label: "User Buy", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "order_code", label: "Order Code", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "base_price", label: "Base Price", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "total_price", label: "Total Price", class: "width-300"},
+            {key: "status", label: "Status", class: "width-200 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
 
         ])
@@ -98,7 +93,7 @@ const ProductList : React.FC = () => {
                     continue
                 }
 
-                if (key === 'Status' && item[key] !== value) {
+                if (key === 'status' && item[key] !== value) {
                     return false
                 }
 
@@ -120,11 +115,9 @@ const ProductList : React.FC = () => {
     }, [filter, data]);
 
     const loadDataTable = () => {
-        const token = Cookies.get("token")
-        $axios.get('/Product').then(res => {
+        $axios.get('/Order').then(res => {
             setData(res.data.data)
             setFilterData(res.data.data)
-            
         })
             .catch(err => {
                 console.log(err)
@@ -132,28 +125,28 @@ const ProductList : React.FC = () => {
 
     }
     const handleComponentAdd: React.FC =() => {
-        return  (<ProductAdd loadDataTable={loadDataTable} form={'add'}/>)
+        return  (<RoleAdd loadDataTable={loadDataTable} form={'add'}/>)
     }
     const handleComponentEdit: React.FC =( ) => {
-        return  (<ProductAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
+        return  (<RoleAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<ProductDetail id={currentId} />)
+        return  (<RoleDetail id={currentId} />)
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
-        setComponentTitle("Add product")
+        setComponentTitle("Add role")
         setShowComponent('add')
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Edit product")
+        setComponentTitle("Edit role")
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail product")
+        setComponentTitle("Detail role")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -170,11 +163,10 @@ const ProductList : React.FC = () => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
                 const token = Cookies.get("token")
-                $axios.delete(`Product/${item.Id}`).then(res => {
+                $axios.delete(`Role/${item.Id}`).then(res => {
                     console.log("check res", res)
-                    
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete product successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete role successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -192,29 +184,26 @@ const ProductList : React.FC = () => {
     const header: React.FC = () => {
         return (
             <div className='header-page'>
-               <div className='header-page'>
                 <Breadcrumbs separator="›" aria-label="breadcrumb" className='breadcrumb'>
                     <Link
                         color="inherit"
                         to="/"
                     >
-                        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-                        Home
+                     <HomeIcon className='icon-breadcrum' />
                     </Link>
                     <Link
-                     to='/product'
+                        to='/order'
                     >
-                       Product
+                        Order
                     </Link>
                 </Breadcrumbs>
-            </div>
             </div>
         )
     }
 
     const search: React.FC = () => {
         const setChangeStatus = (e: any) => {
-            setFilter(prev => ({...prev, Status: e.target.value}))
+            setFilter(prev => ({...prev, status: e.target.value}))
         }
         const setChangeName = (e: any) => {
             setFilter(prev => ({...prev, Name: e.target.value}))
@@ -222,22 +211,24 @@ const ProductList : React.FC = () => {
         return (
             <div className='search-container'>
                 <div>
-                  <input
-                      value={filter.Name}
-                         onChange={e =>  setChangeName(e)}
-                         className='form-control test-position' placeholder="Search name..."/>
+                    <input
+                        value={filter.Name}
+                        onChange={e => setChangeName(e)}
+                        className='form-control test-position' placeholder="Search name..."/>
                 </div>
             <Select
                 className="search-form width-200 custom-form"
-                value={filter.Status}
+                value={filter.status}
                 onChange={e => setChangeStatus(e)}
                 displayEmpty
             >
                 <MenuItem value={-1}>
                     <span className='placeholder-text'>Select status</span>
                 </MenuItem>
-                <MenuItem value={1}>Active</MenuItem>
-                <MenuItem value={0}>Disable</MenuItem>
+                <MenuItem value={1}>Order</MenuItem>
+                <MenuItem value={2}>Uncompleted</MenuItem>
+                <MenuItem value={3}>Completed</MenuItem>
+                <MenuItem value={4}>Cancel</MenuItem>
             </Select>
             </div>
         )
@@ -246,9 +237,12 @@ const ProductList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
-                <div onClick={ showModalAdd} className="btn btn-general">Add new </div>
+                {checkPermission('Role', 'create') ? (
+                    <div onClick={showModalAdd} className="btn btn-general">Add new</div>
+                ) : ''}
+
             </div>
-        )
+    )
     }
 
     const content: React.FC = () => {
@@ -281,8 +275,8 @@ const ProductList : React.FC = () => {
             setItemTo(perPage)
         }
         const setLastPage = () => {
-            setItemFrom(total-perPage)
-            setItemTo(total)
+            setItemFrom(total > perPage  ?  total - perPage :1)
+            setItemTo(total > perPage  ? total: perPage)
         }
         const getSortValue = (value:string) => {
             switch (value.toLowerCase()) {
@@ -340,10 +334,6 @@ const ProductList : React.FC = () => {
                                     (itemFrom <= index && itemTo > index && currentPage !== 1 ) ||
                                     perPage === 'All'
                                 ) {
-                                    
-                                    const imagePath = item.ProductImages && item.ProductImages.length > 0 ? item.ProductImages[0].ImagePath : null;
-                                    const imageThumbPath = item.ImageThumbPath && item.ImageThumbPath.length > 0 ? item.ImageThumbPath : null;
-                                    
                                     return (
                                         <TableRow key={crypto.randomUUID()}>
                                             {
@@ -356,69 +346,74 @@ const ProductList : React.FC = () => {
                                                             </TableCell>
                                                         )
                                                     }
-
-                                                    if (field.key === "ImageThumbPath") {
-                                                       
+                                                    if (field.key === "status") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                            {imageThumbPath? (
-                                                              <Image
-                                                                src={baseUrl + item.ImageThumbPath}
-                                                                alt={item.Name}
-                                                                className="image-product"
-                                                                width="70"
-                                                                preview
-                                                              />
-                                                            ) : (
-                                                              <div>No Image</div>  // Hiển thị nếu không có hình ảnh
-                                                            )}
-                                                          </TableCell>
-                                                        )
-                                                    }
-                                                    if (field.key === "Status") {
-                                                        return (
-                                                            <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                {item[field.key] ? (
+                                                                {item[field.key] === 1 ? (
                                                                 <div className='justify-content-center d-flex'>
-                                                                      <div className='status-success'>
-                                                                          Active
+                                                                      <div className='status-disable'>
+                                                                          Order
                                                                       </div>
                                                                 </div>
 
                                                                 )
                                                                     :
+                                                                item[field.key] === 2 ? (
+                                                                        <div className='justify-content-center d-flex'>
+                                                                            <div className='status-process'>
+                                                                                Uncompleted
+                                                                            </div>
+                                                                        </div>
+
+                                                                    ) :
+                                                                    item[field.key] === 3 ? (
+                                                                            <div className='justify-content-center d-flex'>
+                                                                                <div className='status-success'>
+                                                                                    Completed
+                                                                                </div>
+                                                                            </div>
+
+                                                                        ) :
+                                                                    item[field.key] === 4 ? (
+                                                                            <div className='justify-content-center d-flex'>
+                                                                                <div className='status-danger'>
+                                                                                    Cancel
+                                                                                </div>
+                                                                            </div>
+
+                                                                        ) :
                                                                     (
                                                                         <div className='justify-content-center d-flex'>
-                                                                            <div className='status-disable'>
-                                                                                Disable
-                                                                            </div>
                                                                         </div>
                                                                     )
                                                                 }
                                                             </TableCell>
                                                         )
                                                     }
-                                                    if(field.key ==" Authors"){
-                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
-
-                                                        </TableCell>
-                                                    }
                                                     if (field.key === "Action") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'read') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Role', 'read') && showModalDetail(item)}
+                                                                   >
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Role', 'update') && showModalEdit(item)}
+                                                                  >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'delete') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Role', 'delete') && deleteItem(item)}
+                                                                    >
                                                                     <DeleteOutlineOutlinedIcon  />
                                                                 </span>
                                                             </TableCell>
                                                         )
                                                     }
-                                                
                                                     return (
                                                         <TableCell className={field.class} key={crypto.randomUUID()}>
                                                             {item[field.key] ? item[field.key] : '-'}
@@ -505,4 +500,4 @@ const ProductList : React.FC = () => {
     )
 }
 
-export default ProductList
+export default ResourceList

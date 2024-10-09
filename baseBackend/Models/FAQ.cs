@@ -10,6 +10,9 @@ public class FAQ
     public string Title { get; set; }
     public string Decription { get; set; }
     public int Type { get; set; }
+    public int Status { get; set; }
+
+    public int Version { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }

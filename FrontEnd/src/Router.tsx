@@ -14,6 +14,8 @@ import UserList from "@pages/user/UserList.tsx";
 import CompanyList from "@pages/companyparent/ComanyPartnerList"
 import ProductList from "@pages/product/ProductList"
 import SaleList from "@pages/sale/SaleList"
+import OrderList from "@pages/order/OrderList"
+import FAQList from "@pages/FAQ/FAQList"
 // import FAQList from "@pages/FAQ/FAQList"
 
 export  default  createBrowserRouter([
@@ -82,14 +84,19 @@ export  default  createBrowserRouter([
                 errorElement: (<ErrorPage error="other"/>),
             },
             {
+                path: 'order',
+                element: (<OrderList />),
+                errorElement: (<ErrorPage error="other"/>),
+            },
+            {
                 path: '403',
                 element: (<ErrorPage error="403"/>),
             },
-            // {
-            //     path: 'faq',
-            //     element: (<FAQList />),
-            //     errorElement: (<ErrorPage error="'Error page"/>),
-            // },
+            {
+                path: 'FAQ',
+                element: (<FAQList />),
+                errorElement: (<ErrorPage error="'Error page"/>),
+            },
             {
                 path: '*',
                 element: (<ErrorPage error="404"/>),

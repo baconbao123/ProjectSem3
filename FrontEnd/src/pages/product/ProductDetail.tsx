@@ -5,23 +5,39 @@ import {
   setToast,
 } from "@src/Store/Slinces/appSlice.ts";
 import { useDispatch } from "react-redux";
-import $axios, { Categoryization } from "@src/axios.ts";
+import $axios, { Productization } from "@src/axios.ts";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
-interface CategoryDetail {
+import { Image } from 'primereact/image';
+interface ProductDetail {
   id: any;
 }
-const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
+const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [parentCategory, setParentCategory] = useState("");
+
   const [status, setStatus] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const [updatedBy, setUpdatedBy] = useState("");
   const [createdAt, setCreatedAt] = useState("");
   const [updatedAt, setUpdateAt] = useState("");
-
+  const [basePrice, setBasePrice] = useState(0);
+  const [sellPrice, setSellPrice] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+  const [imageThumbPath, setImageThumbPath] = useState("");
+  const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
   const token = Cookies.get("token");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const MAX_LENGTH = 500; // Độ dài tối đa để cắt bớt mô tả
+
+  const toggleDescription = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const shortDescription =
+    description?.length > MAX_LENGTH
+      ? description.substring(0, MAX_LENGTH) + "..."
+      : description;
   useEffect(() => {
     loadData();
   }, []);
@@ -29,38 +45,50 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
     dispatch(setLoading(true));
 
     $axios
-      .get(`Category/${id}`)
+      .get(`Product/${id}`)
       .then((res) => {
-        if (res.data.data && res.data.data.Category.Name) {
-          setName(res.data.data.Category.Name);
+        console.log(res.data.data[0]);
+      
+        if (res.data.data[0] && res.data.data[0].Name) {
+          setName(res.data.data[0].Name);
         }
-        if (res.data.data && res.data.data.Category.Description) {
-          setDescription(res.data.data.Category.Description);
+        if (res.data.data[0] && res.data.data[0].Description) {
+          setDescription(res.data.data[0].Description);
         }
-        if (res.data.data && res.data.data.ParentName) {
-          setParentCategory(res.data.data.ParentName);
+
+        if (res.data.data[0] && res.data.data[0].BasePrice) {
+          setBasePrice(res.data.data[0].BasePrice);
         }
-        if (res.data.data && res.data.data.Category.Status) {
-          setStatus(res.data.data.Category.Status);
+        if (res.data.data[0] && res.data.data[0].SellPrice) {
+          setSellPrice(res.data.data[0].SellPrice);
         }
-        if (res.data.data && res.data.data.Category.UpdateAt) {
+        if (res.data.data[0] && res.data.data[0].Quantity) {
+          setQuantity(res.data.data[0].Quantity);
+        }
+
+        if (res.data.data[0] && res.data.data[0].Status) {
+          setStatus(res.data.data[0].Status);
+        }
+        if (res.data.data[0] && res.data.data[0].UpdateAt) {
           setUpdateAt(
-            dayjs(res.data.data.Category.UpdateAt).format("YYYY-MM-DD HH:mm:ss")
+            dayjs(res.data.data[0].UpdateAt).format("YYYY-MM-DD HH:mm:ss")
           );
         }
-        if (res.data.data && res.data.data.Category.CreatedAt) {
+        if (res.data.data[0] && res.data.data[0].CreatedAt) {
           setCreatedAt(
-            dayjs(res.data.data.Category.CreatedAt).format(
-              "YYYY-MM-DD HH:mm:ss"
-            )
+            dayjs(res.data.data[0].CreatedAt).format("YYYY-MM-DD HH:mm:ss")
           );
         }
 
-        if (res.data.data && res.data.data.UserCreate) {
-          setCreatedBy(res.data.data.UserCreate);
+        if (res.data.data[0] && res.data.data[0].CreatedBy) {
+          setCreatedBy(res.data.data[0].CreatedBy);
         }
-        if (res.data.data && res.data.data.UserUpdate) {
-          setUpdatedBy(res.data.data.UserUpdate);
+        if (res.data.data[0] && res.data.data[0].UpdatedBy) {
+          setUpdatedBy(res.data.data[0].UpdatedBy);
+        }
+        if (res.data.data[0] && res.data.data[0].ImageThumbPath) {
+          setImageThumbPath(res.data.data[0].ImageThumbPath);
+       
         }
       })
       .catch((err) => {
@@ -80,15 +108,62 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
             <span className="label-form me-3">Name:</span>
             <span> {name ? name : "-"}</span>
           </div>
-          <div>
-            <span className="label-form me-3">Parent category:</span>
-            <span> {parentCategory? parentCategory : "-"}</span>
+          <div className="mt-3">
+            {imageThumbPath ? (
+              <Image
+                src={baseUrl+imageThumbPath}
+                alt="Thumb"
+                className="image-product"
+                width="70"
+                preview
+              />
+            ) : (
+              "-"
+            )}
           </div>
         </div>
         <div className="col-6">
           <div>
+            <span className="label-form me-3">Quantity:</span>
+            <span>x {quantity ? quantity : "-"}</span>
+          </div>
+          <div>
+            <span className="label-form me-3">Base price:</span>
+            <span> $ {basePrice ? basePrice : "-"}</span>
+          </div>
+          <div>
+            <span className="label-form me-3">Sell price:</span>
+            <span> $ {sellPrice ? sellPrice : "-"}</span>
+          </div>
+        </div>
+
+        <div className="col-12">
+          <div>
             <span className="label-form me-3">Description:</span>
-            <span> {description ? description : "-"}</span>
+            <span>
+              {description ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: isExpanded ? description : shortDescription,
+                  }}
+                />
+              ) : (
+                "-"
+              )}
+            </span>
+            {description.length > MAX_LENGTH && (
+              <button
+                onClick={toggleDescription}
+                style={{
+                  cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  color: "blue",
+                }}
+              >
+                {isExpanded ? "Hide" : "More"}
+              </button>
+            )}
           </div>
         </div>
         <div className="mt-3 col-6">
@@ -146,4 +221,4 @@ const CategoryDetail: React.FC<CategoryDetail> = ({ id }) => {
   );
 };
 
-export default CategoryDetail;
+export default ProductDetail;

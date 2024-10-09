@@ -14,14 +14,15 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import HomeIcon from '@mui/icons-material/Home';
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
-import { Image } from 'primereact/image';
+import ResourceAdd from "@pages/resource/ResourceAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
-import ProductDetail from "./ProductDetail";
 
 import {Link} from "react-router-dom";
-import ProductAdd from "./ProductAdd";
-const ProductList : React.FC = () => {
+import CompanyAdd from "./FAQAdd";
+import CompanyDetail from "./FAQDetail";
+import FAQAdd from "./FAQAdd";
+const FAQList: React.FC = () => {
     const dispatch = useDispatch();
 
     const [field, setField] = React.useState<any>([]);
@@ -35,20 +36,14 @@ const ProductList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({Name: '', Status: -1});
-    const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
+    const [filter, setFilter] = useState({Title: '', Status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
-            {key: "ImageThumbPath", label: "Image", class: ""},
-            {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
-            {key: "Code", label: "Product code", class: "", sortable: true, sortValue: 'none'},
-            {key: "CompanyPartnerName", label: "Company partner", class: ""},
-           
-            {key: "Quantity", label: "Quantity", class: ""},
-            {key: "BasePrice", label: "Base price", class: ""},
-            {key: "SellPrice", label: "Sell price", class: ""},
+            {key: "Title", label: "Title", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "Decription", label: "Decription", class: ""},
+            {key: "Type", label: "Group FAQs", class: ""},
             {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
 
@@ -102,7 +97,7 @@ const ProductList : React.FC = () => {
                     return false
                 }
 
-                if (key === 'Name' && !item[key].toLowerCase().includes(value.toLowerCase())) {
+                if (key === 'Title' && !item[key].toLowerCase().includes(value.toLowerCase())) {
                     return false
                 }
             }
@@ -121,10 +116,10 @@ const ProductList : React.FC = () => {
 
     const loadDataTable = () => {
         const token = Cookies.get("token")
-        $axios.get('/Product').then(res => {
-            setData(res.data.data)
-            setFilterData(res.data.data)
-            
+        $axios.get('/FAQ').then(res => {
+            console.log(res.data)
+            setData(res.data)
+            setFilterData(res.data)
         })
             .catch(err => {
                 console.log(err)
@@ -132,28 +127,28 @@ const ProductList : React.FC = () => {
 
     }
     const handleComponentAdd: React.FC =() => {
-        return  (<ProductAdd loadDataTable={loadDataTable} form={'add'}/>)
+        return  (<FAQAdd loadDataTable={loadDataTable} form={'add'}/>)
     }
     const handleComponentEdit: React.FC =( ) => {
-        return  (<ProductAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
+        return  (<FAQAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<ProductDetail id={currentId} />)
+        return  (<CompanyDetail id={currentId} />)
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
-        setComponentTitle("Add product")
+        setComponentTitle("Add FAQ")
         setShowComponent('add')
     }
     const showModalEdit = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Edit product")
+        setComponentTitle("Edit FAQ")
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.Id)
-        setComponentTitle("Detail product")
+        setComponentTitle("Detail FAQ")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -170,11 +165,10 @@ const ProductList : React.FC = () => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
                 const token = Cookies.get("token")
-                $axios.delete(`Product/${item.Id}`).then(res => {
+                $axios.delete(`FAQ/${item.Id}`).then(res => {
                     console.log("check res", res)
-                    
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete product successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete resource successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -192,22 +186,21 @@ const ProductList : React.FC = () => {
     const header: React.FC = () => {
         return (
             <div className='header-page'>
-               <div className='header-page'>
                 <Breadcrumbs separator="›" aria-label="breadcrumb" className='breadcrumb'>
                     <Link
                         color="inherit"
                         to="/"
                     >
-                        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-                        Home
+                        <HomeIcon className='icon-breadcrum' />
+
+
                     </Link>
                     <Link
-                     to='/product'
+                     to='/FAQ'
                     >
-                       Product
+                        FAQ
                     </Link>
                 </Breadcrumbs>
-            </div>
             </div>
         )
     }
@@ -217,15 +210,15 @@ const ProductList : React.FC = () => {
             setFilter(prev => ({...prev, Status: e.target.value}))
         }
         const setChangeName = (e: any) => {
-            setFilter(prev => ({...prev, Name: e.target.value}))
+            setFilter(prev => ({...prev, Title: e.target.value}))
         }
         return (
             <div className='search-container'>
                 <div>
                   <input
-                      value={filter.Name}
+                      value={filter.Title}
                          onChange={e =>  setChangeName(e)}
-                         className='form-control test-position' placeholder="Search name..."/>
+                         className='form-control test-position' placeholder="Search title..."/>
                 </div>
             <Select
                 className="search-form width-200 custom-form"
@@ -340,10 +333,6 @@ const ProductList : React.FC = () => {
                                     (itemFrom <= index && itemTo > index && currentPage !== 1 ) ||
                                     perPage === 'All'
                                 ) {
-                                    
-                                    const imagePath = item.ProductImages && item.ProductImages.length > 0 ? item.ProductImages[0].ImagePath : null;
-                                    const imageThumbPath = item.ImageThumbPath && item.ImageThumbPath.length > 0 ? item.ImageThumbPath : null;
-                                    
                                     return (
                                         <TableRow key={crypto.randomUUID()}>
                                             {
@@ -354,25 +343,6 @@ const ProductList : React.FC = () => {
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
                                                                 {index + 1}
                                                             </TableCell>
-                                                        )
-                                                    }
-
-                                                    if (field.key === "ImageThumbPath") {
-                                                       
-                                                        return (
-                                                            <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                            {imageThumbPath? (
-                                                              <Image
-                                                                src={baseUrl + item.ImageThumbPath}
-                                                                alt={item.Name}
-                                                                className="image-product"
-                                                                width="70"
-                                                                preview
-                                                              />
-                                                            ) : (
-                                                              <div>No Image</div>  // Hiển thị nếu không có hình ảnh
-                                                            )}
-                                                          </TableCell>
                                                         )
                                                     }
                                                     if (field.key === "Status") {
@@ -398,11 +368,6 @@ const ProductList : React.FC = () => {
                                                             </TableCell>
                                                         )
                                                     }
-                                                    if(field.key ==" Authors"){
-                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
-
-                                                        </TableCell>
-                                                    }
                                                     if (field.key === "Action") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
@@ -418,7 +383,6 @@ const ProductList : React.FC = () => {
                                                             </TableCell>
                                                         )
                                                     }
-                                                
                                                     return (
                                                         <TableCell className={field.class} key={crypto.randomUUID()}>
                                                             {item[field.key] ? item[field.key] : '-'}
@@ -505,4 +469,4 @@ const ProductList : React.FC = () => {
     )
 }
 
-export default ProductList
+export default FAQList

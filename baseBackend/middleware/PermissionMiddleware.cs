@@ -44,7 +44,26 @@ public class PermissionMiddleware
                 resource = "Product";
                 action = getAction(context.Request.Method);
             }
-
+            if (path.StartsWithSegments("/api/Sale") || path.StartsWithSegments("/api/Sale"))
+            {
+                resource = "Sale";
+                action = getAction(context.Request.Method);
+            }
+            if (path.StartsWithSegments("/api/Category") || path.StartsWithSegments("/api/Category"))
+            {
+                resource = "Category";
+                action = getAction(context.Request.Method);
+            }
+            if (path.StartsWithSegments("/api/Author") || path.StartsWithSegments("/api/Author"))
+            {
+                resource = "Author";
+                action = getAction(context.Request.Method);
+            }
+            if (path.StartsWithSegments("/api/CompanyPartner") || path.StartsWithSegments("/api/CompanyPartner"))
+            {
+                resource = "CompanyPartner";
+                action = getAction(context.Request.Method);
+            }
             if (resource == "" || action == "")
             {
                 await _next(context);
