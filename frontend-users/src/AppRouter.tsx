@@ -2,9 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Login from './Components/Login/Login'
 import Home from './Page/Home/Home'
 import { MainLayouts } from './Page/MainLayouts'
-import NotFound from './Page/NotFound/NotFound'
+import NotFound from './Components/NotFound/NotFound'
 import { StoreSystem } from './Page/StoreSystem/StoreSystem'
-import AllBooks from './Page/AllBooks/AllBooks'
 import Vouchers from './Page/Vouchers/Vouchers'
 import Cart from './Page/Cart/Cart'
 import Order from './Page/Order/Order'
@@ -17,17 +16,14 @@ import OrderCancel from './Components/CardOrder/OrderActions/OrderCancel/OrderCa
 import Register from './Components/Register/Register'
 import MemberBenefits from './Page/MemberBenefits/MemberBenefits'
 import ProductDetail from './Page/ProductDetail/ProductDetail'
-import AllStationery from './Page/AllStationery/AllStationery'
-import AllCD from './Page/AllCD/AllCD'
 import Checkout from './Page/Checkout/Checkout'
 import FAQ from './Page/FAQ/FAQ'
 import CheckoutCompleted from './Page/Checkout/Compelete/CheckoutCompleted'
 import { useSelector } from 'react-redux'
 import { RootState } from './Store/store'
-import AllBooksDetail from './Page/AllBooks/Detail/AllBooksDetail'
 import Account from './Page/Accoount/Account'
-import AllStationeryDetail from './Page/AllStationery/Detail/AllStationeryDetail'
-import AllCDsDetail from './Page/AllCD/Detail/AllCDsDetail'
+import CategoryDetail from './Page/Category/CategoryDetail/CategoryDetail'
+import Category from './Page/Category/Category'
 
 export const AppRouter: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.userId)
@@ -47,15 +43,11 @@ export const AppRouter: React.FC = () => {
           <Route index element={<Navigate to='/home' />} />
           <Route path='home' element={<Home />} />
           <Route path='store' element={<StoreSystem />} />
-          <Route path='all-stationery' element={<AllStationery />} />
-          <Route path='all-stationery/:genres' element={<AllStationeryDetail />} />
-          <Route path='all-cds' element={<AllCD />} />
-          <Route path='all-cds/:genres' element={<AllCDsDetail />} />
-          <Route path='all-books' element={<AllBooks />} />
-          <Route path='all-books/:genres' element={<AllBooksDetail />} />
+          <Route path='/:category' element={<Category />} />
+          <Route path='/:category/:genres' element={<CategoryDetail />} />
           <Route path='vouchers' element={<Vouchers />} />
           <Route path='member-benefits' element={<MemberBenefits />} />
-          {userId ? <Route path='account/:id' element={<Account />} /> : <Route path='account' element={<Account />} />}
+          {userId && <Route path='account/:id' element={<Account />} />}
           <Route path='checkout/cart' element={<Cart />} />
           {userId && <Route path='checkout' element={<Checkout />} />}
           {userId && <Route path='checkout/compeleted' element={<CheckoutCompleted />} />}

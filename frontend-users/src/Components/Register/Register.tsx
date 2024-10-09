@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { $axios } from '../../axios'
 import Swal from 'sweetalert2'
 import axios from 'axios'
@@ -6,6 +6,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Col, Container, Row } from 'react-bootstrap'
 import './Register.scss'
 import { Button } from 'primereact/button'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../Store/store'
+import { setLoaded, setLoading } from '../../Store/loadingSlice'
+import Loading from '../Loading/Loading'
 
 interface RegisterData {
   Username: string
@@ -20,8 +24,24 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [isConfirmTouched, setIsConfirmTouched] = useState<boolean>(false)
   const [passwordMatch, setPasswordMatch] = useState<boolean>(true)
+  const isLoading = useSelector((state: RootState) => state.loading.isLoading)
+  const dispatch = useDispatch()
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    dispatch(setLoading())
+
+    const timeoutId = setTimeout(() => {
+      dispatch(setLoaded())
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [dispatch])
+
+  const handleLoaded = () => {
+    dispatch(setLoaded())
+  }
 
   // Handle match Password
   const handlePasswordRegister = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +67,6 @@ const Register = () => {
     }
 
     const registerData: RegisterData = { Username: usernameRegister, Email: emailRegister, Password: passwordRegister }
-    console.log(registerData)
 
     try {
       const res = await $axios.post('UserFe', registerData)
@@ -84,10 +103,27 @@ const Register = () => {
     <Container className='container-register'>
       <div className='form-box-register'>
         <Row>
-          <Col lg={6} className='d-flex justify-content-center align-items-center'>
-            <video className='register-video' autoPlay muted loop playsInline preload='auto' key='register-video'>
-              <source src='/videos/register-video.mp4' type='video/mp4' />
-            </video>
+          <Col lg={6} className='col-video-register'>
+            <div className='image-container'>
+              {isLoading ? (
+                <Loading />
+              ) : (
+                <>
+                  <video
+                    className='register-video'
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload='auto'
+                    key='register-video'
+                    onLoad={handleLoaded}
+                  >
+                    <source src='/videos/register-video.mp4' type='video/mp4' />
+                  </video>
+                </>
+              )}
+            </div>
           </Col>
           <Col lg={6}>
             <div className='form-content'>
