@@ -9,27 +9,11 @@ export default interface Product {
   Quantity: string
   Manufactor: string
   Author: string
-  ProductImage: string[]
+  ProductImage?: string[]
+  ImageThumbPath?: string
   CategoryName: string
   CreatedAt: string
+  CompanyPartnerName?: string
   //   Thêm
   special?: string
 }
-
-// export default interface Product {
-//   Id: number
-// //   Code: string
-// //   CategoryId: string
-//   Name: string
-//   Status: boolean
-//   Description: string
-// //   Profit: string
-//   BasePrice: string
-//   SellPrice: string
-//   Quantity: string
-//   Manufactor: string
-// //   PublisherId: string
-//   ProductImage: string[]
-// //   Thêm
-//   special?: string
-// }

@@ -4,23 +4,40 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Avatar } from 'primereact/avatar'
-import { GiCancel } from 'react-icons/gi'
+import Cookies from 'js-cookie'
 import axios from 'axios'
 import { $axios } from '../../axios'
 import Swal from 'sweetalert2'
 import RequiredLogin from '../../Components/RequiredLogin/RequiredLogin'
 import { useParams } from 'react-router-dom'
+import { Dialog } from 'primereact/dialog'
+
+interface AccountData {
+  Id: string
+  Email: string
+  Username: string
+  Phone: string
+}
 
 const Account: React.FC = () => {
+  // Username
   const [username, setUsername] = useState<string>('')
+  // Email
   const [email, setEmail] = useState<string>('')
+  // Phone
   const [phone, setPhone] = useState<string>('')
+  // Password
+  const [showSetPassword, setShowSetPassword] = useState<boolean>(false)
   const [newPassword, setNewPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [passwordMatch, setPasswordMatch] = useState<boolean>(true)
   const [isConfirmTouched, setIsConfirmTouched] = useState<boolean>(false)
+  // File - avatar
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
+
+  // Set password
+
   const [user, setUser] = useState<any>(null)
   const { id } = useParams<{ id: string }>()
 
@@ -44,57 +61,36 @@ const Account: React.FC = () => {
       if (file) {
         setSelectedFile(file)
         setFileName(file.name)
+
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setUser((prevUser: any) => ({
+            ...prevUser,
+            Avatar: reader.result as string
+          }))
+        }
+        reader.readAsDataURL(file)
       }
     }
-  }
-
-  const handleCancel = () => {
-    setSelectedFile(null)
-    setFileName(null)
   }
 
   const handleUpdateAccount = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
 
-    if (!passwordMatch) return
-
-    const formData = new FormData()
-
-    formData.append('Id', id ? String(id) : '0') // Ensure the ID is a string
-    formData.append('Email', email)
-
-    // Only append the new password if it's provided
-    if (newPassword) {
-      formData.append('Password', newPassword)
-    }
-
-    formData.append('Username', username)
-    formData.append('Phone', phone)
-
-    if (selectedFile) {
-      formData.append('Avatar', selectedFile)
-    }
+    const accountData: AccountData = { Id: id ?? '', Email: email, Username: username, Phone: phone }
 
     try {
-      await $axios.put('UserFE', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      const res = await $axios.put('UserFE', accountData)
+      if (res.status === 200) {
+        await Swal.fire({
+          title: 'Update Success!',
+          icon: 'success',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
 
-      await Swal.fire({
-        title: 'Update Success!',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500
-      })
-
-      window.location.reload()
-
-      setConfirmPassword('')
-      setNewPassword('')
-      setSelectedFile(null)
-      setFileName(null)
+      // window.location.reload()
     } catch (error) {
       let errorMess = ''
 
@@ -133,6 +129,28 @@ const Account: React.FC = () => {
     getUserById()
   }, [id])
 
+  async function handleLogout() {
+    Swal.fire({
+      title: 'Confirm logout?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          Cookies.remove('token')
+          Cookies.remove('refreshToken')
+
+          window.location.reload()
+        } catch (error) {
+          console.error('Logout failed:', error)
+        }
+      }
+    })
+  }
+
   return (
     <>
       {id ? (
@@ -145,6 +163,73 @@ const Account: React.FC = () => {
               </Row>
               <form onSubmit={handleUpdateAccount}>
                 <Row className='row-my-profile-content'>
+                  {/* avatar */}
+                  <Col lg={4} className='col-avatar'>
+                    <Avatar
+                      image={
+                        selectedFile
+                          ? URL.createObjectURL(selectedFile)
+                          : user?.Avatar
+                            ? `${import.meta.env.VITE_API_BACKEND_IMAGE}/${user.Avatar}`
+                            : '/images/no-avatar.jpg'
+                      }
+                      size='xlarge'
+                      shape='circle'
+                      className='avatar-img'
+                    />
+                    <div className='mt-3'></div>
+                    <Button label='Select Avatar' className='btn-avatar' type='button'>
+                      <input
+                        type='file'
+                        accept='image/png, image/jpeg'
+                        onChange={handleFileChange}
+                        style={{ opacity: 0, position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
+                      />
+                    </Button>
+
+                    <div className='mt-3'></div>
+
+                    <Button
+                      type='button'
+                      label='Change Password'
+                      className='btn-change-pass'
+                      onClick={() => setShowSetPassword(true)}
+                    />
+                    <Dialog
+                      header='Update Password'
+                      visible={showSetPassword}
+                      onHide={() => {
+                        if (!showSetPassword) return
+                        setShowSetPassword(false)
+                      }}
+                      style={{ width: '50vw' }}
+                      breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+                    >
+                      <div className='profile-group-dialog'>
+                        <p>New Passowrd</p>
+                        <InputText
+                          type='password'
+                          className='p-inputtext-sm'
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                      </div>
+                      <div className='mt-3'></div>
+
+                      <div className='profile-group-dialog'>
+                        <p>Confirm Password</p>
+                        <InputText
+                          type='text'
+                          className='p-inputtext-sm'
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                      </div>
+                    </Dialog>
+
+                    <div className='mt-3'></div>
+                    <Button label='Logout' onClick={() => handleLogout()} className='btn-logout' type='button' />
+                  </Col>
                   <Col lg={8} className='col-profile-content'>
                     <div className='profile-group'>
                       <p>Username</p>
@@ -176,66 +261,11 @@ const Account: React.FC = () => {
                         onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
-                    <div className='profile-group'>
-                      <p>New Password</p>
-                      <InputText
-                        type='password'
-                        className='p-inputtext-sm'
-                        value={newPassword}
-                        onChange={handleNewPasswordChange}
-                      />
-                    </div>
-                    <div className='profile-group'>
-                      <p>Confirm Password</p>
-                      <InputText
-                        type='password'
-                        className='p-inputtext-sm'
-                        value={confirmPassword}
-                        onChange={handleConfirmPasswordChange}
-                      />
-                      {!passwordMatch && <p style={{ color: 'red', fontSize: '12px' }}>Passwords do not match</p>}
-                    </div>
+
                     <div className='profile-group'>
                       <p></p>
-                      <Button type='submit' label='Save' severity='success' outlined className='btn-save' />
+                      <Button type='submit' label='Save' className='btn-save' />
                     </div>
-                  </Col>
-                  {/* avatar */}
-                  <Col lg={4} className='col-avatar'>
-                    <Avatar
-                      image={
-                        user?.Avatar
-                          ? `${import.meta.env.VITE_API_BACKEND_IMAGE}/${user.Avatar}`
-                          : '/images/no-avatar.jpg'
-                      }
-                      size='xlarge'
-                      shape='circle'
-                      className='avatar-img'
-                    />{' '}
-                    <br />
-                    <Button label='Select Avatar' severity='success' outlined className='btn-avatar' type='button'>
-                      <input
-                        type='file'
-                        accept='image/png, image/jpeg'
-                        onChange={handleFileChange}
-                        style={{ opacity: 0, position: 'absolute', left: 0, top: 0, width: '100%', height: '100%' }}
-                      />
-                    </Button>
-                    {selectedFile && (
-                      <>
-                        <Row className='avatar-selected'>
-                          <Col lg={2}>
-                            <img src={URL.createObjectURL(selectedFile)} alt='Selected Avatar' />
-                          </Col>
-                          <Col lg={8}>
-                            <div style={{ fontSize: '12px' }}>{fileName}</div>
-                          </Col>
-                          <Col lg={2} className='col-cancel-img'>
-                            <GiCancel className='icon-cancel' onClick={handleCancel} />
-                          </Col>
-                        </Row>
-                      </>
-                    )}
                   </Col>
                 </Row>
               </form>

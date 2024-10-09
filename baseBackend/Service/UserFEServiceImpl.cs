@@ -1,5 +1,4 @@
 ﻿using AuthenticationJWT.DTO;
-using AuthenticationJWT.Helper;
 using AuthenticationJWT.Models;
 using AutoMapper;
 
@@ -55,19 +54,19 @@ public class UserFEServiceImpl : UserFEService
             var user = getUserByID(userDto.Id);
 
             if (user == null) return false;
-            if (userDto.Avatar != null && userDto.Avatar.Length > 0)
-            {
-                string fileName = FileHelper.generateFileName(userDto.Avatar.FileName);
-                string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images");
-                string filePath = Path.Combine(uploadsFolder, fileName);
+            //if (userDto.Avatar != null && userDto.Avatar.Length > 0)
+            //{
+            //    string fileName = FileHelper.generateFileName(userDto.Avatar.FileName);
+            //    string uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "images");
+            //    string filePath = Path.Combine(uploadsFolder, fileName);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    userDto.Avatar.CopyTo(stream);
-                }
+            //    using (var stream = new FileStream(filePath, FileMode.Create))
+            //    {
+            //        userDto.Avatar.CopyTo(stream);
+            //    }
 
-                user.Avatar = fileName;
-            }
+            //    user.Avatar = fileName;
+            //}
 
             user.Username = string.IsNullOrEmpty(userDto.Username) ? user.Username : userDto.Username;
             user.Email = string.IsNullOrEmpty(userDto.Email) ? user.Email : userDto.Email;

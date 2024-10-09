@@ -52,38 +52,29 @@
     }
   }
 
-  //    new realease
+  // new realease
   .img-new-realse {
     width: 100%;
     height: 80%;
   }
 
-  // Category explore books
-  .container-banner-books {
-    // banner
-    .img-books {
-    }
+  .block {
+    margin-top: 24px;
   }
 
-  .div-see-more {
+  .row-btn-see-more {
+    margin-top: 20px;
     display: flex;
     justify-content: center;
 
-    .btn-see-more {
-      border-radius: 5px;
-      color: $btn-color;
-      width: 160px;
-      font-size: 16px;
+    .url-see-more {
+      width: 107px;
+
+      .btn-see-more {
+        border-color: $btn-color;
+        border-radius: 5px;
+        color: $btn-color;
+      }
     }
-  }
-
-  .container-banner-stationery {
-    margin-top: 45px;
-  }
-
-  .img-category-banner {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
   }
 }
