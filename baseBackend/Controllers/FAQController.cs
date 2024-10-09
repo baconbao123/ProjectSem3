@@ -2,50 +2,110 @@
 using AuthenticationJWT.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace AuthenticationJWT.Controllers;
-[Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class FAQController : Controller
+namespace AuthenticationJWT.Controllers
 {
-    private FAQService fAQService;
-
-    public FAQController(FAQService fAQService)
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class FAQController : ControllerBase
     {
-        this.fAQService = fAQService;
-    }
+        private readonly FAQService _faqService;
 
-    [HttpGet]
-    public IActionResult GetAllFAQs()
-    {
-        try
+        public FAQController(FAQService faqService)
         {
-            return Ok(fAQService.GetFAQs());
+            _faqService = faqService;
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
-    [HttpPost]
-    public IActionResult PostAllFAQs([FromBody] FAQDTO fAQDTO)
-    {
-        try
+        // GET: api/faq
+        [HttpGet]
+        public ActionResult<List<FAQDTO>> GetFAQs()
         {
-            if (fAQService.PostFAQ(fAQDTO))
+            var faqs = _faqService.GetFAQs();
+            return Ok(faqs);
+        }
+
+        // POST: api/faq
+        [HttpPost]
+        public IActionResult PostAllFAQs([FromBody] IEnumerable<FAQDTO> faqDTOs)
+        {
+            try
             {
-                return Ok();
+                if (_faqService.PostFAQs(faqDTOs))
+                {
+                    return Ok("FAQs added successfully.");
+                }
+                return BadRequest("Failed to add FAQs.");
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
-        catch (Exception ex)
+
+        // GET: api/faq/{id}
+        [HttpGet("{id}")]
+        public ActionResult<FAQDTO> GetFAQById(int id)
         {
-            return BadRequest(ex.Message);
+            var faq = _faqService.GetFAQById(id);
+            if (faq == null)
+            {
+                return NotFound($"FAQ with ID {id} not found.");
+            }
+            return Ok(faq);
         }
+
+        // PUT: api/faq/{id}
+        [HttpPut("{id}")]
+        public IActionResult UpdateFAQ(int id, [FromBody] FAQDTO faqDTO)
+        {
+            try
+            {
+                if (_faqService.PutFAQ(faqDTO, id))
+                {
+                    return Ok("FAQ updated successfully.");
+                }
+                return BadRequest("Failed to update FAQ.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // DELETE: api/faq/{id}
+        [HttpDelete("{id}")]
+        public IActionResult DeleteFAQ(int id)
+        {
+            try
+            {
+                // Check if the FAQ exists before trying to delete
+                var faq = _faqService.GetFAQById(id);
+                if (faq == null)
+                {
+                    return NotFound($"FAQ with ID {id} not found.");
+                }
+
+                // Attempt to delete the FAQ
+                if (_faqService.DeleteFAQ(id))
+                {
+                    return Ok("FAQ deleted successfully.");
+                }
+
+                return BadRequest("Failed to delete the FAQ due to an unknown reason.");
+            }
+            catch (DbUpdateException dbEx)
+            {
+
+                return BadRequest("An error occurred while deleting the FAQ. Please try again.");
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest("An unexpected error occurred. Please try again.");
+            }
+        }
+
     }
 }

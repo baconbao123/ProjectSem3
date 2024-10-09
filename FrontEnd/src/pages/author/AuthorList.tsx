@@ -24,6 +24,8 @@ import dayjs from "dayjs";
 import * as XLSX from 'xlsx'; // Thư viện XLSX để xuất Excel
 import {saveAs} from 'file-saver'; // Thư viện hỗ trợ lưu file
 import Papa from 'papaparse'; // Import papaparse
+import {checkPermission} from "@src/Service/common.ts";
+
 const AuthorList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -381,7 +383,7 @@ const button: React.FC = () => {
                                                     }
                                                     if (field.key === "Action") {
                                                         return (
-                                                            <TableCell className={field.class} key={crypto.randomUUID()}>
+                                                            <TableCell className={field.class} key={crypto.randomUUID()} >
                                                                 <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
