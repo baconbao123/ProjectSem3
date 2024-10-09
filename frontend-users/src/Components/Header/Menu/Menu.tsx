@@ -1,105 +1,104 @@
 import { Col, Container, Row } from 'react-bootstrap'
-import { useEffect, useRef, useState } from 'react'
-import './Menu.scss'
 import { Link } from 'react-router-dom'
-
-interface CategoryItem {
-  id: number
-  name: string
-}
+import { InputText } from 'primereact/inputtext'
+import { Button } from 'primereact/button'
+import './Menu.scss'
+import { useEffect, useRef, useState } from 'react'
+import { $axios } from '../../../axios'
 
 export const Menu = () => {
-  const [showItem, setShowItem] = useState(false)
-  const [isSticky, setIsSticky] = useState(false)
-  const categoryRef = useRef<HTMLDivElement>(null)
-
-  const items: CategoryItem[] = [
-    { id: 1, name: 'Novel' },
-    { id: 2, name: 'Trinh thám' },
-    { id: 3, name: 'Technology' }
-  ]
+  const [itemCategories, setItemCategories] = useState<any | []>([])
+  const [expandedCategoryId, setExpandedCategoryId] = useState<number | null>(null)
+  const expandedCategoryRef = useRef<HTMLDivElement>(null)
 
   const itemsPage: { name: string; url: string }[] = [
     {
-      name: 'Books',
-      url: '/all-books'
-    },
-    {
       name: 'Vouchers',
       url: '/vouchers'
+    },
+    {
+      name: 'FAQ',
+      url: '/faq'
     }
   ]
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
-        setShowItem(false)
-      }
+    const fetchItem = async () => {
+      const res = await $axios.get('CategoriesFE/getCategories')
+      setItemCategories(res.data.data)
     }
 
+    fetchItem()
+  }, [])
+
+  const toggleSubcategory = (parentId: number) => {
+    setExpandedCategoryId((prevId) => (prevId === parentId ? null : parentId))
+  }
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (expandedCategoryRef.current && !expandedCategoryRef.current.contains(e.target as Node)) {
+      setExpandedCategoryId(null)
+    }
+  }
+
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside)
 
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 200) {
-        setIsSticky(true)
-      } else {
-        setIsSticky(false)
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
   return (
     <>
-      <div className={`menu-container ${isSticky ? 'sticky' : ''}`}>
+      <div className='menu-container'>
         <Container>
           <Row>
-            {/* Category */}
-            <Col lg={3} md={3} sm={3} xs={3}>
-              <div className='category' ref={categoryRef} onClick={() => setShowItem(!showItem)}>
-                <div className='content'>
-                  <i className='pi pi-bars icon'></i> &nbsp;&nbsp;
-                  <span className='title'>CATEGORIES</span>
-                </div>
-                <div className='arrowitem'>
-                  <i className='pi pi-angle-down' style={{ fontSize: '1.8rem' }}></i>
-                </div>
-                {showItem && (
-                  <div className='categoryItem'>
-                    {items.map((item) => (
-                      <div key={item.id} className='item'>
+            {/* Page */}
+            <Col lg={9}>
+              <div className='page-right-container'>
+                {itemCategories
+                  .filter((item: any) => item.Level === 0)
+                  .map((parentCategory: any, index: any) => (
+                    <div key={index} className='items'>
+                      <div className='item' onClick={() => toggleSubcategory(parentCategory.Id)}>
+                        <span className='name'>{parentCategory.Name}</span>
+                        <div className='arrowitem'>
+                          <i className='pi pi-angle-down' style={{ fontSize: '1.8rem' }}></i>
+                        </div>
+                      </div>
+                      {/* Display subcategories */}
+                      {expandedCategoryId === parentCategory.Id && (
+                        <div className='subcategories' ref={expandedCategoryRef}>
+                          {itemCategories
+                            .filter((subItem: any) => subItem.ParentId === parentCategory.Id)
+                            .map((subCategory: any, subIndex: any) => (
+                              <Link to={`/${parentCategory.Name}/${subCategory.Name}`} className='url-categories'>
+                                <div key={subIndex} className='subcategory'>
+                                  <span className='name'>{subCategory.Name}</span>
+                                </div>
+                              </Link>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                {itemsPage.map((item, index) => (
+                  <div key={index} className='items'>
+                    <Link to={item.url} className='url'>
+                      <div className='item'>
                         <span className='name'>{item.name}</span>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Col>
-
-            {/* Page */}
-            <Col lg={6} md={4} sm={5} xs={5}>
-              <div className='page-container'>
-                {itemsPage.map((item, index) => (
-                  <div key={index} className='item'>
-                    <Link to={item.url} className='url'>
-                      <span className='name'>{item.name}</span>
                     </Link>
                   </div>
                 ))}
               </div>
             </Col>
 
-            {/* Sale */}
-            <Col lg={3} md={5} sm={4} xs={4}>
-              <div className='save-container'>
-                <p style={{ paddingTop: '10px'}}>|</p> &nbsp;&nbsp; <i className='pi pi-star-fill icon' style={{ fontSize: '1.2rem' }}></i> &nbsp;
-                Extra &nbsp; <span style={{ color: 'yellow' }}>10%</span> &nbsp; off for loyal customers
+            {/* Search */}
+            <Col lg={3} className='col-search-left'>
+              <div className='p-inputgroup'>
+                <InputText placeholder='Search...' className='inputgroup' />
+                <Button label='Search' className='btnSearch' />
               </div>
             </Col>
           </Row>

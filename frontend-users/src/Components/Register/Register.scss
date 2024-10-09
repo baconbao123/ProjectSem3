@@ -18,9 +18,26 @@
     padding: 40px;
   }
 
-  .register-video {
-    width: 100%;
-    height: auto;
+  .col-video-register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .image-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 15px 0 0 15px;
+      position: relative;
+      transition: transform 0.6s ease-in-out; 
+    }
+  
+
+    .register-video {
+      width: 100%;
+      height: auto;
+    }
   }
 
   .form-content {

@@ -50,7 +50,7 @@ public class UserFEController : Controller
     }
 
     [HttpPut]
-    public IActionResult UserUpdate([FromForm] UserUpdateDTO userUpdateDTO)
+    public IActionResult UserUpdate([FromBody] UserUpdateDTO userUpdateDTO)
     {
         try
         {

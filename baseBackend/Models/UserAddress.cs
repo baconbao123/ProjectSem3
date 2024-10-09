@@ -9,11 +9,11 @@ public class UserAddress
     [Required]
     public int UserId { get; set; }
 
-    public int Mark { get; set; }
+    public string? AssignName { get; set; }
+    public bool? Assign { get; set; }
 
     public string? Phone { get; set; }
     public bool Index { get; set; }
-    public string? OtherMark { get; set; }
     public string DetailAddress { get; set; }
     public string? Address { get; set; }
 

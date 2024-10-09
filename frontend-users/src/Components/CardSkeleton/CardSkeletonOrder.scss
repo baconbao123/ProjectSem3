@@ -1,0 +1,12 @@
+.card-skeleton-order-master {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  .card-skeleton-left {
+    margin-left: 20px;
+  }
+}

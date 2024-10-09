@@ -1,9 +1,17 @@
-@import '../../../global.scss';
+@import '/global.scss';
 
-.link-email {
+.store-system-container {
+  margin-top: 20px;
+  margin-bottom: 40px;
+
+  .store-system-row {
+    margin-top: 20px;
+  }
+  .link-email {
     color: black;
     text-decoration: none;
     &:hover {
-        color: $btn-bgColor-hover;
+      color: $btn-bgColor-hover;
     }
+  }
 }
