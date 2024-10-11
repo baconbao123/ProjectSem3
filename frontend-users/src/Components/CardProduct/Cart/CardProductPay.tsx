@@ -121,7 +121,7 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
       <Col lg={3}>
         <div className='div-left'>
           <input type='checkbox' className='check-items' checked={localChecked} onChange={handleCheckboxChange} />
-          <img src='https://itbook.store/img/books/9781617291609.png' className='img-card' />
+          <img src={`${import.meta.env.VITE_API_BACKEND_PATH}/${product.ImageThumbPath}`} className='img-card' />
         </div>
       </Col>
       <Col lg={5} className='content-books'>
@@ -137,7 +137,7 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
           </div>
         )}
       </Col>
-      <Col lg={2} className='container-amount'>
+      <Col lg={2} className='container-amount' style={{ display: 'flex', justifyContent: 'end' }}>
         <div className='counter-amount'>
           <span className='sign-sub' onClick={handleDecrease}>
             -
@@ -148,11 +148,11 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
           </span>
         </div>
       </Col>
-      <Col lg={1} className='container-price'>
-        {totalPrice.toFixed(1)}
-      </Col>
-      <Col lg={1} className='container-trash'>
-        <i className='pi pi-trash' onClick={handleDeleteClick} />
+      <Col lg={2} className='container-price'>
+        <div className='content-price'>
+          {totalPrice.toFixed(1)}
+          <i className='pi pi-trash' onClick={handleDeleteClick} />
+        </div>
       </Col>
     </Row>
   )

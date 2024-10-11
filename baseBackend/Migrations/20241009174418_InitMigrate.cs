@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthenticationJWT.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMigration : Migration
+    public partial class InitMigrate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -178,6 +178,8 @@ namespace AuthenticationJWT.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Decription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Version = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdateAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
@@ -607,10 +609,10 @@ namespace AuthenticationJWT.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "Name", "UpdateAt", "UpdatedBy", "Version" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(932), 1, null, null, "create", new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(942), 1, 0 },
-                    { 2, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(944), 1, null, null, "update", new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(945), 1, 0 },
-                    { 3, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(946), 1, null, null, "read", new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(946), 1, 0 },
-                    { 4, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(948), 1, null, null, "delete", new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(948), 1, 0 }
+                    { 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8976), 1, null, null, "create", new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8987), 1, 0 },
+                    { 2, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8989), 1, null, null, "update", new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8989), 1, 0 },
+                    { 3, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8991), 1, null, null, "read", new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8991), 1, 0 },
+                    { 4, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8992), 1, null, null, "delete", new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8993), 1, 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -618,19 +620,19 @@ namespace AuthenticationJWT.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "Name", "Status", "UpdateAt", "UpdatedBy", "Version" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1051), 1, null, null, "Admin", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1051), 1, 0 },
-                    { 2, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1053), 1, null, null, "User", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1054), 1, 0 },
-                    { 3, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1055), 1, null, null, "Product", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1056), 1, 0 },
-                    { 4, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1057), 1, null, null, "Resource", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1058), 1, 0 },
-                    { 5, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1059), 1, null, null, "Role", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1060), 1, 0 },
-                    { 6, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1061), 1, null, null, "Sale", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1061), 1, 0 },
-                    { 7, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1063), 1, null, null, "Guest", 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1063), 1, 0 }
+                    { 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9098), 1, null, null, "Admin", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9099), 1, 0 },
+                    { 2, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9101), 1, null, null, "User", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9101), 1, 0 },
+                    { 3, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9103), 1, null, null, "Product", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9103), 1, 0 },
+                    { 4, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9105), 1, null, null, "Resource", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9105), 1, 0 },
+                    { 5, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9106), 1, null, null, "Role", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9107), 1, 0 },
+                    { 6, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9108), 1, null, null, "Sale", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9109), 1, 0 },
+                    { 7, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9110), 1, null, null, "Guest", 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9110), 1, 0 }
                 });
 
             migrationBuilder.InsertData(
                 table: "User",
                 columns: new[] { "Id", "Avatar", "CreatedAt", "CreatedBy", "DeletedAt", "Email", "Expired", "Password", "Phone", "RefreshToken", "Status", "UpdateAt", "UpdatedBy", "Username", "Version" },
-                values: new object[] { 1, null, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1089), 0, null, "SA@gmail.com", null, "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK", null, null, 1, new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1090), 0, "SA", 0 });
+                values: new object[] { 1, null, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9132), 0, null, "SA@gmail.com", null, "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK", null, null, 1, new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9133), 0, "SA", 0 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Product_Code",

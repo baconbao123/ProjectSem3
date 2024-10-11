@@ -7,7 +7,7 @@
   .container-account {
     background-color: white;
     width: 1305px;
-    padding: 20px 20px 0px 20px;
+    padding: 24px 20px 0px 20px;
 
     .row-my-profile {
       border-bottom: 1px solid gainsboro;
@@ -43,6 +43,7 @@
         img {
           height: 100%;
           width: 100%;
+          object-fit: cover;
         }
 
         .btn-avatar {
@@ -140,7 +141,7 @@
   align-items: center;
 
   p {
-    width: 160px;
+    width: 200px;
     font-size: 14px;
   }
 
@@ -156,5 +157,12 @@
     &:hover {
       border-color: $prime-color;
     }
+  }
+
+  .btn-update-dialog {
+    background-color: $btn-color;
+    border-color: $btn-color;
+    font-size: 12px;
+    border-radius: 5px;
   }
 }

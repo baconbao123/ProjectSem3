@@ -102,6 +102,10 @@ export  default  createBrowserRouter([
                 element: (<ErrorPage error="404"/>),
             },
             {
+                path: '404',
+                element: (<ErrorPage error="404"/>),
+            },
+            {
                 path: '500',
                 element: (<ErrorPage error="500"/>),
             },

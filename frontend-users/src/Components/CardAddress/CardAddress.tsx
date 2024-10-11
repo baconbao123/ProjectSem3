@@ -4,13 +4,16 @@ import { Col, Row } from 'react-bootstrap'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
+import { InputSwitch } from 'primereact/inputswitch'
 
 export interface CardAddressState {
   Id: string
-  Username: string
+  AssignName: string
+  Assign: boolean
   Phone: string
   Address: string
   DetailAddress: string
+  Index: boolean
 }
 
 interface CardAddressProps {
@@ -21,6 +24,15 @@ interface CardAddressProps {
 
 const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSelectedId }) => {
   const [viewUpdateAddress, setViewUpdateAddress] = useState<boolean>(false)
+  
+
+  // data
+  const [assignName, setAssignName] = useState<string>(cardAdress.AssignName)
+  const [assign, setAssign] = useState<boolean>(cardAdress.Assign)
+  const [phone, setPhone] = useState<string>(cardAdress.Phone)
+  const [index, setIndex] = useState<boolean>(cardAdress.Index)
+  const [address, setAddress] = useState<string>(cardAdress.Address)
+  const [detailAddress, setDetailAddress] = useState<string>(cardAdress.DetailAddress)
 
   const handleChange = () => {
     setSelectedId(cardAdress.Id)
@@ -40,14 +52,21 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
         <Col lg={9}>
           <Row>
             <Col lg={6} style={{ borderRight: '1px solid gainsboro' }}>
-              <span className='name'>{cardAdress.Address}</span>
+              <span className='name'>{cardAdress.AssignName}</span>
             </Col>
             <Col lg={6}>
               <span className='phone'>{cardAdress.Phone}</span>
             </Col>
           </Row>
           <Row className='mt-3'>
-            <Col lg={12}  className='address'>{cardAdress.DetailAddress}</Col>
+            <Col lg={12} className='address'>
+              {cardAdress.Address}
+            </Col>
+          </Row>
+          <Row className='mt-3'>
+            <Col lg={12} className='address'>
+              Address Details: {cardAdress.DetailAddress}
+            </Col>
           </Row>
         </Col>
         <Col lg={2} style={{ display: 'flex', justifyContent: 'center' }}>
@@ -63,25 +82,54 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
               setViewUpdateAddress(false)
             }}
           >
-            <div className='row-address-1'>
-              <span className='input-address-group'>
-                <label htmlFor='Username'>Username</label>
-                <InputText id='Username' />
-              </span>
-              <div className='input-address-group' style={{ marginLeft: '10px' }}>
-                <label htmlFor='Phone'>Phone</label>
-                <InputText id='Phone' />
+            <form>
+              <div className='row-address-1'>
+                <span className='input-address-group'>
+                  <label htmlFor='Username'>AssignName</label>
+                  <InputText id='Username' value={assignName} onChange={(e) => setAssignName(e.target.value)} />
+                </span>
+                <div className='input-address-group' style={{ marginLeft: '10px' }}>
+                  <label htmlFor='Phone'>Phone</label>
+                  <InputText id='Phone' value={phone} onChange={(e) => setPhone(e.target.value)} />
+                </div>
               </div>
-            </div>
-            <div className='row-address-2'>
-              <span className='input-address-group'>
-                <label htmlFor='Address'>Address</label>
-                <InputText id='Address'/>
-              </span>
-            </div>
-            <div className='row-address-3'>
-              <Button label='Save' className='save' onClick={() => setViewUpdateAddress(false)}/>
-            </div>
+              <div className='row-address-2'>
+                <span className='input-address-group'>
+                  <label htmlFor='Address'>Address</label>
+                  <InputText id='Address' value={address} onChange={(e) => setAddress(e.target.value)} />
+                </span>
+              </div>
+              <div className='row-address-2'>
+                <span className='input-address-group'>
+                  <label htmlFor='AddressDetail'>Address Details</label>
+                  <InputText
+                    id='AddressDetail'
+                    value={detailAddress}
+                    onChange={(e) => setDetailAddress(e.target.value)}
+                  />
+                </span>
+              </div>
+              <div className='row-address-2 mt-2'>
+                <span className='span-default'>Set as default address</span>
+                <InputSwitch
+                  checked={index}
+                  onChange={(e) => setIndex(e.value)}
+                  className='input-switch-address'
+                />{' '}
+              </div>
+              <div className='row-address-2 mt-3'>
+                <input
+                  type='checkbox'
+                  checked={assign}
+                  onChange={(e) => setAssign(e.target.checked)}
+                  className='checkbox-confirm'
+                />
+                <span className='span-confirm'>Allow someone else to receive it for you</span>
+              </div>
+              <div className='row-address-3 mt-3'>
+                <Button type='submit' label='Save' className='save' onClick={() => setViewUpdateAddress(false)} />
+              </div>
+            </form>
           </Dialog>
         </Col>
       </Row>

@@ -3,9 +3,8 @@
 .cart-container {
   background-color: $bg-breadcrumb;
   font-size: 16px;
-  padding-bottom: 20px;
-
- 
+  padding-bottom: 50px;
+  padding-top: 12px;
 
   .row-heading {
     padding: 10px 5px;
@@ -18,7 +17,7 @@
 
   .row-select {
     background-color: white;
-    padding: 10px 8px;
+    padding: 10px 19px;
     border-radius: 10px;
     color: rgb(63, 63, 63);
 
@@ -49,7 +48,7 @@
     border-radius: 10px;
     padding-top: 15px;
     padding-bottom: 7px;
-    padding-left: 7px;
+    padding-left: 20px;
     padding-right: 7px;
 
     .row-item {
@@ -64,7 +63,7 @@
       }
 
       &:last-child {
-        border: none; /* Bỏ border cho dòng cuối cùng */
+        border: none; 
       }
     }
   }

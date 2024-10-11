@@ -19,12 +19,46 @@
     &:hover {
       background-color: $btn-bgColor-hover;
     }
-
-    
   }
 
   .row-address-3 {
     display: flex;
     justify-content: center;
+  }
+}
+
+.checkbox-confirm {
+  margin-left: 10px;
+  width: 20px;
+  height: 20px;
+  accent-color: $color-check;
+}
+
+.span-confirm {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.span-default {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.input-switch-address {
+  margin-left: 10px;
+
+  .p-inputswitch-slider {
+    background-color: gainsboro; 
+    transition: background-color 0.3s;
+  }
+
+  &.p-inputswitch-checked {
+    .p-inputswitch-slider {
+      background-color: #1cc0a0; 
+    }
+  }
+
+  .p-inputswitch-input:checked + .p-inputswitch-slider {
+    background-color: #1cc0a0; 
   }
 }

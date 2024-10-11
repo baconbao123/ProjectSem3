@@ -14,13 +14,17 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
 import RoleAdd from "@pages/role/RoleAdd.tsx";
+import OrderAdd from "@pages/order/OrderAdd.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
 import RoleDetail from "@pages/role/RoleDetail.tsx";
 import {Link} from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import {checkPermission} from "@src/Service/common.ts";
+import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
 import ErrorPage from "@pages/common/ErrorPage.tsx";
+import {Simulate} from "react-dom/test-utils";
+import cancel = Simulate.cancel;
 const ResourceList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -35,7 +39,7 @@ const ResourceList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({Name: '', status: -1});
+    const [filter, setFilter] = useState({order_code: '', status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
@@ -94,10 +98,15 @@ const ResourceList : React.FC = () => {
                 }
 
                 if (key === 'status' && item[key] !== value) {
+                    if (value === 5) {
+                        if (item['cancel']) {
+                            return true
+                        }
+                    }
                     return false
                 }
 
-                if (key === 'Name' && !item[key].toLowerCase().includes(value.toLowerCase())) {
+                if (key === 'order_code' && !item[key].toLowerCase().includes(value.toLowerCase())) {
                     return false
                 }
             }
@@ -128,7 +137,7 @@ const ResourceList : React.FC = () => {
         return  (<RoleAdd loadDataTable={loadDataTable} form={'add'}/>)
     }
     const handleComponentEdit: React.FC =( ) => {
-        return  (<RoleAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
+        return  (<OrderAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
         return  (<RoleDetail id={currentId} />)
@@ -139,13 +148,13 @@ const ResourceList : React.FC = () => {
         setShowComponent('add')
     }
     const showModalEdit = (item: any) => {
-        setCurrentId(item.Id)
-        setComponentTitle("Edit role")
+        setCurrentId(item.id)
+        setComponentTitle("Edit order")
         setShowComponent('edit')
         dispatch(setShowModal(true))
     }
     const showModalDetail = (item: any) => {
-        setCurrentId(item.Id)
+        setCurrentId(item.id)
         setComponentTitle("Detail role")
         setShowComponent('view')
         dispatch(setShowModal(true))
@@ -158,15 +167,14 @@ const ResourceList : React.FC = () => {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
+            confirmButtonText: "Yes, cancel it!"
         }).then((result) => {
             if (result.isConfirmed) {
                 dispatch(setLoading(true))
-                const token = Cookies.get("token")
-                $axios.delete(`Role/${item.Id}`).then(res => {
+                $axios.delete(`Order/${item.id}`).then(res => {
                     console.log("check res", res)
                     loadDataTable()
-                    dispatch(setToast({status: 'success', message: 'Success', data: 'Delete role successful'}))
+                    dispatch(setToast({status: 'success', message: 'Success', data: 'Cancel order successful'}))
                     dispatch(setShowModal(false))
                 })
                     .catch(err => {
@@ -206,15 +214,15 @@ const ResourceList : React.FC = () => {
             setFilter(prev => ({...prev, status: e.target.value}))
         }
         const setChangeName = (e: any) => {
-            setFilter(prev => ({...prev, Name: e.target.value}))
+            setFilter(prev => ({...prev, order_code: e.target.value}))
         }
         return (
             <div className='search-container'>
                 <div>
                     <input
-                        value={filter.Name}
+                        value={filter.order_code}
                         onChange={e => setChangeName(e)}
-                        className='form-control test-position' placeholder="Search name..."/>
+                        className='form-control test-position' placeholder="Search order code"/>
                 </div>
             <Select
                 className="search-form width-200 custom-form"
@@ -227,8 +235,9 @@ const ResourceList : React.FC = () => {
                 </MenuItem>
                 <MenuItem value={1}>Order</MenuItem>
                 <MenuItem value={2}>Uncompleted</MenuItem>
-                <MenuItem value={3}>Completed</MenuItem>
-                <MenuItem value={4}>Cancel</MenuItem>
+                <MenuItem value={3}>Processing</MenuItem>
+                <MenuItem value={4}>Completed</MenuItem>
+                <MenuItem value={5}>Cancel</MenuItem>
             </Select>
             </div>
         )
@@ -237,9 +246,9 @@ const ResourceList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
-                {checkPermission('Role', 'create') ? (
-                    <div onClick={showModalAdd} className="btn btn-general">Add new</div>
-                ) : ''}
+                {/*{checkPermission('Role', 'create') ? (*/}
+                {/*    <div onClick={showModalAdd} className="btn btn-general">Add new</div>*/}
+                {/*) : ''}*/}
 
             </div>
     )
@@ -349,7 +358,16 @@ const ResourceList : React.FC = () => {
                                                     if (field.key === "status") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                {item[field.key] === 1 ? (
+                                                                {
+                                                                    item['cancel']  ? (
+                                                                        <div className='justify-content-center d-flex'>
+                                                                            <div className='status-danger'>
+                                                                                Canceled
+                                                                            </div>
+                                                                        </div>
+
+                                                                    )
+                                                                        :item[field.key] === 1 ? (
                                                                 <div className='justify-content-center d-flex'>
                                                                       <div className='status-disable'>
                                                                           Order
@@ -360,7 +378,7 @@ const ResourceList : React.FC = () => {
                                                                     :
                                                                 item[field.key] === 2 ? (
                                                                         <div className='justify-content-center d-flex'>
-                                                                            <div className='status-process'>
+                                                                            <div className='status-uncompleted'>
                                                                                 Uncompleted
                                                                             </div>
                                                                         </div>
@@ -368,16 +386,16 @@ const ResourceList : React.FC = () => {
                                                                     ) :
                                                                     item[field.key] === 3 ? (
                                                                             <div className='justify-content-center d-flex'>
-                                                                                <div className='status-success'>
-                                                                                    Completed
+                                                                                <div className='status-process'>
+                                                                                    Processing
                                                                                 </div>
                                                                             </div>
 
                                                                         ) :
                                                                     item[field.key] === 4 ? (
                                                                             <div className='justify-content-center d-flex'>
-                                                                                <div className='status-danger'>
-                                                                                    Cancel
+                                                                                <div className='status-success'>
+                                                                                    Completed
                                                                                 </div>
                                                                             </div>
 
@@ -394,22 +412,22 @@ const ResourceList : React.FC = () => {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
                                                                 <span
-                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'read') ? '' : 'btn-disable'}`}
-                                                                    onClick={() => checkPermission('Role', 'read') && showModalDetail(item)}
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'read') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Order', 'read') && showModalDetail(item)}
                                                                    >
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
                                                                 <span
-                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'update') ? '' : 'btn-disable'}`}
-                                                                    onClick={() => checkPermission('Role', 'update') && showModalEdit(item)}
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Order', 'update') && showModalEdit(item)}
                                                                   >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
                                                                 <span
-                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Role', 'delete') ? '' : 'btn-disable'}`}
-                                                                    onClick={() => checkPermission('Role', 'delete') && deleteItem(item)}
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Order', 'update') && deleteItem(item)}
                                                                     >
-                                                                    <DeleteOutlineOutlinedIcon  />
+                                                                    <RestoreOutlinedIcon  />
                                                                 </span>
                                                             </TableCell>
                                                         )

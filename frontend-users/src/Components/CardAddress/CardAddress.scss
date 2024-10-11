@@ -15,6 +15,11 @@
     color: $prime-color;
     cursor: pointer;
     font-size: 14px;
+    height: 20px;
+
+    &:hover {
+      color: $btn-bgColor-hover;
+    }
   }
 
   .address {
@@ -34,6 +39,15 @@
     input {
       width: 18vw;
       font-size: 16px;
+      box-shadow: none;
+
+      &:focus {
+        border-color: $prime-color;
+      }
+
+      &:hover {
+        border-color: $prime-color;
+      }
     }
   }
 }
@@ -50,6 +64,16 @@
     input {
       width: 37.3vw;
       font-size: 16px;
+
+      box-shadow: none;
+
+      &:focus {
+        border-color: $prime-color;
+      }
+
+      &:hover {
+        border-color: $prime-color;
+      }
     }
   }
 }

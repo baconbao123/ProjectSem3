@@ -75,7 +75,6 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
       <Card
         title={<Link to={`/products/details/${product.Id}`}>{sliceText(product.Name, 35)}</Link>}
         subTitle={product.CompanyPartnerName}
-        // subTitle='NXB Thanh nien'
         footer={footer}
         header={header}
       >

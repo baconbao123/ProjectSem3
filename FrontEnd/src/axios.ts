@@ -19,12 +19,15 @@ $axios.interceptors.response.use(
         return response;
     },
     (error) => {
-        const errorStatus = [403,500, 400, 401]
+        const errorStatus = [403,500, 400, 401, 404]
         if (error.response && error.response.status === 403) {
             location.href = '/403'
         }
         else if (error.response && error.response.status === 500) {
             location.href = '/500'
+        }
+        else if (error.response && error.response.status === 404 && window.location.pathname  !== '/404') {
+            location.href = '/404'
         }
         else if (error.response && error.response.status === 400) {
         }
@@ -50,7 +53,7 @@ $axios.interceptors.response.use(
             }
         }
         else if ( window.location.pathname  !== '/error' && !errorStatus.includes(error.response.status)) {
-            location.href = '/error'
+            // location.href = '/error'
         }
         return Promise.reject(error);
     }

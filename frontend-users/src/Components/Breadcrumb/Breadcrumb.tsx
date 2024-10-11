@@ -5,7 +5,6 @@ import './Breadcrumb.scss'
 interface BreadcrumbItem {
   label?: string
   url: string
-  icon?: string,
   page?: boolean
 }
 
@@ -18,11 +17,10 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, home }) => {
   const model = items.map((i) => ({
     label: i.label,
     url: i.url,
-    icon: i.icon,
-    className: i.page ? 'breadcrumb-page':''
+    className: i.page ? 'breadcrumb-page' : ''
   }))
 
-  const homeItem = home ? { icon: home.icon || 'pi pi-home', url: home.url } : undefined
+  const homeItem = home ? { label: home.label, url: home.url } : undefined
 
   return (
     <div className='breadcrumb-container'>
@@ -32,6 +30,5 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, home }) => {
     </div>
   )
 }
-
 
 export default Breadcrumb

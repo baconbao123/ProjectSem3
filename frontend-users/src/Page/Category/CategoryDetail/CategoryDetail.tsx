@@ -40,7 +40,7 @@ const CategoryDetail: React.FC = () => {
       page: true
     }
   ]
-  const home = { icon: 'pi pi-home', url: '/home' }
+  const home = { label: 'Home', url: '/home' }
 
   const filterItems: Filter[] = [
     { name: 'Newest', value: 'newest' },

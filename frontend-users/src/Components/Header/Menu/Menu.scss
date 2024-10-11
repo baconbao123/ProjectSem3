@@ -12,21 +12,27 @@
     align-items: center;
 
     .items {
+      display: flex;
+      // flex-direction: column;
       font-weight: 500;
-      padding: 0 25px;
+      // padding: 0 25px;
+      padding-left: 20px;
+
+      &:first-child {
+        padding-left: 4px;
+      }
 
       .item {
+        margin: 0 !important;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
+        gap: 8px;
         color: white;
+        cursor: pointer;
 
         &:hover {
           color: $prime-color;
-        }
-
-        .name {
-          cursor: pointer;
         }
 
         .arrowitem {
@@ -38,26 +44,29 @@
 
     .subcategories {
       position: absolute;
-      background-color: #484646;
+      background-color: white;
       color: white;
       top: 49px;
-      padding: 10px;
-      width: 116px;
+      width: 10%;
 
       .url-categories {
         text-decoration: none;
-        color: white;
+        color: black;
 
-        .name {
-          cursor: pointer;
-  
+        .subcategory {
+          padding: 5px 0;
+
           &:hover {
-            color: $prime-color;
+            color: white;
+            background-color: $prime-color;
+          }
+
+          .name {
+            margin-left: 10px;
+            font-size: 14px;
           }
         }
       }
-
-      
     }
 
     .url {
@@ -67,33 +76,20 @@
 
   .col-search-left {
     display: flex;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
 
-    .p-inputgroup {
-      display: flex;
-      align-items: center;
+    .inputgroup {
+      height: 34px;
+      font-size: 14px;
 
-      .inputgroup {
-        height: 30px;
-        font-size: 12px;
-
-        &:focus {
-          box-shadow: none;
-          border-color: $prime-color;
-        }
+      &:hover {
+        border-color: $prime-color;
       }
 
-      .btnSearch {
-        height: 30px;
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
-        background-color: $prime-color;
+      &:focus {
+        box-shadow: none;
         border-color: $prime-color;
-
-        &:hover {
-          background-color: $btn-bgColor-hover;
-        }
       }
     }
   }
