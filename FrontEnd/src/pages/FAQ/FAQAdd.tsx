@@ -101,7 +101,7 @@ const FAQAdd: React.FC<FAQAdd> = ({ loadDataTable, form, id }) => {
     const dataForm = faqList.map((faq) => ({
       Title: faq.title,
       Decription: faq.description || "",
-      Type: faq.type || null,
+      Type: faq.type || -1,
       Status: faq.status ? 1 : 0,
     }));
 

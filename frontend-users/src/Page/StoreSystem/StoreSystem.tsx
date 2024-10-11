@@ -17,7 +17,7 @@ export const StoreSystem = () => {
 
     const timeoutId = setTimeout(() => {
       dispatch(setLoaded())
-    }, 1000)
+    }, 1500)
 
     return () => clearTimeout(timeoutId) 
   }, [dispatch])

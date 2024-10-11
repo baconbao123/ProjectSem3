@@ -2,44 +2,46 @@ import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import CardVoucher from '../../Components/CardVoucher/CardVoucher'
 import './Voucher.scss'
-import Breadcrumb from '../../Components/Breadcrumb/Breadcrumb'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../Store/store'
 // import { addVouchers, setUserId } from '../../Store/voucherSlice'
 import Swal from 'sweetalert2'
 import Loading from '../../Components/Loading/Loading'
 import { $axios } from '../../axios'
+import { setLoaded, setLoading } from '../../Store/loadingSlice'
+import { Skeleton } from '@mui/material'
 
 const Vouchers: React.FC = () => {
   const [vouchers, setVouchers] = useState<any | []>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const items = [{ label: 'Vouchers', url: '/vouchers', page: true }]
-  const home = { icon: 'pi pi-home', url: '/home' }
   const userId = useSelector((state: RootState) => state.auth.userId)
-  const [claimed, setClaimed] = useState<string>('')
-  // const dispatch = useDispatch()
-
-  // useEffect(() => {
-  //   if (userId) {
-  //     dispatch(setUserId(userId))
-  //   }
-  // }, [userId, dispatch])
+  const isLoading = useSelector((state: RootState) => state.loading.isLoading)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
         const res = await $axios.get('SaleFE')
-        // let fetchedVouchers = res.data.data
         setVouchers(res.data.data)
       } catch (err) {
         console.log(err)
+        setLoaded()
       } finally {
-        setLoading(false)
+        setLoaded()
       }
     }
 
     fetchVouchers()
   }, [userId])
+
+  useEffect(() => {
+    dispatch(setLoading())
+
+    const timeout = setTimeout(() => {
+      dispatch(setLoaded())
+    }, 1000)
+
+    return () => clearTimeout(timeout)
+  }, [dispatch])
 
   const handleStatusGet = async (saleId: string) => {
     if (!userId) {
@@ -54,8 +56,10 @@ const Vouchers: React.FC = () => {
         UserId: userId,
         SaleId: parseInt(saleId)
       })
-      setClaimed(res.data)
-      
+
+      if (res.status === 200) {
+        alert('CLAIMED')
+      }
     } catch {
       Swal.fire('Failed to collect voucher!')
     }
@@ -63,11 +67,16 @@ const Vouchers: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb items={items} home={home} />
-
       <div className='voucher-container'>
         {/* Image */}
-        <img src='images/vouchers.jpg' className='img-voucher' />
+        {isLoading ? (
+          <Skeleton height='534px'/>
+        ) : (
+          <img src='images/vouchers.jpg' className='img-voucher' />
+        )
+        
+      
+      }
 
         {/* Content */}
         {/* Title */}
@@ -79,7 +88,7 @@ const Vouchers: React.FC = () => {
           </Container>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <Loading />
         ) : (
           <>

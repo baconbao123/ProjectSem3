@@ -260,10 +260,10 @@ namespace AuthenticationJWT.Controllers
         [Authorize]
         public async Task<IActionResult> Post([FromForm] ProductRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
             if (string.IsNullOrWhiteSpace(request.Name))
             {
@@ -336,8 +336,8 @@ namespace AuthenticationJWT.Controllers
                 ImageThumbPath = Path.Combine("uploads", "thumbProduct", imageFileName1).Replace("\\", "/"),
                 Status = request.Status ?? 0,
                 Version = 0,
-                CreatedAt = DateTime.UtcNow,
-                UpdateAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
+                UpdateAt = DateTime.Now,
                 CreatedBy = userId,
                 UpdatedBy = userId
             };
@@ -606,8 +606,8 @@ namespace AuthenticationJWT.Controllers
                             {
                                 ProductId = id,
                                 AuthorId = authorId,
-                                CreatedAt = DateTime.UtcNow,
-                                UpdateAt = DateTime.UtcNow,
+                                CreatedAt = DateTime.Now,
+                                UpdateAt = DateTime.Now,
                                 UpdatedBy = userId
                             });
                         }
@@ -648,8 +648,8 @@ namespace AuthenticationJWT.Controllers
                             {
                                 ProductId = id,
                                 CategoryId = categoryId,
-                                CreatedAt = DateTime.UtcNow,
-                                UpdateAt = DateTime.UtcNow,
+                                CreatedAt = DateTime.Now,
+                                UpdateAt = DateTime.Now,
                                 UpdatedBy = userId
                             });
                         }
@@ -759,7 +759,7 @@ namespace AuthenticationJWT.Controllers
                                 {
                                     ProductId = id,
                                     ImagePath = Path.Combine("uploads", "products", fileName).Replace("\\", "/"),
-                                    CreatedAt = DateTime.UtcNow,
+                                    CreatedAt = DateTime.Now,
                                     UpdatedBy = userId
                                 };
 

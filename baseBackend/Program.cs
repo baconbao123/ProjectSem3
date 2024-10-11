@@ -1,6 +1,7 @@
-using AuthenticationJWT.DTO;
+﻿using AuthenticationJWT.DTO;
 using AuthenticationJWT.middleware;
 using AuthenticationJWT.Service;
+using AuthenticationJWT.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -29,7 +30,11 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader();
                       });
 });
-
+builder.Logging.ClearProviders(); // Xóa tất cả các providers hiện có
+builder.Logging.AddConsole();     // Thêm Console Logging
+builder.Logging.AddDebug();
+// Đăng ký Hosted Service
+builder.Services.AddHostedService<ExpiredSaleUpdater>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>

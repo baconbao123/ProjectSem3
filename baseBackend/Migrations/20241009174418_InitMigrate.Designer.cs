@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationJWT.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20241008151503_InitMigration")]
-    partial class InitMigration
+    [Migration("20241009174418_InitMigrate")]
+    partial class InitMigrate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,40 +65,40 @@ namespace AuthenticationJWT.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(932),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8976),
                             CreatedBy = 1,
                             Name = "create",
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(942),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8987),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(944),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8989),
                             CreatedBy = 1,
                             Name = "update",
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(945),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8989),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(946),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8991),
                             CreatedBy = 1,
                             Name = "read",
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(946),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8991),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(948),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8992),
                             CreatedBy = 1,
                             Name = "delete",
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(948),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(8993),
                             UpdatedBy = 1,
                             Version = 0
                         });
@@ -405,6 +405,9 @@ namespace AuthenticationJWT.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -416,6 +419,9 @@ namespace AuthenticationJWT.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Version")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -995,77 +1001,77 @@ namespace AuthenticationJWT.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1051),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9098),
                             CreatedBy = 1,
                             Name = "Admin",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1051),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9099),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1053),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9101),
                             CreatedBy = 1,
                             Name = "User",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1054),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9101),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1055),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9103),
                             CreatedBy = 1,
                             Name = "Product",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1056),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9103),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1057),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9105),
                             CreatedBy = 1,
                             Name = "Resource",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1058),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9105),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1059),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9106),
                             CreatedBy = 1,
                             Name = "Role",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1060),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9107),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1061),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9108),
                             CreatedBy = 1,
                             Name = "Sale",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1061),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9109),
                             UpdatedBy = 1,
                             Version = 0
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1063),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9110),
                             CreatedBy = 1,
                             Name = "Guest",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1063),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9110),
                             UpdatedBy = 1,
                             Version = 0
                         });
@@ -1232,12 +1238,12 @@ namespace AuthenticationJWT.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1089),
+                            CreatedAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9132),
                             CreatedBy = 0,
                             Email = "SA@gmail.com",
                             Password = "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK",
                             Status = 1,
-                            UpdateAt = new DateTime(2024, 10, 8, 22, 15, 1, 651, DateTimeKind.Local).AddTicks(1090),
+                            UpdateAt = new DateTime(2024, 10, 10, 0, 44, 16, 737, DateTimeKind.Local).AddTicks(9133),
                             UpdatedBy = 0,
                             Username = "SA",
                             Version = 0

@@ -20,12 +20,7 @@ export const Navigate = () => {
           </Col>
 
           {/* Save banner */}
-          <Col lg={8} md={3} sm={3}>
-            <div className='save-container'>
-              <i className='pi pi-star-fill icon' style={{ fontSize: '1.4rem' }}></i> &nbsp; Extra &nbsp;{' '}
-              <span className='span-sale'>10%</span> &nbsp; off for loyal customers
-            </div>
-          </Col>
+          <Col lg={8} md={3} sm={3}></Col>
 
           <Col lg={2} md={4} sm={4} className='navi-right'>
             <div className='navi'>
@@ -42,7 +37,7 @@ export const Navigate = () => {
                 </div>
               </Link>
               {userId ? (
-                <Link to={`/account/${userId}`} className='url'>
+                <Link to='/account' className='url'>
                   <div className='account'>
                     <i className='pi pi-user icon' style={{ fontSize: '1.7rem' }}></i>
                     <span className='span-text-navi'>Account</span>

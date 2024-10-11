@@ -1,0 +1,53 @@
+@import '/global.scss';
+
+.container-all-books-content {
+  background-color: #f8f9fa;
+  padding-top: 10px;
+  padding-bottom: 30px;
+
+  .content-category-product {
+    background-color: white;
+    margin-top: 20px;
+    padding: 20px 0;
+    border-radius: 10px;
+
+    .category-name-container {
+      text-align: center;
+      color: $prime-color;
+
+      .category-name {
+        font-size: 20px;
+        font-weight: 600;
+
+      }
+    }
+    
+    // Content
+    .block {
+      margin-bottom: 20px;
+      padding: 0 20px 20px 20px;
+      border-radius: 10px;
+
+      .heading {
+        padding: 10px 0;
+        // border-bottom: 1px solid gainsboro;
+
+        .title {
+          font-size: 16px;
+          font-weight: 600;
+          color: $btn-color;
+        }
+
+        .title-link {
+          text-decoration: none;
+          color: gray;
+          font-size: 14px;
+
+          &:hover {
+            color: $btn-color;
+          }
+        }
+      }
+    }
+  }
+}

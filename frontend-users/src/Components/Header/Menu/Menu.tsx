@@ -1,7 +1,8 @@
 import { Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { InputText } from 'primereact/inputtext'
-import { Button } from 'primereact/button'
+import { InputIcon } from 'primereact/inputicon'
+import { IconField } from 'primereact/iconfield'
 import './Menu.scss'
 import { useEffect, useRef, useState } from 'react'
 import { $axios } from '../../../axios'
@@ -12,6 +13,10 @@ export const Menu = () => {
   const expandedCategoryRef = useRef<HTMLDivElement>(null)
 
   const itemsPage: { name: string; url: string }[] = [
+    {
+      name: 'All Products',
+      url: '/all-products'
+    },
     {
       name: 'Vouchers',
       url: '/vouchers'
@@ -55,7 +60,7 @@ export const Menu = () => {
             {/* Page */}
             <Col lg={9}>
               <div className='page-right-container'>
-                {itemCategories
+                {/* {itemCategories
                   .filter((item: any) => item.Level === 0)
                   .map((parentCategory: any, index: any) => (
                     <div key={index} className='items'>
@@ -65,14 +70,15 @@ export const Menu = () => {
                           <i className='pi pi-angle-down' style={{ fontSize: '1.8rem' }}></i>
                         </div>
                       </div>
-                      {/* Display subcategories */}
+
+                      // Display subcategory
                       {expandedCategoryId === parentCategory.Id && (
                         <div className='subcategories' ref={expandedCategoryRef}>
                           {itemCategories
                             .filter((subItem: any) => subItem.ParentId === parentCategory.Id)
                             .map((subCategory: any, subIndex: any) => (
                               <Link to={`/${parentCategory.Name}/${subCategory.Name}`} className='url-categories'>
-                                <div key={subIndex} className='subcategory'>
+                                <div className='subcategory' key={subIndex}>
                                   <span className='name'>{subCategory.Name}</span>
                                 </div>
                               </Link>
@@ -80,7 +86,7 @@ export const Menu = () => {
                         </div>
                       )}
                     </div>
-                  ))}
+                  ))} */}
 
                 {itemsPage.map((item, index) => (
                   <div key={index} className='items'>
@@ -96,10 +102,10 @@ export const Menu = () => {
 
             {/* Search */}
             <Col lg={3} className='col-search-left'>
-              <div className='p-inputgroup'>
-                <InputText placeholder='Search...' className='inputgroup' />
-                <Button label='Search' className='btnSearch' />
-              </div>
+              <IconField iconPosition='left'>
+                <InputIcon className='pi pi-search'> </InputIcon>
+                <InputText placeholder='Search' className='inputgroup'/>
+              </IconField>
             </Col>
           </Row>
         </Container>

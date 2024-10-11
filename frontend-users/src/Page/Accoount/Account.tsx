@@ -9,14 +9,22 @@ import axios from 'axios'
 import { $axios } from '../../axios'
 import Swal from 'sweetalert2'
 import RequiredLogin from '../../Components/RequiredLogin/RequiredLogin'
-import { useParams } from 'react-router-dom'
 import { Dialog } from 'primereact/dialog'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../Store/store'
+import { setLoaded, setLoading } from '../../Store/loadingSlice'
+import Loading from '../../Components/Loading/Loading'
 
 interface AccountData {
   Id: string
   Email: string
   Username: string
   Phone: string
+}
+
+interface AccountPasswordData {
+  Id: string
+  Password: string
 }
 
 const Account: React.FC = () => {
@@ -33,13 +41,24 @@ const Account: React.FC = () => {
   const [passwordMatch, setPasswordMatch] = useState<boolean>(true)
   const [isConfirmTouched, setIsConfirmTouched] = useState<boolean>(false)
   // File - avatar
+  const [avatar, setAvatar] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [fileName, setFileName] = useState<string | null>(null)
 
-  // Set password
+  const isLoading = useSelector((state: RootState) => state.loading.isLoading)
+  const dispatch = useDispatch()
 
   const [user, setUser] = useState<any>(null)
-  const { id } = useParams<{ id: string }>()
+  const userId = useSelector((state: RootState) => state.auth.userId)
+
+  useEffect(() => {
+    dispatch(setLoading())
+
+    const timeout = setTimeout(() => {
+      dispatch(setLoaded())
+    }, 1000)
+
+    return () => clearTimeout(timeout)
+  }, [dispatch])
 
   const handleNewPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewPassword(e.target.value)
@@ -55,29 +74,48 @@ const Account: React.FC = () => {
     setPasswordMatch(newPassword === value)
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle File - avatar
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0]
       if (file) {
         setSelectedFile(file)
-        setFileName(file.name)
 
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          setUser((prevUser: any) => ({
-            ...prevUser,
-            Avatar: reader.result as string
-          }))
+        // Update avatar
+        const formData = new FormData()
+        formData.append('Id', String(userId))
+        formData.append('Avatar', file)
+
+        try {
+          const res = await $axios.put('UserFE/UserUpdateAvatar', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          if (res.status === 200) {
+            await Swal.fire({
+              title: 'Avatar uploaded successfully!',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500
+            })
+          }
+        } catch {
+          await Swal.fire({
+            title: 'Avatar upload failed!',
+            text: 'Please try again.',
+            icon: 'error'
+          })
         }
-        reader.readAsDataURL(file)
       }
     }
   }
 
-  const handleUpdateAccount = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  // Update Account Data
+  const handleUpdateAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const accountData: AccountData = { Id: id ?? '', Email: email, Username: username, Phone: phone }
+    const accountData: AccountData = { Id: userId ?? '', Email: email, Username: username, Phone: phone }
 
     try {
       const res = await $axios.put('UserFE', accountData)
@@ -89,8 +127,6 @@ const Account: React.FC = () => {
           timer: 1500
         })
       }
-
-      // window.location.reload()
     } catch (error) {
       let errorMess = ''
 
@@ -105,16 +141,58 @@ const Account: React.FC = () => {
     }
   }
 
-  const getUserById = async () => {
-    if (!id) return
+  // Handle Change Password
+  const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setShowSetPassword(false)
+
+    if (!passwordMatch) return
+
+    const data: AccountPasswordData = { Id: userId ?? '', Password: newPassword }
 
     try {
-      const res = await $axios.get(`UserFE/getUserById/${id}`)
+      const res = await $axios.put('UserFE', data)
+
+      if (res.status === 200) {
+        await Swal.fire({
+          title: 'Update Success!',
+          icon: 'success',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (error) {
+      let errorMess = ''
+      if (axios.isAxiosError(error) && error.response?.data) {
+        errorMess = Array.isArray(error.response.data) ? error.response.data.join('\n') : error.response.data
+      }
+      await Swal.fire({
+        title: 'Update Failed!',
+        text: errorMess,
+        icon: 'error'
+      })
+    }
+  }
+
+  useEffect(() => {
+    getUserById()
+  }, [userId])
+
+  // fetch data user
+  const getUserById = async () => {
+    if (!userId) return
+
+    try {
+      const res = await $axios.get(`UserFE/getUserById/${userId}`)
       const userData = res.data
       setUser(userData)
       setEmail(userData.Email ? userData.Email : email)
       setUsername(userData.Username ? userData.Username : username)
       setPhone(userData.Phone ? userData.Phone : phone)
+      setAvatar(userData.Avatar ? userData.Avatar : avatar)
     } catch (error) {
       console.error('Error fetching user data:', error)
       Swal.fire({
@@ -124,10 +202,6 @@ const Account: React.FC = () => {
       })
     }
   }
-
-  useEffect(() => {
-    getUserById()
-  }, [id])
 
   async function handleLogout() {
     Swal.fire({
@@ -153,7 +227,7 @@ const Account: React.FC = () => {
 
   return (
     <>
-      {id ? (
+      {userId ? (
         user && (
           <div className='container-master-account'>
             <Container className='container-account'>
@@ -165,18 +239,25 @@ const Account: React.FC = () => {
                 <Row className='row-my-profile-content'>
                   {/* avatar */}
                   <Col lg={4} className='col-avatar'>
-                    <Avatar
-                      image={
-                        selectedFile
-                          ? URL.createObjectURL(selectedFile)
-                          : user?.Avatar
-                            ? `${import.meta.env.VITE_API_BACKEND_IMAGE}/${user.Avatar}`
-                            : '/images/no-avatar.jpg'
-                      }
-                      size='xlarge'
-                      shape='circle'
-                      className='avatar-img'
-                    />
+                    {isLoading ? (
+                      <div className='mb-5' style={{ height: '100px' }}>
+                        <Loading />
+                      </div>
+                    ) : (
+                      <Avatar
+                        image={
+                          selectedFile
+                            ? URL.createObjectURL(selectedFile)
+                            : avatar
+                              ? `${import.meta.env.VITE_API_BACKEND_IMAGE}/${user.Avatar}`
+                              : '/images/no-avatar.jpg'
+                        }
+                        size='xlarge'
+                        shape='circle'
+                        className='avatar-img'
+                      />
+                    )}
+
                     <div className='mt-3'></div>
                     <Button label='Select Avatar' className='btn-avatar' type='button'>
                       <input
@@ -189,6 +270,7 @@ const Account: React.FC = () => {
 
                     <div className='mt-3'></div>
 
+                    {/* Change Password */}
                     <Button
                       type='button'
                       label='Change Password'
@@ -202,34 +284,46 @@ const Account: React.FC = () => {
                         if (!showSetPassword) return
                         setShowSetPassword(false)
                       }}
-                      style={{ width: '50vw' }}
+                      style={{ width: '30vw' }}
                       breakpoints={{ '960px': '75vw', '641px': '100vw' }}
                     >
-                      <div className='profile-group-dialog'>
-                        <p>New Passowrd</p>
-                        <InputText
-                          type='password'
-                          className='p-inputtext-sm'
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                      </div>
-                      <div className='mt-3'></div>
+                      <form onSubmit={(e) => handleChangePassword(e)}>
+                        <div className='profile-group-dialog'>
+                          <p>New Passowrd</p>
+                          <InputText
+                            type='password'
+                            className='p-inputtext-sm'
+                            value={newPassword}
+                            onChange={handleNewPasswordChange}
+                          />
+                        </div>
+                        <div className='mt-3'></div>
 
-                      <div className='profile-group-dialog'>
-                        <p>Confirm Password</p>
-                        <InputText
-                          type='text'
-                          className='p-inputtext-sm'
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                      </div>
+                        <div className='profile-group-dialog'>
+                          <p>Confirm Password</p>
+                          <InputText
+                            type='password'
+                            className='p-inputtext-sm'
+                            value={confirmPassword}
+                            onChange={handleConfirmPasswordChange}
+                          />
+                        </div>
+                        
+                        {!passwordMatch && <p style={{ color: 'red', fontSize: '14px', marginLeft: '150px' }}>Password Do Not Match</p>}
+                        
+
+                        <div className='profile-group-dialog mt-3'>
+                          <p></p>
+                          <Button type='submit'className='btn-update-dialog' label='Update Password' onClick={(e: any) => handleChangePassword(e)} />
+                        </div>
+                      </form>
                     </Dialog>
 
                     <div className='mt-3'></div>
+                    {/* Logout */}
                     <Button label='Logout' onClick={() => handleLogout()} className='btn-logout' type='button' />
                   </Col>
+
                   <Col lg={8} className='col-profile-content'>
                     <div className='profile-group'>
                       <p>Username</p>

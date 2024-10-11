@@ -70,6 +70,27 @@ public class UserFEController : Controller
         }
     }
 
+    [HttpPut("UserUpdateAvatar")]
+    public IActionResult UserUpdateAvatar([FromForm] UserUpdateAvatarDTO userUpdateDTO)
+    {
+        try
+        {
+            if (userFEService.UpdateAvatarUser(userUpdateDTO))
+            {
+                return Ok();
+            }
+            else
+            {
+
+                return BadRequest();
+            }
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
+
     [HttpGet("getUserById/{id}")]
     public IActionResult GetUserById(int id)
     {
