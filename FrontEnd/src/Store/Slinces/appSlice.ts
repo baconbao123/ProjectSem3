@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const appSlice = createSlice({
     name: 'app',
     initialState: {
-        loading: false,
+        loading: true,
         toast: {status: 'info', message: 'This is toast', data: ''},
         showToast: false,
         showMenu: false,
@@ -15,7 +15,8 @@ export const appSlice = createSlice({
         userEmail: '',
         userPhone: '',
         userId: '',
-        permission: []
+        permission: [],
+        isInit: false
     },
     reducers: {
        setLoading: (state, action) => {
@@ -51,6 +52,9 @@ export const appSlice = createSlice({
         },
         setPermission: (state, action) => {
             state.permission = action.payload;
+        },
+        setIsInit: (state, action) => {
+            state.isInit = action.payload;
         }
     },
 });
@@ -67,7 +71,8 @@ export const
         setUserEmail,
         setUserId,
         setUserPhone,
-        setPermission
+        setPermission,
+        setIsInit
     }
     = appSlice.actions;
 

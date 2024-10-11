@@ -9,6 +9,7 @@ public class MyMapper : Profile
     {
         CreateMap<User, UserRegisterDTO>().ReverseMap();
         CreateMap<User, UserUpdateDTO>().ReverseMap();
+        CreateMap<User, UserUpdateAvatarDTO>().ReverseMap();
         CreateMap<FAQ, FAQDTO>().ReverseMap();
         CreateMap<UserAddress, AddressUserDTO>().ReverseMap();
     }

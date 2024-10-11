@@ -19,7 +19,16 @@ import {useNavigate} from 'react-router-dom';
 // @ts-ignore
 import Cookies from "js-cookie"
 import {useDispatch} from "react-redux";
-import {setLoading, setToast, setUserEmail, setUserId, setUserName, setUserPhone} from "@src/Store/Slinces/appSlice.ts";
+import {
+    setIsInit,
+    setLoading,
+    setToast,
+    setUserEmail,
+    setUserId,
+    setUserName,
+    setUserPhone
+} from "@src/Store/Slinces/appSlice.ts";
+import {checkPermission} from "@src/Service/common.ts";
 
 
 const Login: React.FC = () => {
@@ -47,8 +56,39 @@ const Login: React.FC = () => {
             })
 
     }
-    const login = () =>  {
+    const initUserData = async () => {
+        try {
+            // Kiểm tra token
+            const res = await $axios.get('/Auth');
+            const userData = res.data;
+
+            if (userData && userData.id) {
+                // Lưu thông tin người dùng vào localStorage
+                const { id, name, email, phone, avatar } = userData;
+                localStorage.setItem("id", id);
+                if (name) localStorage.setItem("name", name);
+                if (email) localStorage.setItem("email", email);
+                if (phone) localStorage.setItem("phone", phone);
+                if (avatar) localStorage.setItem("avatar", avatar);
+
+                // Lấy quyền của người dùng
+                const permissionRes = await $axios.get(`/Auth/getPermision/${id}`);
+                const permissions = permissionRes.data.data;
+
+                if (permissions) {
+                    // Lưu quyền vào localStorage
+                    localStorage.setItem("permission", JSON.stringify(permissions));
+                }
+            }
+            location.replace('/')
+        } catch (error) {
+            console.error('Error during user data initialization:', error);
+        }
+    }
+
+    const login =  async () =>  {
         dispatch(setLoading(true))
+        dispatch(setIsInit(true))
         $axios.post('Auth/login', {email, password, remember}).then(
             (res) => {
                 dispatch(setToast({status: "success", message: "Login successful"}))
