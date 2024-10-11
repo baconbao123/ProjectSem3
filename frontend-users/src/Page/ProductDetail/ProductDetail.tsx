@@ -6,7 +6,6 @@ import { Rating } from 'primereact/rating'
 import { Button } from 'primereact/button'
 import { BsCartPlus } from 'react-icons/bs'
 import { SlPaypal } from 'react-icons/sl'
-import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Galleria, GalleriaResponsiveOptions } from 'primereact/galleria'
 import CardRating from '../../Components/CardRating/CardRating'
@@ -14,6 +13,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../Store/store'
 import Swal from 'sweetalert2'
 import { addProductToCart, setUserId } from '../../Store/cartSlice'
+import { $axios } from '../../axios'
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
 
 const rating = [
   {
@@ -25,10 +26,11 @@ const rating = [
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const home = { icon: 'pi pi-home', url: '/home' }
+  const home = { label: 'Home', url: '/home' }
   const items = [{ label: 'Detail', url: `/products/details/${id}`, page: false }]
   const [amount, setAmount] = useState<number>(1)
-  const [product, setProduct] = useState<any>(null)
+
+  const [product, setProduct] = useState<any | null>(null)
   const [images, setImages] = useState<any[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const userId = useSelector((state: RootState) => state.auth.userId)
@@ -38,15 +40,23 @@ const ProductDetail: React.FC = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`https://bookstore123.free.mockoapp.net/products/details/${id}`)
-        setProduct(res.data)
-        console.log('Product images:', res.data.ProductImage)
-        const formattedImages = res.data.ProductImage.map((url: string) => ({
-          itemImageSrc: url,
-          thumbnailImageSrc: url,
-          alt: 'Product Image'
-        }))
-        setImages(formattedImages)
+        const res = await $axios.get(`ProductFE/${id}`)
+        const productData = res.data.data[0]
+        setProduct(productData)
+        console.log(res.data)
+
+        if (productData.ProductImages) {
+          const formattedImages = productData.ProductImages.map((url: string) => {
+            const fullUrl = import.meta.env.VITE_API_BACKEND_PATH + url
+            console.log('Full Image URL:', fullUrl)
+            return {
+              itemImageSrc: fullUrl,
+              thumbnailImageSrc: fullUrl,
+              alt: 'Product Image'
+            }
+          })
+          setImages(formattedImages)
+        }
       } catch (e) {
         console.log(e)
       }
@@ -117,6 +127,33 @@ const ProductDetail: React.FC = () => {
     navigate('/checkout')
   }
 
+  const handlePrevImage = () => {
+    setActiveIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))
+  }
+
+  const handleNextImage = () => {
+    setActiveIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))
+  }
+
+  const footerContent = (
+    <div className='galleria-nav-buttons'>
+      <Button
+        className='gallery-prev'
+        onClick={handlePrevImage}
+        style={{ pointerEvents: 'auto', opacity: 1, cursor: 'pointer' }}
+      >
+        <IoIosArrowBack />
+      </Button>
+      <Button
+        className='gallery-next'
+        onClick={handleNextImage}
+        style={{ pointerEvents: 'auto', opacity: 1, cursor: 'pointer' }}
+      >
+        <IoIosArrowForward />
+      </Button>
+    </div>
+  )
+
   return (
     <>
       <Breadcrumb home={home} items={items} />
@@ -124,7 +161,7 @@ const ProductDetail: React.FC = () => {
         {product && (
           <Container>
             <Row>
-              <Col lg={4} className='col-img-galleria'>
+              <Col lg={3} className='col-img-galleria'>
                 <div className='container-galleria'>
                   <Galleria
                     value={images}
@@ -135,10 +172,11 @@ const ProductDetail: React.FC = () => {
                     item={itemTemplate}
                     thumbnail={thumbnailTemplate}
                     style={{ maxWidth: '640px' }}
+                    header={footerContent}
                   />
                 </div>
               </Col>
-              <Col lg={8}>
+              <Col lg={9}>
                 <div className='container-details-content'>
                   <Row>
                     <div className='details-title'>{product.Name} </div>
@@ -150,10 +188,15 @@ const ProductDetail: React.FC = () => {
                   </Row>
                   <Row className='row-2'>
                     <Col lg={6}>
-                      Publisher: <span className='span-publishing'>{product.Manufactor}</span>
+                      Publisher: <span className='span-publishing'>{product.CompanyPartnerName}</span>
                     </Col>
                     <Col lg={6}>
-                      Author: <span className='span-author'>{product.Author}</span>
+                      Author: &nbsp;
+                      {product.Authors.map((author: any, index: any) => (
+                        <span className='span-author' key={index}>
+                          {author.Name}
+                        </span>
+                      ))}
                     </Col>
                   </Row>
                   <Row className='row-3'>
@@ -163,8 +206,8 @@ const ProductDetail: React.FC = () => {
                       <span className='base-price'>$ {product.BasePrice}</span>
                     </div>
                     {/* <div className='container-details-base-price'>
-                   <span className='base-price'>$ 55</span>
-               </div> */}
+                <span className='base-price'>$ 55</span>
+            </div> */}
                   </Row>
                   <Row className='row-4'>
                     <div className='container-amount'>
@@ -195,32 +238,35 @@ const ProductDetail: React.FC = () => {
                     </div>
                   </Row>
                 </div>
-
-                <div className='container-details-product-content'>
-                  <Row>
-                    <span className='details-title'>Details</span>
-                  </Row>
-                  <Row>
-                    <div className='table'>
-                      <table border={1} className='table-details'>
+              </Col>
+            </Row>
+            <Row>
+              <div className='container-details-product-content'>
+                <Row>
+                  <span className='details-title'>Details</span>
+                </Row>
+                <Row>
+                  <div className='table'>
+                    <table border={1} className='table-details'>
+                      <thead>
                         <tr>
                           <th>Product Code</th>
-                          <td>{product.Code}</td>
+                          <td>031271498</td>
                         </tr>
-                      </table>
-                    </div>
+                      </thead>
+                    </table>
+                  </div>
 
-                    <div className='container-description-content'>
-                      <Row>
-                        <span className='details-title'>Product Description</span>
-                      </Row>
-                      <Row>
-                        <div className='description-content'>{product.Description}</div>
-                      </Row>
-                    </div>
-                  </Row>
-                </div>
-              </Col>
+                  <div className='container-description-content'>
+                    <Row>
+                      <span className='details-title'>Product Description</span>
+                    </Row>
+                    <Row>
+                      <div className='description-content' dangerouslySetInnerHTML={{ __html: product.Description }} />
+                    </Row>
+                  </div>
+                </Row>
+              </div>
             </Row>
           </Container>
         )}

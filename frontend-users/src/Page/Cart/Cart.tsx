@@ -107,7 +107,9 @@ const Cart: React.FC = () => {
           <Container>
             {/* Heading */}
             <Row className='row-heading'>
-              <Col lg={4}>CART</Col>
+              <Col lg={4}>
+                <span style={{ fontWeight: '600' }}>CART</span>
+              </Col>
             </Row>
 
             {/* Content */}
@@ -127,12 +129,11 @@ const Cart: React.FC = () => {
                     <span className='span-select'>Select All ({countItems} items)</span>
                   </Col>
                   <Col lg={2} style={{ display: 'flex', justifyContent: 'center' }}>
-                    <span className='span-amount'>Total Amount</span>
+                    <span className='span-amount'> Amount</span>
                   </Col>
-                  <Col lg={1} style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Col lg={2} style={{ display: 'flex', justifyContent: 'start' }}>
                     <span className='span-total'>Price</span>
                   </Col>
-                  <Col lg={1}></Col>
                 </Row>
 
                 {/* Cart products items */}

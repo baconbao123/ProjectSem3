@@ -1,13 +1,9 @@
 import React from 'react'
-import Breadcrumb from '../../Components/Breadcrumb/Breadcrumb'
 import { Col, Container, Row, Card } from 'react-bootstrap'
 import './MemberBenefits.scss'
 import { Link } from 'react-router-dom'
 
 const MemberBenefits: React.FC = () => {
-  const items = [{ label: 'Member Benefits', url: '/member-benefits', page: true }]
-  const home = { icon: 'pi pi-home', url: '/home' }
-
   const memberDiscounts = [
     {
       condition: 'Orders over $200',
@@ -37,7 +33,6 @@ const MemberBenefits: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb items={items} home={home} />
       <div className='container-member-benefits'>
         <Container>
           <Row className='row-heading-member'>

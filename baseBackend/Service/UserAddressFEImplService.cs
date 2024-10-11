@@ -35,6 +35,9 @@ public class UserAddressFEImplService : UserAddressFEService
             return false;
         }
         var address = mapper.Map<UserAddress>(addressUserDTO);
+        address.Status = 1;
+        address.CreatedAt = DateTime.Now;
+        address.UpdateAt = DateTime.Now;
 
         context.UserAddress.Add(address);
         return context.SaveChanges() > 0;

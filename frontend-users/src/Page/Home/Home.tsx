@@ -1,9 +1,6 @@
 import { Col, Container, Row } from 'react-bootstrap'
 import { CardProduct } from '../../Components/CardProduct/Home/CardProduct'
 import { useEffect, useState } from 'react'
-import Product from '../../Interfaces/Product'
-import axios from 'axios'
-import './Home.scss'
 import { Link } from 'react-router-dom'
 import CategoryCarousel from './CategoryCarousel/CategoryCarousel'
 import { $axios } from '../../axios'
@@ -12,10 +9,11 @@ import { RootState } from '../../Store/store'
 import { setLoaded, setLoading } from '../../Store/loadingSlice'
 import { Skeleton } from 'primereact/skeleton'
 import { Button } from 'primereact/button'
+import { boxService } from '../../Data/HomeData'
+import './Home.scss'
 
 const Home = () => {
   const [products, setProducts] = useState<any | []>([])
-  const [productFake, setProductFake] = useState<Product[]>([])
   const [productsData, setProductsData] = useState<any | []>([])
   const isLoading = useSelector((state: RootState) => state.loading.isLoading)
   const dispatch = useDispatch()
@@ -60,27 +58,14 @@ const Home = () => {
     dispatch(setLoaded())
   }
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get('https://bookstore123.free.mockoapp.net/all-products-books')
-        setProductFake(res.data)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-
-    fetchProducts()
-  }, [])
-
   return (
     <>
       <div className='main'>
         <div className='intro-section pt-lg-2'>
-          {/* Banner */}
           <Container style={{ paddingTop: '10px' }}>
             <Row>
               <Col xl={9} md={6} sm={6}>
+                {/* Banner */}
                 <div className='banner banner-big banner-overlay'>
                   <div>
                     {isLoading ? (
@@ -125,7 +110,7 @@ const Home = () => {
                       </a>
                     </h3>
                     <Link
-                      to='/all-books'
+                      to='/all-products'
                       style={{ textDecoration: 'none' }}
                       className='btn btn-outline-white-3 banner-link'
                     >
@@ -159,50 +144,19 @@ const Home = () => {
           <div className='icon-boxes-container bg-transparent'>
             <Container>
               <Row>
-                <Col lg={3} sm={6}>
-                  <div className='icon-box icon-box-side'>
-                    <span className='icon-box-icon'>
-                      <i className='icon-truck' />
-                    </span>
-                    <div className='icon-box-content'>
-                      <h3 className='icon-box-title'>Payment &amp; Delivery</h3>
-                      <p>Free shipping for orders within 3KM</p>
+                {boxService.map((b, index) => (
+                  <Col lg={3} sm={6} key={index}>
+                    <div className='icon-box icon-box-side'>
+                      <span className='icon-box-icon'>
+                        <i className={b.icon} />
+                      </span>
+                      <div className='icon-box-content'>
+                        <h3 className='icon-box-title'>{b.title}</h3>
+                        <p>{b.subTitle}</p>
+                      </div>
                     </div>
-                  </div>
-                </Col>
-                <Col lg={3} sm={6}>
-                  <div className='icon-box icon-box-side'>
-                    <span className='icon-box-icon'>
-                      <i className='icon-rotate-left' />
-                    </span>
-                    <div className='icon-box-content'>
-                      <h3 className='icon-box-title'>Return &amp; Refund</h3>
-                      <p>Free 100% money back guarantee</p>
-                    </div>
-                  </div>
-                </Col>
-                <Col lg={3} sm={6}>
-                  <div className='icon-box icon-box-side'>
-                    <span className='icon-box-icon'>
-                      <i className='icon-life-ring' />
-                    </span>
-                    <div className='icon-box-content'>
-                      <h3 className='icon-box-title'>Quality</h3>
-                      <p>Always prioritize customer benefits</p>
-                    </div>
-                  </div>
-                </Col>
-                <Col lg={3} sm={6}>
-                  <div className='icon-box icon-box-side'>
-                    <span className='icon-box-icon'>
-                      <i className='icon-envelope' />
-                    </span>
-                    <div className='icon-box-content'>
-                      <h3 className='icon-box-title'>Member Benefits</h3>
-                      <p>Exclusive vouchers for members</p>
-                    </div>
-                  </div>
-                </Col>
+                  </Col>
+                ))}
               </Row>
             </Container>
           </div>
@@ -220,7 +174,7 @@ const Home = () => {
               <Col lg={6} md={7} sm={3} xs={6}></Col>
               <Col lg={2} md={3} sm={3} xs={3}>
                 <div className='heading-right'>
-                  <Link to='' className='title-link'>
+                  <Link to='/best-seller' className='title-link'>
                     View More Products <i className='icon-long-arrow-right' />
                   </Link>
                 </div>
@@ -228,10 +182,10 @@ const Home = () => {
             </Row>
 
             <Row style={{ paddingBottom: '15px' }}>
-              {productFake
+              {productsData
                 .slice(0, 6)
-                .filter((p) => p.SellPrice)
-                .map((product) => (
+                .sort((a: any, b: any) => b.SellPrice - a.SellPrice)
+                .map((product: any) => (
                   <Col lg={2} md={3} key={product.Id}>
                     <CardProduct product={product} />
                   </Col>
@@ -241,8 +195,7 @@ const Home = () => {
         </div>
 
         {/* New Releases */}
-        {/* Heading */}
-        <div className='container' style={{ height: '446px', marginTop: '30px' }}>
+        <div className='container' style={{ marginTop: '30px' }}>
           <div className='heading heading-flex'>
             <div className='heading-left'>
               <h2 className='title'>New Releases</h2>
@@ -255,10 +208,7 @@ const Home = () => {
           </div>
 
           <Row>
-            <Col lg={4} md={4} sm={4} xs={4}>
-              <img src='/images/new-release.png' alt='banner' className='img-new-realse' />
-            </Col>
-            <Col lg={8}>
+            <Col lg={12}>
               <Row>
                 {productsData
                   .slice(0, 4)
@@ -271,7 +221,7 @@ const Home = () => {
                     return dateB.getTime() - dateA.getTime()
                   })
                   .map((product: any) => (
-                    <Col lg={3} key={product.Id}>
+                    <Col lg={2} key={product.Id}>
                       <CardProduct product={product} />
                     </Col>
                   ))}
@@ -286,7 +236,7 @@ const Home = () => {
           <div key={index}>
             {category.Level === 0 && (
               <>
-                <div className='mb-5' />
+                <div className='mb-6' />
                 <div className='banner-group mb-2'>
                   <Container style={{ height: '200px' }}>
                     <Row>
@@ -294,41 +244,47 @@ const Home = () => {
                     </Row>
                   </Container>
                 </div>
-
-                {products
-                  .filter((subCategory: any) => subCategory.Level === 1 && subCategory.ParentId === category.Id)
-                  .map((subCategory: any, subIndex: any) => (
-                    <div key={subIndex} className='block'>
-                      <div className='block-wrapper'>
-                        <Container className='container-product-home'>
-                          <div className='heading heading-flex mt-4'>
-                            <div className='heading-left' style={{ zIndex: '1' }}>
-                              <h2 className='title'>{subCategory.Name}</h2>
+                <div className='product-container-card'>
+                  <Container>
+                    <div className='title'>{category.Name}</div>
+                    {products
+                      .filter(
+                        (subCategory: any) =>
+                          subCategory.Level === 1 &&
+                          subCategory.ParentId === category.Id &&
+                          subCategory.Products.length > 0
+                      )
+                      .map((subCategory: any, subIndex: any) => (
+                        <div key={subIndex} className='block'>
+                          <div className='block-wrapper'>
+                            <div className='heading heading-flex mt-4'>
+                              <div className='heading-left' style={{ zIndex: '1' }}>
+                                <div className='titleSmall'>{subCategory.Name}</div>
+                              </div>
+                              <div className='heading-right' style={{ zIndex: '1' }}>
+                                <Link to={`/${category.Name}/${subCategory.Name}`} className='title-link'>
+                                  View more Products <i className='icon-long-arrow-right' />
+                                </Link>
+                              </div>
                             </div>
-                            <div className='heading-right' style={{ zIndex: '1' }}>
-                              <Link to={`/all-books/${subCategory.Name}`} className='title-link'>
-                                View more Products <i className='icon-long-arrow-right' />
-                              </Link>
-                            </div>
+                            <Row>
+                              {subCategory.Products?.slice(0, 6).map((product: any, productIndex: any) => (
+                                <Col lg={2} key={productIndex}>
+                                  <CardProduct product={product} />
+                                </Col>
+                              ))}
+                            </Row>
                           </div>
-                          <Row>
-                            {subCategory.Products?.slice(0, 6).map((product: any, productIndex: any) => (
-                              <Col lg={2} key={productIndex}>
-                                <CardProduct product={product} />
-                              </Col>
-                            ))}
-                          </Row>
-                        </Container>
-                      </div>
-                    </div>
-                  ))}
-                <Container>
-                  <Row className='row-btn-see-more'>
-                    <Link to={`/${category.Name}`} className='url-see-more'>
-                      <Button label='See More' outlined className='btn-see-more' />
-                    </Link>
-                  </Row>
-                </Container>
+                        </div>
+                      ))}
+
+                    <Row className='row-btn-see-more'>
+                      <Link to={`/${category.Name}`} className='url-see-more'>
+                        <Button label='View More' outlined className='btn-see-more' />
+                      </Link>
+                    </Row>
+                  </Container>
+                </div>
               </>
             )}
           </div>
