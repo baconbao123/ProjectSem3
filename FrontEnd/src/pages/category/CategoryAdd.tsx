@@ -3,14 +3,27 @@ import { useDispatch } from "react-redux";
 import { setLoading, setShowModal, setToast } from "@src/Store/Slinces/appSlice.ts";
 import $axios from "@src/axios.ts";
 import Cookies from "js-cookie";
+import "@assets/styles/category.scss"
+import {
+  TextField,
+  MenuItem,
+  IconButton,
+  Grid,
+  Button,
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
 
-interface CategoryAdd {
-  loadDataTable: any;
+interface CategoryAddProps {
+  loadDataTable: () => void;
   id?: any;
   form: string;
 }
 
-const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
+const CategoryAdd: React.FC<CategoryAddProps> = ({ loadDataTable, form, id }) => {
   const [categoriesList, setCategoriesList] = useState([
     {
       name: '',
@@ -19,10 +32,9 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
       status: false,
     }
   ]); // Mảng chứa các danh mục cần thêm
-  const [error, setError] = useState<any>({});
+  const [error, setError] = useState<{ [key: string]: string }>({});
   const [item, setItem] = useState<any>({});
   const [categories, setCategories] = useState<any[]>([]);
-  const token = Cookies.get("token");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -30,6 +42,7 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
       loadData();
     }
     loadCategories(); // Load danh sách danh mục cha
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = () => {
@@ -41,14 +54,19 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
           setCategoriesList([{
             name: category.Name || '',
             description: category.Description || '',
-            parentId: category.ParentId || '',
-            status: category.Status || false,
+            parentId: category.ParentId ? category.ParentId.toString() : '',
+            status: category.Status ? true : false,
           }]);
           setItem(category);
         }
       })
       .catch((err) => {
         console.log(err);
+        dispatch(setToast({
+          status: "error",
+          message: "Error",
+          data: "Failed to load category data",
+        }));
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -66,6 +84,11 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
       })
       .catch((err) => {
         console.log(err);
+        dispatch(setToast({
+          status: "error",
+          message: "Error",
+          data: "Failed to load parent categories",
+        }));
       });
   };
 
@@ -91,8 +114,30 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
     setCategoriesList(newCategoriesList);
   };
 
+  const validate = (): boolean => {
+    const newError: { [key: string]: string } = {};
+
+    categoriesList.forEach((category, index) => {
+      if (!category.name.trim()) {
+        newError[`name-${index}`] = "Name is required";
+      }
+
+
+      if (!category.parentId) {
+        newError[`parentId-${index}`] = "Parent Category is required";
+      }
+
+      // Status là boolean, không cần validation trừ khi bạn có quy tắc cụ thể
+      // Giả sử status luôn có giá trị true hoặc false
+    });
+
+    setError(newError);
+    return Object.keys(newError).length === 0;
+  };
+
   const addNew = () => {
-    setError({});
+    if (!validate()) return;
+
     dispatch(setLoading(true));
     const dataForm = categoriesList.map(category => ({
       Name: category.name,
@@ -100,29 +145,33 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
       ParentId: parseInt(category.parentId) || null,
       Status: category.status ? 1 : 0,
     }));
+
     $axios
       .post("Category", dataForm)
       .then((res) => {
         loadDataTable();
-        dispatch(
-          setToast({
-            status: "success",
-            message: "Success",
-            data: "Add new Categories successful",
-          })
-        );
+        dispatch(setToast({
+          status: "success",
+          message: "Success",
+          data: "Add new Categories successful",
+        }));
         dispatch(setShowModal(false));
       })
       .catch((err) => {
-        const errorMessage = err.response?.data?.errors[0].message || "Something went wrong";
-    
-        dispatch(
-          setToast({
-            status: "error",
-            message: "Error",
-            data: errorMessage,
-          })
-        );
+        console.log(err);
+        const errorMessage = err.response?.data?.errors?.[0]?.message || "Something went wrong";
+        dispatch(setToast({
+          status: "error",
+          message: "Error",
+          data: errorMessage,
+        }));
+        if (err.response?.data?.errors) {
+          const serverErrors: { [key: string]: string } = {};
+          err.response.data.errors.forEach((errorItem: any) => {
+            serverErrors[errorItem.field.toLowerCase()] = errorItem.message;
+          });
+          setError(serverErrors);
+        }
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -130,37 +179,43 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
   };
 
   const save = () => {
-    setError({});
+    if (!validate()) return;
+
     const dataForm = {
       Name: categoriesList[0].name,
       Description: categoriesList[0].description,
-      ParentId: parseInt(categoriesList[0].parentId) || null,
+      ParentId: categoriesList[0].parentId ? parseInt(categoriesList[0].parentId) : null,
       Status: categoriesList[0].status ? 1 : 0,
       Version: item.Version,
     };
+
     dispatch(setLoading(true));
     $axios
       .put(`Category/${id}`, dataForm)
       .then((res) => {
         loadDataTable();
-        dispatch(
-          setToast({
-            status: "success",
-            message: "Success",
-            data: "Edit Category successful",
-          })
-        );
+        dispatch(setToast({
+          status: "success",
+          message: "Success",
+          data: "Edit Category successful",
+        }));
         dispatch(setShowModal(false));
       })
       .catch((err) => {
+        console.log(err);
         const errorMessage = err.response?.data?.message || "Something went wrong";
-        dispatch(
-          setToast({
-            status: "error",
-            message: "Error",
-            data: errorMessage,
-          })
-        );
+        dispatch(setToast({
+          status: "error",
+          message: "Error",
+          data: errorMessage,
+        }));
+        if (err.response?.data?.errors) {
+          const serverErrors: { [key: string]: string } = {};
+          err.response.data.errors.forEach((errorItem: any) => {
+            serverErrors[errorItem.field.toLowerCase()] = errorItem.message;
+          });
+          setError(serverErrors);
+        }
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -168,131 +223,144 @@ const CategoryAdd: React.FC<CategoryAdd> = ({ loadDataTable, form, id }) => {
   };
 
   const ShowError: React.FC<{ errorKey: string }> = ({ errorKey }) => {
-    let data: any[] = [];
-    if (error[errorKey] && error[errorKey].length > 0) {
-      data = error[errorKey];
-    }
-    return <div className="text-danger mt-1">{data[0] ? data[0] : ""} </div>;
+    return error[`${errorKey.toLowerCase()}`] ? (
+      <div className="text-danger mt-1">{error[`${errorKey.toLowerCase()}`]}</div>
+    ) : null;
   };
 
   return (
-    <div className="container-fluid">
-      {categoriesList.map((category, index) => (
-        <div className="row" key={index}>
-          <div className="col-6">
-            <div className="">
-              <div className="label-form">
-                Name <span className="text-danger">*</span>
-              </div>
-              <input
+    <div className="container-fluid mt-3">
+      <Grid>
+        {categoriesList.map((category, index) => (
+          <Grid container spacing={2} key={index} alignItems="center" className="mb-3">
+            {/* Left Column */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Name Category"
                 value={category.name}
-                className="form-control"
-                placeholder="Enter name"
                 onChange={(e) => handleChange(index, "name", e.target.value)}
+                error={!!error[`name-${index}`]}
+                helperText={error[`name-${index}`]}
+                fullWidth
+                required
               />
-              <ShowError errorKey="Name" />
-            </div>
+            </Grid>
 
-            <div className="mt-3">
-              <div className="label-form">
-                Status <span className="text-danger">*</span>
-              </div>
-              <div className="form-check form-switch">
-                <input
-                  checked={category.status}
-                  onChange={(e) => handleChange(index, "status", e.target.checked)}
-                  className="form-check-input form-switch switch-input"
-                  type="checkbox"
-                  id="flexSwitchCheckDefault"
-                />
-              </div>
-              <ShowError errorKey="Status" />
-            </div>
-          </div>
+            {/* Right Column */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Parent Category"
+                select
+                value={category.parentId}
+                onChange={(e) => handleChange(index, "parentId", e.target.value)}
+                error={!!error[`parentId-${index}`]}
+                helperText={error[`parentId-${index}`]}
+                fullWidth
+                required
+              >
+                <MenuItem value="">Select Parent Category</MenuItem>
+                {categories
+                  .filter(cat => cat.Status !== 0)
+                  .map((cat) => (
+                    <MenuItem key={cat.Id} value={cat.Id.toString()}>
+                      {"-".repeat(cat.Level) + " " + cat.Name}
+                    </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
 
-          <div className="col-6">
-            <div className="">
-              <div className="label-form">Description</div>
-              <textarea
-                className="form-control"
+            {/* Description */}
+            <Grid item xs={12}>
+              <TextField
+                label="Description"
                 value={category.description}
                 onChange={(e) => handleChange(index, "description", e.target.value)}
-                style={{ height: "100px" }}
-                placeholder="Enter description"
-                id="floatingTextarea2"
+           
+                fullWidth
+                multiline
+                rows={4}
+           
               />
-              <ShowError errorKey="Description" />
-            </div>
-          </div>
+            </Grid>
 
-          <div className="col-12 mt-3">
-            <div className="label-form">Parent Category</div>
-            <select
-              className="form-select"
-              value={category.parentId}
-              onChange={(e) => handleChange(index, "parentId", e.target.value)}
+            {/* Status */}
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={category.status}
+                    onChange={(e) => handleChange(index, "status", e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Status"
+              />
+              {error[`status-${index}`] && (
+                <div className="text-danger mt-1">{error[`status-${index}`]}</div>
+              )}
+            </Grid>
+
+            {/* Remove Button */}
+            {form === "add" && (
+              <Grid item xs={12} className="d-flex justify-content-end">
+                <IconButton
+                  color="secondary"
+                  onClick={() => removeCategory(index)}
+                  disabled={categoriesList.length === 1}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            )}
+          </Grid>
+        ))}
+
+        {/* Add More Button */}
+        {form === "add" && (
+          <Grid container justifyContent="flex-end" className="mb-3">
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={addNewCategory}
             >
-              <option value="">Select Parent Category</option>
-              {categories
-              .filter(cat => cat.Status !==0)
-              .map((cat) => (
-                <option key={cat.Id} value={cat.Id}>
-                  {"-".repeat(cat.Level) + " " + cat.Name}
-                </option>
-              ))}
-            </select>
-            <ShowError errorKey="ParentCategory" />
-          </div>
-
-          {form === "add" && (
-            <div className="col-12 mt-3 d-flex justify-content-end">
-              <button
-                type="button"
-                className="btn btn-outline-danger"
-                onClick={() => removeCategory(index)}
-                disabled={categoriesList.length === 1}
-              >
-                - Remove
-              </button>
-            </div>
-          )}
-        </div>
-      ))}
-
-      {form === "add" && (
-        <div className="col-12 mt-3 d-flex justify-content-end">
-          <button type="button" className="btn btn-outline-primary " onClick={addNewCategory}>
-            + Add More
-          </button>
-        </div>
-      )}
-
-      <div className="group-btn mt-3">
-        <button
-          onClick={() => dispatch(setShowModal(false))}
-          type="button"
-          className="btn btn-outline-secondary"
-        >
-          Cancel
-        </button>
-        {form === "add" ? (
-          <button
-            onClick={addNew}
-            type="button"
-            className="btn btn-outline-primary"
-          >
-            Save All
-          </button>
-        ) : (
-          <button
-            onClick={save}
-            type="button"
-            className="btn btn-outline-primary"
-          >
-            Save
-          </button>
+              Add More Category
+            </Button>
+          </Grid>
         )}
-      </div>
+
+        {/* Action Buttons */}
+        <Grid container spacing={2} className="mt-3">
+          <Grid item xs={12} className="d-flex justify-content-center">
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => dispatch(setShowModal(false))}
+              className="mx-3"
+              startIcon={<CloseIcon />}
+            >
+              Cancel
+            </Button>
+            {form === "add" ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={addNew}
+              >
+                Save All
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={save}
+              >
+                Save
+              </Button>
+            )}
+          </Grid>
+        </Grid>
+      </Grid>
     </div>
   );
 };

@@ -226,7 +226,9 @@ public class ProductImageRequest()
 
 
 public class SaleRequest
+
 {
+    [Required(ErrorMessage = "Name is required.")]
     [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
     public string Name { get; set; }
 
@@ -237,6 +239,7 @@ public class SaleRequest
 
     public int Type { get; set; }
 
+
     [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
     public DateTime? StartDate { get; set; }
@@ -245,6 +248,11 @@ public class SaleRequest
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
     public DateTime? EndDate { get; set; }
 
+    public int Quantity { get; set; }
+
+    public int? CategoryId { get; set; }
+
+
     [Required(ErrorMessage = "Status is required.")]
     [Range(0, 1, ErrorMessage = "Status must be either 0 or 1.")]
     public int? Status { get; set; }
@@ -252,3 +260,14 @@ public class SaleRequest
     public int Version { get; set; }
 }
 
+public class OrderRequest()
+{
+    [Required(ErrorMessage = "Action is required.")]
+    [StringLength(50, ErrorMessage = "Action cannot be longer than 50 characters.")]
+    public string action { get; set; }
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(1, 4, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+    public int Version { get; set; }
+
+}

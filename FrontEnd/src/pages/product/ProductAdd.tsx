@@ -5,6 +5,12 @@ import {
   Chip,
   Autocomplete,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Tooltip
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
@@ -19,12 +25,14 @@ import { Editor, EditorTextChangeEvent } from "primereact/editor";
 import { Toast } from "primereact/toast";
 import { FileUpload } from "primereact/fileupload";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add"; // Import icon thêm mới
 import "@assets/styles/product.scss";
+import { Email } from "@mui/icons-material";
 
 interface ProductAddProps {
   loadDataTable: () => void;
   id?: number;
-  form: string;
+  form: "add" | "edit" | "copy";
 }
 
 interface Company {
@@ -35,12 +43,14 @@ interface Company {
 interface Author {
   Id: number;
   Name: string;
+  Biography: string;
 }
 
 interface Category {
   Id: number;
   Name: string;
   Level: number;
+  Status: number; // Thêm Status để kiểm tra active
 }
 
 const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
@@ -64,16 +74,54 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const [existingImages, setExistingImages] = useState<string[]>([]); // Hình ảnh hiện có
   const [deletedImages, setDeletedImages] = useState<string[]>([]); // Hình ảnh bị xóa
   const token = Cookies.get("token");
+  const [currentForm, setCurrentForm] = useState<"add" | "edit" | "copy">(form);
   const dispatch = useDispatch();
 
-  console.log(error);
+  // States for Add Author Dialog
+  const [openAddAuthor, setOpenAddAuthor] = useState(false);
+  const [newAuthorName, setNewAuthorName] = useState("");
+
+  // States for Add Company Dialog
+  const [openAddCompany, setOpenAddCompany] = useState(false);
+  const [newCompanyName, setNewCompanyName] = useState("");
+  const [newCompanyEmail, setNewCompanyEmail] = useState("");
+  const [newCompanyPhone, setNewCompanyPhone] = useState("");
+  const [newCompanyAddress, setNewCompanyAddress] = useState("");
+  const [newCompanyType, setNewCompanyType] = useState("");
+  const [newCompanyStatus, setNewCompanyStatus] = useState<boolean>(true);
+  const [addCompanyError, setAddCompanyError] = useState<string>("");
+  // States for Add Category Dialog
+  const [openAddCategory, setOpenAddCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = useState(""); // Thêm Description
+  const [newCategoryParentId, setNewCategoryParentId] = useState<string>(""); // Thêm ParentId
+  const [newCategoryStatus, setNewCategoryStatus] = useState<boolean>(true); // Thêm Status
+  const [addCategoryError, setAddCategoryError] = useState<string>(""); // Thêm error state
+  const [newCategories, setNewCategories] = useState([
+    {
+      name: "",
+      description: "",
+      parentId: "",
+      status: true,
+    },
+  ]);
+  const [newCompanys, setNewCompanys] = useState([
+    {
+      name: "",
+      email: "",
+      address: "",
+      phone: "",
+      type: "",
+      status: false,
+    },
+  ]);
 
   useEffect(() => {
-    if (form === "edit" && id) {
+    if ((currentForm === "edit" || currentForm === "copy") && id) {
       loadData();
     }
     fetchAuthorsAndCategories();
-  }, [form, id]);
+  }, [currentForm, id]);
 
   const loadData = async () => {
     dispatch(setLoading(true));
@@ -81,7 +129,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
       const res = await $axios.get(`Product/${id}`);
       const product = res.data.data;
 
-      console.log(product[0]);
       if (product) {
         setName(product[0].Name || "");
         setDescription(product[0].Description || "");
@@ -108,6 +155,13 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           );
         }
         setItem(product[0]);
+        if (currentForm === "copy") {
+          setName(product[0].Name + " (Copy)");
+          setExistingImages([]); // Xóa hình ảnh hiện có nếu cần
+          setProductImages([]); // Xóa hình ảnh mới nếu cần
+          setSelectedThumb(null); // Xóa thumbnail nếu cần
+          setDeletedImages([]);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -141,7 +195,10 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         )
       );
     } catch (error) {
-      console.error("Failed to fetch authors and categories", error);
+      console.error(
+        "Failed to fetch authors, categories, and companies",
+        error
+      );
     }
   };
 
@@ -243,7 +300,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     }
 
     // Gửi danh sách các hình ảnh đã bị xóa
-    deletedImages.forEach((imgPath) => formData.append("DeletedImages", imgPath));
+    deletedImages.forEach((imgPath) =>
+      formData.append("DeletedImages", imgPath)
+    );
 
     // Nếu API yêu cầu SaleIds, hãy thêm trường này
     // Ví dụ:
@@ -278,6 +337,254 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const ShowError: React.FC<{ key: string }> = ({ key }) => {
     const messages = error[key] || [];
     return <div className="text-danger mt-1">{messages[0] || ""}</div>;
+  };
+
+  // Hàm mở và đóng Dialog Author
+  const handleOpenAddAuthor = () => {
+    setNewAuthorName("");
+    setOpenAddAuthor(true);
+  };
+
+  const handleCloseAddAuthor = () => {
+    setOpenAddAuthor(false);
+  };
+
+  const handleAddAuthor = async () => {
+    if (!newAuthorName.trim()) {
+      setError((prev) => ({
+        ...prev,
+        newAuthorName: ["Author name is required"],
+      }));
+      return;
+    }
+    try {
+      dispatch(setLoading(true));
+      const res = await $axios.post("Author", { Name: newAuthorName , Status: 1 });
+      const newAuthor: Author = res.data.data;
+      setAuthors((prev) => [...prev, newAuthor]);
+      setAuthorIds((prev) => [...prev, newAuthor.Id]);
+      setOpenAddAuthor(false);
+      dispatch(
+        setToast({ status: "success", message: "Author added successfully" })
+      );
+    } catch (err: any) {
+      console.error("Failed to add author", err);
+      dispatch(
+        setToast({
+          status: "error",
+          message: err.response?.data?.message || "Failed to add author",
+        })
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  // Hàm mở và đóng Dialog Company
+  const handleOpenAddCompany = () => {
+    setNewCompanyName("");
+    setNewCompanyEmail("");
+    setNewCompanyPhone("");
+    setNewCompanyAddress("");
+    setNewCompanyStatus(true);
+
+    setOpenAddCompany(true);
+  };
+
+  const handleCloseAddCompany = () => {
+    setOpenAddCompany(false);
+  };
+
+  const handleNewCompanyChange = (index: number, field: string, value: any) => {
+    const updatedCompanys = [...newCompanys];
+    updatedCompanys[index] = { ...updatedCompanys[index], [field]: value };
+    setNewCompanys(updatedCompanys);
+  };
+  const addNewCompanyField = () => {
+    setNewCompanys([
+      ...newCompanys,
+      { name: "", email: "", phone: "", address: "", type: "", status: true },
+    ]);
+  };
+  const removeNewCompany = (index: number) => {
+    const updatedCompanys = [...newCompanys];
+    updatedCompanys.splice(index, 1);
+    setNewCompanys(updatedCompanys);
+  };
+  const handleAddCompanies = async () => {
+    // Check if newCompanys array is empty
+    if (newCompanys.length === 0) {
+      setAddCompanyError("At least one company must be provided.");
+      return;
+    }
+
+    const errors: string[] = [];
+    // Prepare data form
+    const dataForm = newCompanys
+      .map((company, index) => {
+        // Validate company data
+        if (!company.name.trim()) {
+          errors.push(`Company name is required for category ${index + 1}`);
+        }
+        if (!company.email || !/\S+@\S+\.\S+/.test(company.email)) {
+          errors.push(`Valid email is required for category ${index + 1}`);
+        }
+        if (!company.phone || company.phone.length !== 10) {
+          errors.push(`Phone number must be exactly 10 digits for category ${index + 1}`);
+        }
+        if (!company.address.trim()) {
+          errors.push(`Address is required for category ${index + 1}`);
+        }
+        if (!company.type) {
+          errors.push(
+            `Partner company type is required for category ${index + 1}`
+          );
+        }
+
+        // Return company data if valid, otherwise return null
+        return errors.length === 0
+          ? {
+              Name: company.name,
+              Email: company.email,
+              Phone: company.phone,
+              Address: company.address,
+              Type: company.type,
+              Status: company.status ? 1 : 0,
+            }
+          : null; // Return null if there are errors
+      })
+      .filter(Boolean); // Filter out any null values
+
+    // If there are any errors, set the error message and exit
+    if (errors.length > 0) {
+      setAddCompanyError(errors.join(", "));
+      return;
+    }
+
+    if (dataForm.length === 0) {
+      return;
+    }
+
+    try {
+      dispatch(setLoading(true));
+      const res = await $axios.post("CompanyPartner", dataForm);
+      const addedCompanies: Company[] = res.data.data;
+      setOpenAddCompany(false);
+      setCompanies((prev) => [...prev, ...addedCompanies]);
+      setNewCompanys([
+        { name: "", email: "", phone: "", address: "", type: "", status: true },
+      ]);
+      dispatch(
+        setToast({ status: "success", message: "Companies added successfully" })
+      );
+    } catch (err: any) {
+      console.error("Failed to add companies", err);
+      setAddCompanyError(
+        err.response?.data?.message || "Failed to add companies"
+      );
+      dispatch(
+        setToast({
+          status: "error",
+          message: err.response?.data?.message || "Failed to add companies",
+        })
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  // ====================End company===================
+
+  // Hàm mở và đóng Dialog Category
+  const handleOpenAddCategory = () => {
+    setNewCategoryName("");
+    setNewCategoryDescription(""); // Reset Description
+    setNewCategoryParentId("");
+    setNewCategoryStatus(true);
+    setAddCategoryError("");
+    setOpenAddCategory(true);
+  };
+
+  const handleCloseAddCategory = () => {
+    setOpenAddCategory(false);
+  };
+  const handleNewCategoryChange = (
+    index: number,
+    field: string,
+    value: any
+  ) => {
+    const updatedCategories = [...newCategories];
+    updatedCategories[index] = { ...updatedCategories[index], [field]: value };
+    setNewCategories(updatedCategories);
+  };
+
+  // Hàm thêm một danh mục mới vào danh sách danh mục mới
+  const addNewCategoryField = () => {
+    setNewCategories([
+      ...newCategories,
+      { name: "", description: "", parentId: "", status: true },
+    ]);
+  };
+
+  // Hàm xóa một danh mục khỏi danh sách danh mục mới
+  const removeNewCategory = (index: number) => {
+    const updatedCategories = [...newCategories];
+    updatedCategories.splice(index, 1);
+    setNewCategories(updatedCategories);
+  };
+  // Sửa đổi hàm handleAddCategory thành handleAddCategories
+
+  const handleAddCategories = async () => {
+    // Kiểm tra tất cả các danh mục có tên hay không
+    for (let i = 0; i < newCategories.length; i++) {
+      if (!newCategories[i].name.trim()) {
+        setAddCategoryError(`Category name is required for category ${i + 1}`);
+        return;
+      }
+    }
+
+    try {
+      dispatch(setLoading(true));
+      const dataForm = newCategories.map((category) => ({
+        Name: category.name,
+        Description: category.description,
+        ParentId: category.parentId ? parseInt(category.parentId) : null,
+        Status: category.status ? 1 : 0,
+      }));
+      const res = await $axios.post("Category", dataForm); // Gửi danh sách danh mục
+
+      // Giả sử API trả về danh sách các danh mục đã thêm
+      const addedCategories: Category[] = res.data.data;
+
+      setCategories((prev) => [...prev, ...addedCategories]);
+      setCategoryIds((prev) => [
+        ...prev,
+        ...addedCategories.map((cat) => cat.Id),
+      ]);
+      setOpenAddCategory(false);
+      setNewCategories([
+        { name: "", description: "", parentId: "", status: true },
+      ]); // Reset danh sách danh mục mới
+      dispatch(
+        setToast({
+          status: "success",
+          message: "Categories added successfully",
+        })
+      );
+    } catch (err: any) {
+      console.error("Failed to add categories", err);
+      setAddCategoryError(
+        err.response?.data?.message || "Failed to add categories"
+      );
+      dispatch(
+        setToast({
+          status: "error",
+          message: err.response?.data?.message || "Failed to add categories",
+        })
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   return (
@@ -319,18 +626,27 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           <label className="label-form">
             Company Partner <span className="text-danger">*</span>
           </label>
-          <select
-            value={companyPartnerId}
-            onChange={handleCompanyChange}
-            className="form-control"
-          >
-            <option value={0}>--Select--</option>
-            {companies.map((company) => (
-              <option key={company.Id} value={company.Id}>
-                {company.Name}
-              </option>
-            ))}
-          </select>
+          <div className="d-flex align-items-center">
+            <select
+              value={companyPartnerId}
+              onChange={handleCompanyChange}
+              className="form-control"
+            >
+              <option value={0}>--Select--</option>
+              {companies.map((company) => (
+                <option key={company.Id} value={company.Id}>
+                  {company.Name}
+                </option>
+              ))}
+            </select>
+            <IconButton
+              color="primary"
+              onClick={handleOpenAddCompany}
+              style={{ marginLeft: 8 }}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
           <ShowError key="CompanyPartnerId" />
         </div>
         <div className="col-6"></div>
@@ -397,52 +713,93 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
         {/* Các trường Author và Category */}
         <div className="col-6 mt-3">
-          <label className="label-form">
-            Authors <span className="text-danger">*</span>
-          </label>
-          <Autocomplete
-            multiple
-            options={authors}
-            value={authors.filter((author) => authorIds.includes(author.Id))}
-            getOptionLabel={(option) => option.Name}
-            onChange={(event, newValue) => {
-              setAuthorIds(newValue.map((author) => author.Id));
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                placeholder="Select authors"
-              />
-            )}
-          />
-          <ShowError key="AuthorIds" />
-        </div>
+      <label className="label-form">
+        Authors <span className="text-danger">*</span>
+      </label>
+      <div className="d-flex align-items-center">
+        <Autocomplete
+          multiple
+          options={authors}
+          value={authors.filter((author) => authorIds.includes(author.Id))}
+          getOptionLabel={(option) => {
+            const index = authors.findIndex((a) => a.Id === option.Id) + 1;
+            return `${option.Name} (Author #${index})`; // Thêm số thứ tự tác giả
+          }}
+          onChange={(event, newValue) => {
+            setAuthorIds(newValue.map((author) => author.Id));
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder="Select authors"
+            />
+          )}
+          renderOption={(props, option) => (
+            <Tooltip 
+              title={
+                <div>
+                   <strong>Id:</strong> {option.Id} <br />
+                  <strong>Name author:</strong> {option.Name} <br />
+                  <strong>Biology:</strong> {option.Biography} <br />
+
+                </div>
+              }
+              arrow
+            >
+              <li {...props}>
+                {option.Name} 
+              </li>
+            </Tooltip>
+          )}
+          style={{ flexGrow: 1 }}
+        />
+        <IconButton
+          color="primary"
+          onClick={handleOpenAddAuthor}
+          style={{ marginLeft: 8 }}
+        >
+          <AddIcon />
+        </IconButton>
+      </div>
+      {/* Hiển thị lỗi nếu có */}
+      <ShowError key="AuthorIds" />
+    </div>
 
         <div className="col-6 mt-3">
           <label className="label-form">
             Categories <span className="text-danger">*</span>
           </label>
-          <Autocomplete
-            multiple
-            options={categories}
-            value={categories.filter((category) =>
-              categoryIds.includes(category.Id)
-            )}
-            getOptionLabel={(option) =>
-              "- ".repeat(option.Level) + " " + option.Name
-            }
-            onChange={(event, newValue) => {
-              setCategoryIds(newValue.map((category) => category.Id));
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                placeholder="Select categories"
-              />
-            )}
-          />
+          <div className="d-flex align-items-center">
+            <Autocomplete
+              multiple
+              options={categories}
+              value={categories.filter((category) =>
+                categoryIds.includes(category.Id)
+              )}
+              getOptionLabel={(option) =>
+                "- ".repeat(option.Level) + " " + option.Name
+              }
+              onChange={(event, newValue) => {
+                setCategoryIds(newValue.map((category) => category.Id));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Select categories"
+                />
+              )}
+              style={{ flexGrow: 1 }}
+            />
+            <IconButton
+              color="primary"
+              onClick={handleOpenAddCategory}
+              style={{ marginLeft: 8 }}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
           <ShowError key="CategoryIds" />
         </div>
 
@@ -467,7 +824,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             <div className="mt-2 position-relative d-inline-block">
               <img
                 src={URL.createObjectURL(selectedThumb)}
-                alt="Thumbnail Preview"
+                alt={`Thumbnail Preview`}
                 className="img-thumbnail"
                 style={{
                   width: "100px",
@@ -554,7 +911,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
               {existingImages.map((imageUrl, index) => (
                 <div key={index} className="position-relative">
                   <img
-                    src={baseUrl + imageUrl}
+                    src={`${baseUrl}${imageUrl}`}
                     alt={`Existing ${index}`}
                     className="img-thumbnail"
                     style={{
@@ -582,7 +939,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </div>
         )}
       </div>
-
       <div className="modal-footer mt-3 d-flex gap-3">
         <button
           className="btn btn-secondary"
@@ -597,8 +953,277 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           {form === "edit" ? "Update Product" : "Add Product"}
         </button>
       </div>
-
       <Toast />
+      {/* Dialog Thêm Author Mới */}
+      <Dialog open={openAddAuthor} onClose={handleCloseAddAuthor}>
+        <DialogTitle>Add New Author</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Author Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={newAuthorName}
+            onChange={(e) => setNewAuthorName(e.target.value)}
+            error={Boolean(error.newAuthorName)}
+            helperText={error.newAuthorName ? error.newAuthorName[0] : ""}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddAuthor} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddAuthor} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Thêm Companys Mới */}
+
+      <Dialog
+        open={openAddCompany}
+        onClose={handleCloseAddCompany}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Add New Compannys</DialogTitle>
+        <DialogContent>
+          {newCompanys.map((company, index) => (
+            <div
+              key={index}
+              className="category-form mb-4 p-3"
+              style={{ border: "1px solid #ccc", borderRadius: "8px" }}
+            >
+              <h5>Company {index + 1}</h5>
+              <TextField
+                margin="dense"
+                label="Category Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={company.name}
+                onChange={(e) =>
+                  handleNewCompanyChange(index, "name", e.target.value)
+                }
+                error={!company.name.trim()} // Error condition for name
+                helperText={
+                  !company.name.trim() ? "Company name is required." : ""
+                }
+                required
+              />
+              <TextField
+                margin="dense"
+                label="Email"
+                type="email"
+                fullWidth
+                variant="outlined"
+                value={company.email}
+                onChange={(e) =>
+                  handleNewCompanyChange(index, "email", e.target.value)
+                }
+                error={!company.email || !/\S+@\S+\.\S+/.test(company.email)} // Error condition for email
+                helperText={
+                  !company.email || !/\S+@\S+\.\S+/.test(company.email)
+                    ? "Valid email is required."
+                    : ""
+                }
+              />
+              <TextField
+                margin="dense"
+                label="Phone"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={company.phone}
+                onChange={(e) =>
+                  handleNewCompanyChange(index, "phone", e.target.value)
+                }
+                error={!company.phone || company.phone.length !== 10} // Error condition for phone
+                helperText={
+                  !company.phone || company.phone.length !== 10
+                    ? "Phone number must be exactly 10 digits."
+                    : ""
+                }
+              />
+              <TextField
+                margin="dense"
+                label="Address"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={company.address}
+                onChange={(e) =>
+                  handleNewCompanyChange(index, "address", e.target.value)
+                }
+                error={!company.address.trim()} // Error condition for address
+                helperText={
+                  !company.address.trim() ? "Address is required." : ""
+                }
+              />
+              <FormControl fullWidth margin="dense">
+                <label className="label-form">Patner company</label>
+                <select
+                  value={company.type}
+                  onChange={(e) =>
+                    handleNewCompanyChange(index, "type", e.target.value)
+                  }
+                  className="form-control"
+                >
+                  <option> Select company type</option>
+                  <option value="Manufacturer">Manufacturer</option>
+                  <option value="Publisher">Publisher</option>
+                </select>
+                {/* Display error for Partner Company Type */}
+                {!company.type && (
+                  <div style={{ color: "red", marginTop: "5px" }}>
+                    Partner company type is required for category {index + 1}.
+                  </div>
+                )}
+              </FormControl>
+
+              <FormControl component="fieldset" margin="dense">
+                <label className="label-form">Status</label>
+                <Switch
+                  checked={company.status}
+                  onChange={(e) =>
+                    handleNewCompanyChange(index, "status", e.target.checked)
+                  }
+                  color="primary"
+                />
+              </FormControl>
+              {newCompanys.length > 1 && (
+                <IconButton
+                  color="secondary"
+                  onClick={() => removeNewCompany(index)}
+                  style={{ marginTop: 8 }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </div>
+          ))}
+
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={addNewCompanyField}
+            startIcon={<AddIcon />}
+          >
+            Add More Company
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddCompany} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddCompanies} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Dialog Thêm Category Mới */}
+
+      <Dialog
+        open={openAddCategory}
+        onClose={handleCloseAddCategory}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Add New Categories</DialogTitle>
+        <DialogContent>
+          {newCategories.map((category, index) => (
+            <div
+              key={index}
+              className="category-form mb-4 p-3"
+              style={{ border: "1px solid #ccc", borderRadius: "8px" }}
+            >
+              <h5>Category {index + 1}</h5>
+              <TextField
+                margin="dense"
+                label="Category Name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={category.name}
+                onChange={(e) =>
+                  handleNewCategoryChange(index, "name", e.target.value)
+                }
+                required
+              />
+              <TextField
+                margin="dense"
+                label="Description"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={category.description}
+                onChange={(e) =>
+                  handleNewCategoryChange(index, "description", e.target.value)
+                }
+              />
+              <FormControl fullWidth margin="dense">
+                <label className="label-form">Parent Category</label>
+                <select
+                  value={category.parentId}
+                  onChange={(e) =>
+                    handleNewCategoryChange(index, "parentId", e.target.value)
+                  }
+                  className="form-control"
+                >
+                  <option value="">Select Parent Category</option>
+                  {categories
+                    .filter((cat) => cat.Status !== 0 && cat.Id !== id) // Loại bỏ danh mục hiện tại để tránh chọn chính nó làm Category cha
+                    .map((cat) => (
+                      <option key={cat.Id} value={cat.Id}>
+                        {"- ".repeat(cat.Level) + " " + cat.Name}
+                      </option>
+                    ))}
+                </select>
+              </FormControl>
+
+              <FormControl component="fieldset" margin="dense">
+                <label className="label-form">Status</label>
+                <Switch
+                  checked={category.status}
+                  onChange={(e) =>
+                    handleNewCategoryChange(index, "status", e.target.checked)
+                  }
+                  color="primary"
+                />
+              </FormControl>
+              {newCategories.length > 1 && (
+                <IconButton
+                  color="secondary"
+                  onClick={() => removeNewCategory(index)}
+                  style={{ marginTop: 8 }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </div>
+          ))}
+
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={addNewCategoryField}
+            startIcon={<AddIcon />}
+          >
+            Add More Category
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddCategory} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddCategories} color="primary">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

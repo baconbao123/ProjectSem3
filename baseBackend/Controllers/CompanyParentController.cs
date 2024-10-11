@@ -65,17 +65,71 @@ public class CompanyPartnerController : ControllerBase
 
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
 
-        var partners = new List<CompanyPartner>();
+        // Fetch existing emails and names from the database
         var existingEmails = db.CompanyPartner
-                              .Where(cp => requests.Select(r => r.Email).Contains(cp.Email))
-                              .Select(cp => cp.Email)
-                              .ToList();
+                               .Where(cp => requests.Select(r => r.Email).Contains(cp.Email))
+                               .Select(cp => cp.Email)
+                               .ToList();
+        var existingNames = db.CompanyPartner
+                               .Where(cp => requests.Select(r => r.Name).Contains(cp.Name))
+                               .Select(cp => cp.Name)
+                               .ToList();
+
+        // Check for duplicates in the request
+        var duplicateEmails = requests.GroupBy(r => r.Email)
+                                      .Where(g => g.Count() > 1)
+                                      .Select(g => g.Key)
+                                      .ToList();
+
+        var duplicateNames = requests.GroupBy(r => r.Name)
+                                     .Where(g => g.Count() > 1)
+                                     .Select(g => g.Key)
+                                     .ToList();
+
+        if (duplicateEmails.Any())
+        {
+            return BadRequest(new { message = $"The following emails are duplicated in the request: {string.Join(", ", duplicateEmails)}" });
+        }
+
+        if (duplicateNames.Any())
+        {
+            return BadRequest(new { message = $"The following company names are duplicated in the request: {string.Join(", ", duplicateNames)}" });
+        }
+
+        var partners = new List<CompanyPartner>();
 
         foreach (var request in requests)
         {
+            // Check if required fields are empty
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return BadRequest(new { message = "Company name cannot be empty." });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest(new { message = "Email cannot be empty." });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Address))
+            {
+                return BadRequest(new { message = "Address cannot be empty." });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Type))
+            {
+                return BadRequest(new { message = "Type cannot be empty." });
+            }
+
+            // Check if email or name already exists in the database
             if (existingEmails.Contains(request.Email))
             {
-                return BadRequest(new { message = $"Email {request.Email} exsist already." });
+                return BadRequest(new { message = $"Email {request.Email} already exists." });
+            }
+
+            if (existingNames.Contains(request.Name))
+            {
+                return BadRequest(new { message = $"Company name {request.Name} already exists." });
             }
 
             var partner = new CompanyPartner
@@ -100,6 +154,8 @@ public class CompanyPartnerController : ControllerBase
         db.SaveChanges();
         return Ok(new { data = partners });
     }
+
+
 
 
 

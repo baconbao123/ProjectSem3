@@ -162,41 +162,33 @@ input:focus {
   --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
 }
 
-.status-success {
-  background-color: $success;
+.status-default {
   color: #fff;
   border: 1px solid #ccc;
   padding: 2px 10px;
-  border-radius: 15px;
+  border-radius: 10px;
   text-align: center;
-  width: fit-content;
+  width: 120px;
+}
+.status-success {
+  background-color: $success;
+  @extend .status-default;
 }
 .status-disable {
   background-color: $gray-600;
-  color: #fff;
-  border: 1px solid #ccc;
-  padding: 2px 10px;
-  border-radius: 15px;
-  text-align: center;
-  width: fit-content;
+  @extend .status-default
 }
 .status-danger {
   background-color: $danger;
-  color: #fff;
-  border: 1px solid #ccc;
-  padding: 2px 10px;
-  border-radius: 15px;
-  text-align: center;
-  width: fit-content;
+  @extend .status-default
 }
 .status-process {
   background-color: $yellow;
-  color: #fff;
-  border: 1px solid #ccc;
-  padding: 2px 10px;
-  border-radius: 15px;
-  text-align: center;
-  width: fit-content;
+  @extend .status-default
+}
+.status-uncompleted {
+  background-color: $blue;
+  @extend .status-default
 }
 
 
