@@ -33,9 +33,9 @@ $default-color:$cyan;
 
   display: grid;
   place-items: center; /* Căn giữa theo cả chiều ngang và chiều dọc */
-  height: 100vh;
+  min-height: 100vh;
   .error-page-image {
-    height: 60%;
+    width: 25%;
   }
 }
 

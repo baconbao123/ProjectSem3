@@ -11,10 +11,9 @@ public class OrderProduct
     [Required]
     public int ProductId { get; set; }
     public int Quantity { get; set; }
-
     public float Profit { get; set; }
     public string BasePrice { get; set; }
-    public string SellPrice { get; set; }
+    public string ProductPrice { get; set; }
 
     public int Version { get; set; }
 

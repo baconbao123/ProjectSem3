@@ -190,6 +190,8 @@ namespace AuthenticationJWT.Controllers
 
             var product = (from item in db.Product
                            join partner in db.CompanyPartner on item.CompanyPartnerId equals partner.Id
+                           join u in db.User on item.UpdatedBy equals u.Id
+                           join u2 in db.User on item.CreatedBy equals u2.Id
                            where item.DeletedAt == null
                                  && item.Status == 1
                                  && item.Id == id
@@ -211,7 +213,8 @@ namespace AuthenticationJWT.Controllers
                                item.Quantity,
                                item.CreatedAt,
                                item.UpdateAt,
-
+                               UpdatedBy = u.Username,
+                               CreatedBy = u2.Username,
                                // Lấy danh sách các danh mục của sản phẩm
                                Categories = (from pc in db.ProductCategory
                                              join cate in db.Category on pc.CategoryId equals cate.Id
@@ -238,7 +241,9 @@ namespace AuthenticationJWT.Controllers
                                                      .Where(pi => pi.ProductId == item.Id)
                                                      .Select(pi => pi.ImagePath)
                                                      .ToList(),
+
                            }).ToList();
+
 
 
 

@@ -10,7 +10,7 @@ public class Orders
     public int UserId { get; set; }
     [Required]
     public int AddressId { get; set; }
-
+    public string Code { get; set; }
     public string BasePrice { get; set; }
     public string TotalPrice { get; set; }
 

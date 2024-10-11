@@ -1,45 +1,22 @@
 @import '../../../../global.scss';
 
 .row-navigate {
-  font-family: 'Poppins', sans-serif !important;
-
   align-items: center;
+  padding: 5px 0;
 
-  // Search
-  .p-inputgroup {
-    padding: 15px 0;
+  .save-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 16px;
 
-    .inputgroup {
-      width: 55%;
-      font-size: 14px;
-
-      &:focus {
-        box-shadow: none;
-        border-color: $prime-color;
-      }
-    }
-
-    // Dropdown
-    .p-dropdown .p-dropdown-label {
-      font-size: 14px;
-      color: rgb(176, 176, 176);
-    }
-
-    .btnSearch {
-      border-top-right-radius: 0.5rem; /* Bo tròn góc trên bên phải */
-      border-bottom-right-radius: 0.5rem; /* Bo tròn góc dưới bên phải */
-      background-color: $prime-color;
-      border-color: $prime-color;
-
-      &:hover {
-        background-color: $btn-bgColor-hover;
-      }
+    .span-sale {
+      color: rgb(255, 204, 0);
     }
   }
 
-  // Menu right
   .navi-right {
-    padding: 15px 0;
     padding-right: 10px;
     display: flex;
     justify-content: flex-end;
@@ -48,8 +25,7 @@
     .navi {
       padding-top: 3px;
       display: flex;
-      flex-direction: row;
-      gap: 20px;
+      gap: 25px;
 
       .url {
         text-decoration: none;
@@ -66,6 +42,10 @@
           cursor: pointer;
           &:hover {
             color: $prime-color;
+          }
+
+          .span-text-navi {
+            font-size: 14px;
           }
         }
       }

@@ -2,6 +2,7 @@
 
 .container-master-account {
   background-color: $prime-bgColor-Pages;
+  padding: 100px 0;
 
   .container-account {
     background-color: white;
@@ -30,9 +31,65 @@
       padding: 20px 0;
       color: gray;
 
-      .col-profile-content {
+      .col-avatar {
         border-right: 1px solid gainsboro;
+        text-align: center;
 
+        .avatar-img {
+          width: 160px;
+          height: 160px;
+        }
+
+        img {
+          height: 100%;
+          width: 100%;
+        }
+
+        .btn-avatar {
+          width: 172px;
+          border-radius: 5px;
+          font-size: 14px;
+          padding: 8px 20px;
+          background-color: $btn-color;
+          border-color: $btn-color;
+
+          &:hover {
+            background-color: $btn-bgColor-hover;
+            border-color: $btn-bgColor-hover;
+          }
+        }
+
+        .btn-logout {
+          width: 172px;
+          border-radius: 5px;
+          font-size: 14px;
+          padding: 7px 20px;
+          background-color: rgb(177, 4, 4);
+          border-color: rgb(199, 3, 3);
+
+          &:hover {
+            background-color: rgb(151, 1, 1);
+            border-color: rgb(199, 3, 3);
+          }
+        }
+
+        .btn-change-pass {
+          border-radius: 5px;
+          font-size: 14px;
+          padding: 7px 20px;
+          background-color: rgb(255, 179, 0);
+          border-color: rgb(255, 179, 0);
+
+          &:hover {
+            background-color: rgb(228, 129, 0);
+            border-color: rgb(228, 129, 0);
+          }
+        }
+      }
+
+      .col-profile-content {
+        display: grid;
+        justify-content: start;
         .profile-group {
           display: flex;
           align-items: center;
@@ -60,46 +117,44 @@
           }
 
           .btn-save {
+            margin-left: 5px;
             border-radius: 5px;
-          }
-        }
-      }
+            font-size: 14px;
+            padding: 7px 20px;
+            background-color: $btn-color;
+            border-color: $btn-color;
 
-      .col-avatar {
-        text-align: center;
-
-        .avatar-img {
-          width: 160px;
-          height: 160px;
-        }
-
-        .btn-avatar {
-          border-radius: 5px;
-          border-color: $prime-color;
-        }
-
-        .avatar-selected {
-          margin-top: 10px;
-
-          img {
-            width: 70px;
-            height: 80px;
-            margin-right: 10px;
-          }
-
-          .col-cancel-img {
-            display: flex;
-            justify-content: end;
-
-            .icon-cancel {
-              &:hover {
-                color: red;
-                cursor: pointer;
-              }
+            &:hover {
+              background-color: $btn-bgColor-hover;
+              border-color: $btn-bgColor-hover;
             }
           }
         }
       }
+    }
+  }
+}
+
+.profile-group-dialog {
+  display: flex;
+  align-items: center;
+
+  p {
+    width: 160px;
+    font-size: 14px;
+  }
+
+  .p-inputtext-sm {
+    width: 100%;
+    font-size: 12px;
+    box-shadow: none;
+
+    &:focus {
+      border-color: $prime-color;
+    }
+
+    &:hover {
+      border-color: $prime-color;
     }
   }
 }

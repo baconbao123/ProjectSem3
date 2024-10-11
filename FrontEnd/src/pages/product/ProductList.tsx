@@ -45,6 +45,7 @@ const ProductList : React.FC = () => {
             {key: "Name", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "Code", label: "Product code", class: "", sortable: true, sortValue: 'none'},
             {key: "CompanyPartnerName", label: "Company partner", class: ""},
+           
             {key: "Quantity", label: "Quantity", class: ""},
             {key: "BasePrice", label: "Base price", class: ""},
             {key: "SellPrice", label: "Sell price", class: ""},
@@ -342,6 +343,7 @@ const ProductList : React.FC = () => {
                                     
                                     const imagePath = item.ProductImages && item.ProductImages.length > 0 ? item.ProductImages[0].ImagePath : null;
                                     const imageThumbPath = item.ImageThumbPath && item.ImageThumbPath.length > 0 ? item.ImageThumbPath : null;
+                                    
                                     return (
                                         <TableRow key={crypto.randomUUID()}>
                                             {
@@ -395,6 +397,11 @@ const ProductList : React.FC = () => {
                                                                 }
                                                             </TableCell>
                                                         )
+                                                    }
+                                                    if(field.key ==" Authors"){
+                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
+
+                                                        </TableCell>
                                                     }
                                                     if (field.key === "Action") {
                                                         return (
