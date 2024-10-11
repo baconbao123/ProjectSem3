@@ -46,11 +46,15 @@ function Category() {
               <Row>
                 {categories?.map((category: any, index: any) => (
                   <div key={index}>
-                    {/* Render each category (Book, Stationery, etc.) */}
                     {category.Level === 0 && (
                       <>
                         {categories
-                          .filter((subCategory: any) => subCategory.Level === 1 && subCategory.ParentId === category.Id)
+                          .filter(
+                            (subCategory: any) =>
+                              subCategory.Level === 1 &&
+                              subCategory.ParentId === category.Id &&
+                              subCategory.Products.length > 0
+                          )
                           .map((subCategory: any, subIndex: any) => (
                             <div key={subIndex} className='block'>
                               <div className='block-wrapper'>

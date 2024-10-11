@@ -2,7 +2,7 @@
 
 .main {
   font-size: 14px;
-  padding-bottom: 50px;
+
   // Banner header
   .banner {
     margin-bottom: 0;
@@ -41,6 +41,7 @@
   .heading-right {
     justify-content: end;
     display: flex;
+
     .title-link {
       text-decoration: none;
       color: gray;
@@ -52,14 +53,25 @@
     }
   }
 
-  // new realease
-  .img-new-realse {
-    width: 100%;
-    height: 80%;
-  }
-
   .block {
     margin-top: 24px;
+  }
+
+  .product-container-card {
+    margin-top: 32px;
+    background-color: #f8f9fa;
+    padding: 12px 0;
+
+    .title {
+      font-weight: 600;
+      color: $prime-color;
+      padding-bottom: 5px;
+    }
+
+    .titleSmall {
+      font-size: 20px;
+      font-weight: 600;
+    }
   }
 
   .row-btn-see-more {
@@ -68,7 +80,7 @@
     justify-content: center;
 
     .url-see-more {
-      width: 107px;
+      width: 117px;
 
       .btn-see-more {
         border-color: $btn-color;

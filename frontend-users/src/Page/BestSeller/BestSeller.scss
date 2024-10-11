@@ -1,0 +1,39 @@
+@import '/global.scss';
+
+.img-release {
+  width: 100%;
+  object-fit: cover;
+  height: 450px;
+}
+
+.container-newrelease-content-master {
+  background-color: #f8f9fa;
+  padding-bottom: 30px;
+
+
+  .all-products {
+    margin-top: 30px;
+    // padding: 16px 20px;
+
+    .all-products-block {
+      border-radius: 10px;
+      background-color: white;
+      padding: 10px 0;
+
+      .category-name-container {
+        text-align: center;
+
+        .category-name {
+          font-size: 20px;
+          color: $prime-color;
+          font-weight: 600;
+        }
+      }
+
+      .row-products {
+        margin-top: 10px;
+        padding: 0 20px;
+      }
+    }
+  }
+}

@@ -19,15 +19,14 @@ import ProductDetail from './Page/ProductDetail/ProductDetail'
 import Checkout from './Page/Checkout/Checkout'
 import FAQ from './Page/FAQ/FAQ'
 import CheckoutCompleted from './Page/Checkout/Compelete/CheckoutCompleted'
-import { useSelector } from 'react-redux'
-import { RootState } from './Store/store'
 import Account from './Page/Accoount/Account'
 import CategoryDetail from './Page/Category/CategoryDetail/CategoryDetail'
 import Category from './Page/Category/Category'
+import AllProducts from './Page/All Products/AllProducts'
+import NewRelease from './Page/NewRelease/NewRelease'
+import BestSeller from './Page/BestSeller/BestSeller'
 
 export const AppRouter: React.FC = () => {
-  const userId = useSelector((state: RootState) => state.auth.userId)
-
   return (
     <BrowserRouter>
       <Routes>
@@ -47,10 +46,13 @@ export const AppRouter: React.FC = () => {
           <Route path='/:category/:genres' element={<CategoryDetail />} />
           <Route path='vouchers' element={<Vouchers />} />
           <Route path='member-benefits' element={<MemberBenefits />} />
-          {userId && <Route path='account/:id' element={<Account />} />}
+          <Route path='all-products' element={<AllProducts />} />
+          <Route path='new-releases' element={<NewRelease />} />
+          <Route path='best-seller' element={<BestSeller />} />
+          <Route path='account' element={<Account />} />
           <Route path='checkout/cart' element={<Cart />} />
-          {userId && <Route path='checkout' element={<Checkout />} />}
-          {userId && <Route path='checkout/compeleted' element={<CheckoutCompleted />} />}
+          <Route path='checkout' element={<Checkout />} />
+          <Route path='checkout/compeleted' element={<CheckoutCompleted />} />
           <Route path='faq' element={<FAQ />} />
           <Route path='products/details/:id' element={<ProductDetail />} />
           <Route path='orders' element={<Order />}>
