@@ -252,3 +252,14 @@ public class SaleRequest
     public int Version { get; set; }
 }
 
+public class OrderRequest()
+{
+    [Required(ErrorMessage = "Action is required.")]
+    [StringLength(50, ErrorMessage = "Action cannot be longer than 50 characters.")]
+    public string action { get; set; }
+    [Required(ErrorMessage = "Status is required.")]
+    [Range(1, 4, ErrorMessage = "Status must be either 0 or 1.")]
+    public int? Status { get; set; }
+    public int Version { get; set; }
+
+}

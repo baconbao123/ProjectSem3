@@ -25,7 +25,9 @@ const TopBar : React.FC = () => {
             Cookies.remove("token");
             Cookies.remove("refreshToken");
             localStorage.clear()
-            navigate('/login')
+            location.reload()
+
+
         }
         catch (e) {
             console.log(e);
