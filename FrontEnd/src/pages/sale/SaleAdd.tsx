@@ -1,4 +1,4 @@
-import { FormControl, Switch, TextField } from "@mui/material";
+import { FormControl, Switch, TextField, Grid, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
   setLoading,
@@ -6,170 +6,144 @@ import {
   setToast,
 } from "@src/Store/Slinces/appSlice.ts";
 import { useDispatch } from "react-redux";
-import $axios, { authorization } from "@src/axios.ts";
+import $axios from "@src/axios.ts";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
+
 interface SaleAdd {
-  loadDataTable: any;
+  loadDataTable: () => void;
   id?: any;
   form: string;
 }
+interface Category {
+  Id: number;
+  Name: string;
+}
+
 const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
-  const [name, setName] = useState("");
-  
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [name, setName] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState<number>(0);
+  const [categoryId, setCategoryId] = useState<number>(-1);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   const [type, setType] = useState<number>(1);
   const [discount, setDiscount] = useState<number>(0);
-  const [status, setStatus] = useState(false);
-  const [error, setError] = useState({});
-  const [item, setItem] = useState({});
+  const [status, setStatus] = useState<boolean>(false);
+  const [error, setError] = useState<Record<string, string[]>>({});
+  const [item, setItem] = useState<any>({});
+  const [categories, setCategories] = useState<Category[]>([]);
+  const dispatch = useDispatch();
   const token = Cookies.get("token");
+
   useEffect(() => {
-    console.log("check props ", form, id);
     if (form === "edit") {
       loadData();
     }
-  }, []);
+    fetchCategories();
+  }, [form, id]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await $axios.get("Category");
+      setCategories(response.data.data.filter((category: Category) => category.Status === 1));
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      dispatch(setToast({ status: "error", message: "Error", data: "Failed to load categories." }));
+    }
+  };
+
   const loadData = () => {
     dispatch(setLoading(true));
-
-    $axios
-      .get(`Sale/${id}`)
+    $axios.get(`Sale/${id}`)
       .then((res) => {
-        if (res.data.data && res.data.data.Sale.Name) {
-          setName(res.data.data.Sale.Name);
-        }
-        if (res.data.data && res.data.data.Sale.Type) {
-          setType(res.data.data.Sale.Type);
-        }
-        if (res.data.data && res.data.data.Sale.StartDate) {
-          setStartDate(
-            dayjs(res.data.data.Sale.StartDate).format("YYYY-MM-DDTHH:mm")
-          );
-        }
-        if (res.data.data && res.data.data.Sale.EndDate) {
-          setEndDate(dayjs(res.data.data.Sale.EndDate).format("YYYY-MM-DDTHH:mm"));
-        }
-        if (res.data.data && res.data.data.Sale.Discount) {
-          setDiscount(res.data.data.Sale.Discount * 100);
-        }
-
-        if (res.data.data && res.data.data.Sale.Status) {
-          setStatus(res.data.data.Sale.Status);
-        }
-        if (res.data.data.Sale) {
-          setItem(res.data.data.Sale);
+        const sale = res.data.data.Sale;
+        if (sale) {
+          setName(sale.Name);
+          setType(sale.Type);
+          setQuantity(sale.Quantity);
+          setCategoryId(sale.CategoryId);
+          setStartDate(dayjs(sale.StartDate).format("YYYY-MM-DDTHH:mm"));
+          setEndDate(dayjs(sale.EndDate).format("YYYY-MM-DDTHH:mm"));
+          setDiscount(sale.Discount * 100);
+          setStatus(sale.Status);
+          setItem(sale);
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error("Failed to load sale data", err);
+        dispatch(setToast({ status: "error", message: "Error", data: "Failed to load sale data." }));
       })
       .finally(() => {
         dispatch(setLoading(false));
       });
   };
-  const dispatch = useDispatch();
+
   const addNew = () => {
     setError({});
+    if (!validateFields()) return;
 
-    const formattedStartDate = startDate
-    ? dayjs(startDate).format("YYYY-MM-DDTHH:mm")
-    : "";
-  const formattedEndDate = endDate
-    ? dayjs(endDate).format("YYYY-MM-DDTHH:mm")
-    : "";
+    const formattedStartDate = startDate ? dayjs(startDate).format("YYYY-MM-DDTHH:mm") : "";
+    const formattedEndDate = endDate ? dayjs(endDate).format("YYYY-MM-DDTHH:mm") : "";
 
     const dataForm = {
       Name: name,
       Discount: discount,
-      StartDate: formattedStartDate || undefined, // Chỉ thêm DateOfBirth nếu có giá trị
-      EndDate: formattedEndDate || undefined, // Chỉ thêm DateOfBirth nếu có giá trị
+      Quantity: quantity,
+      CategoryId: categoryId || null,
+      StartDate: formattedStartDate || undefined,
+      EndDate: formattedEndDate || undefined,
       Type: type,
       Status: status ? 1 : 0,
     };
+
     dispatch(setLoading(true));
-    $axios
-      .post("Sale", dataForm)
-      .then((res) => {
-        console.log("check res", res);
+    $axios.post("Sale", dataForm)
+      .then(() => {
         loadDataTable();
-        dispatch(
-          setToast({
-            status: "success",
-            message: "Success",
-            data: "Add new discount successful",
-          })
-        );
+        dispatch(setToast({ status: "success", message: "Success", data: "Add new discount successful" }));
         dispatch(setShowModal(false));
       })
       .catch((err) => {
-        console.log(err);
-        console.log("check err", err.response.data.Errors);
-        if (err.response.data.Errors) {
-          setError(err.response.data.Errors);
+        console.error("Failed to add new discount", err);
+        if (err.response?.data?.errors) {
+          setError(err.response.data.errors);
         }
-        dispatch(
-          setToast({
-            status: "error",
-            message: "Error",
-            data: "Some thing went wrong",
-          })
-        );
+        dispatch(setToast({ status: "error", message: "Error", data: "Something went wrong" }));
       })
       .finally(() => {
         dispatch(setLoading(false));
       });
   };
+
   const save = () => {
     setError({});
+    if (!validateFields()) return;
+
     const dataForm = {
       Name: name,
       Discount: discount,
-      StartDate: startDate, // Chỉ thêm DateOfBirth nếu có giá trị
-      EndDate: endDate, // Chỉ thêm DateOfBirth nếu có giá trị
+      Quantity: quantity,
+      CategoryId: categoryId,
+      StartDate: startDate,
+      EndDate: endDate,
       Type: type,
       Status: status ? 1 : 0,
       Version: item.Version,
     };
+
     dispatch(setLoading(true));
-    $axios
-      .put(`Sale/${id}`, dataForm)
-      .then((res) => {
-        console.log("check res", res);
+    $axios.put(`Sale/${id}`, dataForm)
+      .then(() => {
         loadDataTable();
-        dispatch(
-          setToast({
-            status: "success",
-            message: "Success",
-            data: "Edit Sale successful",
-          })
-        );
+        dispatch(setToast({ status: "success", message: "Success", data: "Edit Sale successful" }));
         dispatch(setShowModal(false));
       })
       .catch((err) => {
-        console.log(err);
-        console.log("check err");
-        if (err.response.data.Errors) {
-          setError(err.response.data.Errors);
+        console.error("Failed to save sale", err);
+        if (err.response?.data?.errors) {
+          setError(err.response.data.errors);
         }
-        if (err.response.data.type === "reload")
-          dispatch(
-            setToast({
-              status: "error",
-              message: "Error",
-              data: err.response.data.message,
-            })
-          );
-        else {
-          dispatch(
-            setToast({
-              status: "error",
-              message: "Error",
-              data: "Some thing went wrong",
-            })
-          );
-        }
+        dispatch(setToast({ status: "error", message: "Error", data: "Something went wrong" }));
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -178,117 +152,134 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setType(Number(e.target.value));
   };
+  const handleTypeChangeCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategoryId(Number(e.target.value));
+  };
+
+
+  const validateFields = () => {
+    const newError: Record<string, string[]> = {};
+    if (!name) {
+      newError.Name = ["Name is required."];
+    }
+    if (discount > 100) {
+      newError.Discount = ["Discount percentage cannot exceed 100."];
+    }
+    if (quantity < 0) {
+      newError.Quantity = ["Quantity cannot be negative."];
+    }
+    if (!startDate) {
+      newError.StartDate = ["Start date is required."];
+    }
+    if (!endDate) {
+      newError.EndDate = ["End date is required."];
+    } else if (!validateDates()) {
+      newError.EndDate = ["End date cannot be before start date."];
+    }
+    setError(newError);
+    return Object.keys(newError).length === 0; // Return true if no errors
+  };
 
   const validateDates = () => {
     if (startDate && endDate) {
-      const start = dayjs(startDate);
-      const end = dayjs(endDate);
-      if (end.isBefore(start)) {
-        setError((prev) => ({
-          ...prev,
-          EndDate: ["End date cannot be before start date."],
-        }));
-        return false;
-      } else {
-        setError((prev) => {
-          const newError = { ...prev };
-          delete newError.EndDate;
-          return newError;
-        });
-        return true;
-      }
+      return dayjs(endDate).isAfter(dayjs(startDate));
     }
-    return true;
+    return true; // If dates are not provided, assume valid
   };
 
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStartDate(e.target.value);
-    setError((prev) => ({ ...prev, StartDate: [] }));
-    // Re-validate dates
-    setTimeout(() => {
-      validateDates();
-    }, 0);
-  };
-
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEndDate(e.target.value);
-    setError((prev) => ({ ...prev, EndDate: [] }));
-    // Re-validate dates
-    setTimeout(() => {
-      validateDates();
-    }, 0);
-  };
-  const ShowError: React.FC = (key) => {
-    let data = [];
-    if (error[key] && error[key].length > 0) {
-      data = error[key];
-    }
-    return <div className="text-danger mt-1">{data[0] ? data[0] : ""} </div>;
+  const ShowError = (key: string) => {
+    const messages = error[key];
+    return messages ? <div className="text-danger mt-1">{messages[0]}</div> : null;
   };
 
   return (
     <div className="container-fluid">
-      <div className="row  ">
-        <div className="col-6">
-          <div className="">
-            <div className="label-form">
-              Name discount <span className="text-danger">*</span>
-            </div>
-            <input
-              value={name}
-              className="form-control"
-              placeholder="Enter discount"
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          {ShowError("Name")}
-          <div className="">
-            <div className="label-form">
-              Start date and time <span className="text-danger">*</span>
-            </div>
-            <input
-              value={startDate}
-              className="form-control"
-              type="datetime-local"
-              
-              onChange={handleStartDateChange}
-            />
-          </div>
-          {ShowError("StartDate")}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={12}>
+          <TextField
+            value={name || ""}
+            label="Name discount"
+            variant="outlined"
+            fullWidth
+            required
+            onChange={(e) => setName(e.target.value)}
+            error={!!error.Name}
+            helperText={ShowError("Name")}
+          />
+        </Grid>
 
-          <div className="">
-            <div className="label-form">
-              End date and time <span className="text-danger">*</span>
-            </div>
-            <input
-              value={endDate}
-              className="form-control"
-              type="datetime-local"
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Start date and time"
+            type="datetime-local"
+            variant="outlined"
+            fullWidth
+            required
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            error={!!error.StartDate}
+            helperText={ShowError("StartDate")}
+            InputLabelProps={{ shrink: true }} // Ensure label stays above the input
+          />
+        </Grid>
 
-              onChange={handleEndDateChange}
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="End date and time"
+            type="datetime-local"
+            variant="outlined"
+            fullWidth
+            required
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            error={!!error.EndDate}
+            helperText={ShowError("EndDate")}
+            InputLabelProps={{ shrink: true }} 
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            value={quantity}
+            label="Quantity"
+            variant="outlined"
+            type="number"
+            fullWidth
+            required
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            error={!!error.Quantity}
+            helperText={ShowError("Quantity")}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            value={discount}
+            label="Discount Percentage"
+            variant="outlined"
+            type="number"
+            fullWidth
+            required
+            onChange={(e) => setDiscount(Number(e.target.value))}
+            error={!!error.Discount}
+            helperText={ShowError("Discount")}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <FormControl fullWidth>
+            <div className="label-form">Status</div>
+            <Switch
+              checked={status}
+              onChange={(e) => setStatus(e.target.checked)}
+              color="primary"
+              inputProps={{ 'aria-label': 'controlled' }}
             />
-          </div>
-          {ShowError("EndDate")}
+          </FormControl>
+        </Grid>
 
-          <div className="mt-3">
-            <div className="label-form">
-              Status <span className="text-danger">*</span>
-            </div>
-            <div className="form-check form-switch">
-              <input
-                checked={status}
-                onChange={(e) => setStatus(e.target.checked)}
-                className="form-check-input form-switch switch-input"
-                type="checkbox"
-                id="flexSwitchCheckDefault"
-              />
-            </div>
-            {ShowError("Status")}
-          </div>
-        </div>
-        <div className="col-6">
-          {/* Thêm dropdown để chọn Type */}
-          <div className="">
+        <Grid item xs={12} md={6}>
+            {/* Thêm dropdown để chọn Type */}
+            <div className="">
             <div className="label-form">
               Discount Type <span className="text-danger">*</span>
             </div>
@@ -303,48 +294,44 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
             </select>
           </div>
           {ShowError("Type")}
-          <div className="">
+          {type === 3 ? (
             <div className="">
-              <div className="label-form">
-                Discount <span className="text-danger">*</span>
+              {/* Thêm dropdown để chọn Type */}
+              <div className="">
+                <div className="label-form">
+                  Category <span className="text-danger">*</span>
+                </div>
+                <select
+                  value={categoryId}
+                  onChange={handleTypeChangeCategory}
+                  className="form-control"
+                >
+                  <option value="">Select category</option>
+                  {categories.map((category) => (
+                    <option key={category.Id} value={category.Id}>
+                      {category.Name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <input
-                value={discount}
-                type="number"
-                className="form-control"
-                placeholder="Enter discount %"
-                onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-              />
+              {ShowError("Discount")}
             </div>
-            {ShowError("Discount")}
-          </div>
-        </div>
-
-        <div className=" group-btn">
-          <button
-            onClick={() => dispatch(setShowModal(false))}
-            type="button"
-            className="btn btn-outline-secondary"
-          >
-            Cancel
-          </button>
-          {form === "add" ? (
-            <button
-              onClick={() => addNew()}
-              className="btn btn-general ps-3 pe-3"
-            >
-              Add new
-            </button>
           ) : (
-            <button
-              onClick={() => save()}
-              className="btn btn-general ps-3 pe-3"
-            >
-              Save
-            </button>
+            " "
           )}
-        </div>
-      </div>
+        </Grid>
+
+
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={form === "edit" ? save : addNew}
+          >
+            {form === "edit" ? "Edit" : "Add"}
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   );
 };

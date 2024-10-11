@@ -33,7 +33,7 @@ public class OrderServiceImpl : OrderService
             ProductId = productDTO.ProductId,
             Quantity = productDTO.Quantity,
             BasePrice = "0",
-            ProductPrice = "0",
+            SellPrice = "0",
             CreatedAt = DateTime.Now,
             UpdateAt = DateTime.Now
         }).ToList();

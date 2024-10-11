@@ -74,6 +74,13 @@ const SaleList: React.FC = () => {
         sortable: true,
         sortValue: "none",
       },
+      {
+        key: "Quantity",
+        label: "Quantity",
+        class: "",
+        sortable: true,
+        sortValue: "none",
+      },
       { key: "StartDate", label: "Start date", class: "" },
       { key: "EndDate", label: "End date", class: "" },
       { key: "Exp", label: "Discount status", class: "" },
