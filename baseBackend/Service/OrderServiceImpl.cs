@@ -19,9 +19,10 @@ public class OrderServiceImpl : OrderService
             UserId = createOrderDto.UserId,
             AddressId = createOrderDto.AddressId,
             BasePrice = createOrderDto.BasePrice,
-            TotalPrice = createOrderDto.TotalPrice,
+            TotalPrice = "0",
             CreatedAt = DateTime.Now,
-            UpdateAt = DateTime.Now
+            UpdateAt = DateTime.Now,
+            Code = Guid.NewGuid().ToString(),
         };
 
         await context.Orders.AddAsync(order);
@@ -29,10 +30,11 @@ public class OrderServiceImpl : OrderService
 
         var orderProducts = createOrderDto.Products.Select(productDTO => new OrderProduct
         {
+
             OderId = order.Id,
             ProductId = productDTO.ProductId,
             Quantity = productDTO.Quantity,
-            BasePrice = "0",
+            BasePrice = (productDTO.Quantity * productDTO.SellPrice).ToString(),
             ProductPrice = "0",
             CreatedAt = DateTime.Now,
             UpdateAt = DateTime.Now
