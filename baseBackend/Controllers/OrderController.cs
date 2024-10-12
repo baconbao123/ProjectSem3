@@ -89,7 +89,7 @@ public class OrderController : ControllerBase
                                product_name = p.product.Name,
                                product_image = p.product.ImageThumbPath,
                                base_price = p.orderProduct.BasePrice,
-                               sell_price = p.orderProduct.SellPrice,
+                               sell_price = p.orderProduct.ProductPrice,
                                quantity = p.orderProduct.Quantity,
                            })
                            .Distinct() // Ensure products are distinct
@@ -219,7 +219,7 @@ public class OrderController : ControllerBase
                            product_name = p.product.Name,
                            product_image = p.product.ImageThumbPath,
                            base_price = p.orderProduct.BasePrice,
-                           sell_price = p.orderProduct.SellPrice,
+                           sell_price = p.orderProduct.ProductPrice,
                            quantity = p.orderProduct.Quantity,
                        })
                        .Distinct() // Ensure products are distinct
