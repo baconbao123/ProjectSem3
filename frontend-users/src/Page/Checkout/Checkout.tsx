@@ -56,7 +56,8 @@ const Checkout: React.FC = () => {
       Products: checkedProducts.map((product) => ({
         ProductId: product.Id,
         Quantity: product.quantity,
-        SellPrice: product.SellPrice
+        SellPrice: product.SellPrice,
+        BasePrice: product.BasePrice,
       }))
     }
 
