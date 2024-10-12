@@ -276,4 +276,11 @@ public class OrderCancel()
 {
     [Required(ErrorMessage = "Cancel is required.")]
     public string Cancel { get; set; }
+    public int Version { get; set; }
+}
+public class OrderReturn()
+{
+    [Required(ErrorMessage = "Return reason is required.")]
+    public string returnReason { get; set; }
+    public int Version { get; set; }
 }

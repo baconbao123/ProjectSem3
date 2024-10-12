@@ -71,7 +71,7 @@
           position: sticky;
           top: 0;
           th {
-            background-color: $default-color;
+            background-color: var(--default-color);
             color: #fff;
           }
 
@@ -123,7 +123,7 @@
             filter: brightness(90%);
             background-color: rgba(224, 224, 224, 0.5);
             td:first-child {
-              border-left: 3px solid $default-color !important;
+              border-left: 3px solid var(--default-color) !important;
             }
           }
         }

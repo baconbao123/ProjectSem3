@@ -35,7 +35,7 @@ const CategoryList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({Name: '',Code:'', Status: -1});
+    const [filter, setFilter] = useState({Name: '',CategoryCode:'', Status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
@@ -216,7 +216,7 @@ const CategoryList : React.FC = () => {
             setFilter(prev => ({...prev, Name: e.target.value}))
         }
         const setChangeCode = (e: any) => {
-            setFilter(prev => ({...prev, Code: e.target.value}))
+            setFilter(prev => ({...prev, CategoryCode: e.target.value}))
         }
       
         return (
@@ -229,7 +229,7 @@ const CategoryList : React.FC = () => {
                 </div>
                 <div>
                   <input
-                      value={filter.Code}
+                      value={filter.CategoryCode}
                          onChange={e =>  setChangeCode(e)}
                          className='form-control test-position' placeholder="Search code category..."/>
                 </div>

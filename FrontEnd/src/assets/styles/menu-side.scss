@@ -34,7 +34,7 @@
 
     .menu-item {
       &.active {
-        background-color:  rgba($default-color, 0.7);
+        background-color:  rgba(var(--default-color), 0.7);
         color: #fff!important;
       }
       cursor: pointer;
@@ -44,7 +44,7 @@
       justify-content: center;
       align-items: center;
       &:hover {
-        background-color:  rgba($default-color, 0.7);
+        background-color:  var(--default-color);
         color: #fff!important;
       }
       margin-top: 10px;
@@ -54,7 +54,7 @@
       }
     }
     .menu-item.active {
-      background-color:  $default-color;
+      background-color:  var(--default-color);
       color: #fff!important;
     }
   }
@@ -67,7 +67,7 @@
     padding: 10px;
     font-size: 12px;
     &:hover {
-      background-color:  rgba($default-color, 0.7);
+      background-color: var(--default-color);
       color: #fff!important;
     }
   }

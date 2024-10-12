@@ -41,7 +41,7 @@ const ResourceList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({order_code: '', status: -1});
+    const [filter, setFilter] = useState({order_code: '', user_code: '' , status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
@@ -101,16 +101,26 @@ const ResourceList : React.FC = () => {
                     continue
                 }
 
-                if (key === 'status' && item[key] !== value) {
+                if (key === 'status') {
                     if (value === 5) {
                         if (item['cancel']) {
                             return true
                         }
                     }
+
+                    if (item['cancel']) {
+                        return false
+                    }
+                    if (item[key] === value) {
+                        return true
+                    }
                     return false
                 }
 
                 if (key === 'order_code' && !item[key].toLowerCase().includes(value.toLowerCase())) {
+                    return false
+                }
+                if (key === 'user_code' && !item[key].toLowerCase().includes(value.toLowerCase())) {
                     return false
                 }
             }
@@ -162,7 +172,7 @@ const ResourceList : React.FC = () => {
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.id)
-        setComponentTitle("Detail role")
+        setComponentTitle("Detail order")
         setShowComponent('view')
         dispatch(setShowModal(true))
     }
@@ -229,6 +239,9 @@ const ResourceList : React.FC = () => {
         const setChangeName = (e: any) => {
             setFilter(prev => ({...prev, order_code: e.target.value}))
         }
+        const setChanngeUserCode = (e: any) => {
+            setFilter(prev => ({...prev, user_code: e.target.value}))
+        }
         return (
             <div className='search-container'>
                 <div>
@@ -237,21 +250,27 @@ const ResourceList : React.FC = () => {
                         onChange={e => setChangeName(e)}
                         className='form-control test-position' placeholder="Search order code"/>
                 </div>
-            <Select
-                className="search-form width-200 custom-form"
-                value={filter.status}
-                onChange={e => setChangeStatus(e)}
-                displayEmpty
-            >
-                <MenuItem value={-1}>
-                    <span className='placeholder-text'>Select status</span>
-                </MenuItem>
-                <MenuItem value={1}>Order</MenuItem>
-                <MenuItem value={2}>Uncompleted</MenuItem>
-                <MenuItem value={3}>Processing</MenuItem>
-                <MenuItem value={4}>Completed</MenuItem>
-                <MenuItem value={5}>Cancel</MenuItem>
-            </Select>
+                <div>
+                    <input
+                        value={filter.user_code}
+                        onChange={e => setChanngeUserCode(e)}
+                        className='form-control test-position' placeholder="Search user code"/>
+                </div>
+                <Select
+                    className="search-form width-200 custom-form"
+                    value={filter.status}
+                    onChange={e => setChangeStatus(e)}
+                    displayEmpty
+                >
+                    <MenuItem value={-1}>
+                        <span className='placeholder-text'>Select status</span>
+                    </MenuItem>
+                    <MenuItem value={1}>Order</MenuItem>
+                    <MenuItem value={2}>Processing</MenuItem>
+                    <MenuItem value={3}>Completed</MenuItem>
+                    <MenuItem value={4}>Return</MenuItem>
+                    <MenuItem value={5}>Cancel</MenuItem>
+                </Select>
             </div>
         )
     }
@@ -431,7 +450,7 @@ const ResourceList : React.FC = () => {
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
                                                                 <span
-                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') && !item.cancel ? '' : 'btn-disable'}`}
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') && !item.cancel && item.status < 3  ? '' : 'btn-disable'}`}
                                                                     onClick={() => checkPermission('Order', 'update') && !item.cancel && showModalEdit(item)}
                                                                   >
                                                                  <EditOutlinedIcon/>
@@ -518,8 +537,6 @@ const ResourceList : React.FC = () => {
                     }
                     title={componentTitle}
                 />
-
-
 
             <MainLayOut
                 header={header}
