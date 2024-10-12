@@ -13,7 +13,7 @@ public class Orders
     public string Code { get; set; }
     public string BasePrice { get; set; }
     public string TotalPrice { get; set; }
-
+    public string SellPrice { get; set; }
     public int Status { get; set; }
     public string? CancelReason { get; set; }
     public DateTime? CancelAt { get; set; }
