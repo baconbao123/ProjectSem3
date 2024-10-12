@@ -47,6 +47,7 @@ public class OrderController : ControllerBase
                             status = order.Status,
                             code = order.Code,
                             cancel = order.CancelAt,
+                            sell_price = order.SellPrice,
                             product,
                             orderProduct,
                             sale,
@@ -63,7 +64,8 @@ public class OrderController : ControllerBase
                        x.version,
                        x.status,
                        x.cancel,
-                       x.user_code
+                       x.user_code,
+                       x.sell_price
                    })
                    .Select(groupResult => new
                    {
@@ -77,6 +79,7 @@ public class OrderController : ControllerBase
                        order_code = groupResult.Key.code,
                        cancel = groupResult.Key.cancel,
                        user_code = groupResult.Key.user_code,
+                       sell_price = groupResult.Key.sell_price,
                        products = groupResult
                            .Where(p => p.product != null)
                            .Select(p => new
@@ -137,6 +140,7 @@ public class OrderController : ControllerBase
                                cancel = order.CancelAt,
                                version = order.Version,
                                status = order.Status,
+                               sell_price = order.SellPrice,
                                product,
                                orderProduct,
                                sale,
@@ -152,7 +156,8 @@ public class OrderController : ControllerBase
                    x.version,
                    x.status,
                    x.cancel,
-                   x.user_code
+                   x.user_code,
+                   x.sell_price
                })
                .Select(groupResult => new
                {
@@ -163,6 +168,7 @@ public class OrderController : ControllerBase
                    base_price = groupResult.Key.base_price,
                    total_price = groupResult.Key.total_price,
                    version = groupResult.Key.version,
+                   sell_price = groupResult.Key.sell_price,
                    status = groupResult.Key.status,
                    cancel = groupResult.Key.cancel,
                    products = groupResult

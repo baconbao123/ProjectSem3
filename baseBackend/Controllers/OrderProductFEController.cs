@@ -1,5 +1,6 @@
 ﻿using AuthenticationJWT.DTO;
 using AuthenticationJWT.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationJWT.Controllers;
@@ -19,17 +20,19 @@ public class OrderProductFEController : Controller
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> PostOrder([FromBody] CreateOrderDto createOrderDto)
     {
         if (createOrderDto == null)
         {
             return BadRequest("Invalid order data.");
         }
-
-        var order = await orderService.CreateOrderAsync(createOrderDto);
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
+        var order = await orderService.CreateOrderAsync(createOrderDto, userId);
         return CreatedAtAction(nameof(PostOrder), new { id = order.Id }, order);
     }
 
+    [Authorize]
     [HttpGet("GetOrderByUser/{id}")]
     public IActionResult GetOrderByUser(int id)
     {

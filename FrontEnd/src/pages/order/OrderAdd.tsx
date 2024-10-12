@@ -57,6 +57,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             {key: "sell_price", label: "Sell Price", class: "text-center"},
             {key: "sale", label: "Sale", class: "width-100 text-center"},
             {key: "total_price", label: "Total Price", class: "text-center"},
+
         ])
     }, [])
     const loadData = ()  => {
@@ -121,20 +122,10 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
 
     }, [filter, product]);
     const save = () => {
-        let action = ''
-        if (status == '1') {
-            action = 'order'
-        }
-        else if (status == '2') {
-            action = 'processing'
-        }
-        else if (status == '3') {
-            action = 'completed'
-        }
         setError({})
         const dataForm = {
-            action: action,
-            Status: status,
+            action: 'completed',
+            Status: 3,
             Version: item.version
         }
         dispatch(setLoading(true))
@@ -446,21 +437,21 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             {(status !== -1) ? step(status) : ''}
             <div className='col-6'>
             <div className='mt-3 d-flex align-items-center mb-3'>
-                {status > 1 && status < 4 && !item.cancel ? (
-                    <>
-                        <div className='label-form me-3'>Status</div>
-                        <Select
-                            className="search-form width-200 custom-form"
-                            style={{height: '38px'}}
-                            value={status}
-                            onChange={e => setStatus(e.target.value)}
-                        >
-                            <MenuItem value={2}>Processing</MenuItem>
-                            <MenuItem value={3}>Completed</MenuItem>
-                        </Select>
-                    </>
-                ) : ''
-                }
+                {/*{status > 1 && status < 4 && !item.cancel ? (*/}
+                {/*    <>*/}
+                {/*        <div className='label-form me-3'>Status</div>*/}
+                {/*        <Select*/}
+                {/*            className="search-form width-200 custom-form"*/}
+                {/*            style={{height: '38px'}}*/}
+                {/*            value={status}*/}
+                {/*            onChange={e => setStatus(e.target.value)}*/}
+                {/*        >*/}
+                {/*            <MenuItem value={2}>Processing</MenuItem>*/}
+                {/*            <MenuItem value={3}>Completed</MenuItem>*/}
+                {/*        </Select>*/}
+                {/*    </>*/}
+                {/*) : ''*/}
+                {/*}*/}
             </div>
             </div>
             <div className='card p-2'>
@@ -473,13 +464,13 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                 <button onClick={() => dispatch(setShowModal(false))} type="button"
                         className="btn btn-outline-secondary">Close
                 </button>
-                {!item.cancel && status !== 4 && status !== 1? (
-                <button onClick={() => save()} className='btn btn-general ps-3 pe-3'>Save</button>
+                {!item.cancel && status !== 4 && status == 2? (
+                <button onClick={() => save()} className='btn btn-general ps-3 pe-3'>Completed</button>
 
                 ) : ''}
 
                 {!item.cancel && status === 1 ? (
-                    <button onClick={() => confirm()} className='btn btn-general ps-3 pe-3'>Confirm</button>
+                    <button onClick={() => confirm()} className='btn btn-general ps-3 pe-3'>Processing</button>
 
                 ) : ''}
             </div>

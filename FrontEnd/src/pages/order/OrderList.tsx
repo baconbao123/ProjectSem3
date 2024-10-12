@@ -15,6 +15,7 @@ import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
 import RoleAdd from "@pages/role/RoleAdd.tsx";
 import OrderAdd from "@pages/order/OrderAdd.tsx";
+import OrderDetail from "@pages/order/OderDetail.tsx";
 import OrderCancel from "@pages/order/OrderCancel.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
@@ -49,6 +50,7 @@ const ResourceList : React.FC = () => {
             {key: "user_code", label: "User code", class: "width-100", sortable: true, sortValue: 'none'},
             {key: "order_code", label: "Order Code", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "base_price", label: "Base Price", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "sell_price", label: "Sell Price", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "total_price", label: "Total Price", class: "width-300"},
             {key: "status", label: "Status", class: "width-200 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
@@ -142,7 +144,7 @@ const ResourceList : React.FC = () => {
         return  (<OrderAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<RoleDetail id={currentId} />)
+        return  (<OrderDetail id={currentId} />)
     }
     const handleComponentCancel: React.FC = () => {
         return  (<OrderCancel  loadDataTable={loadDataTable} form={'edit'} id={currentId} />)

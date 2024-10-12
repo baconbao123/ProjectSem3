@@ -5,5 +5,5 @@ namespace AuthenticationJWT.Service;
 
 public interface OrderService
 {
-    Task<Orders> CreateOrderAsync(CreateOrderDto createOrderDto);
+    Task<Orders> CreateOrderAsync(CreateOrderDto createOrderDto, string userId);
 }
