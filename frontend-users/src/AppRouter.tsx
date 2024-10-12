@@ -9,7 +9,6 @@ import Cart from './Page/Cart/Cart'
 import Order from './Page/Order/Order'
 import AllOders from './Page/Order/AllOders/AllOders'
 import Completed from './Page/Order/Completed/Completed'
-import Uncompleted from './Page/Order/Uncompleted/Uncompleted'
 import OrderDetails from './Components/CardOrder/OrderActions/OrderDetails/OrderDetails'
 import Canceled from './Page/Order/Canceled/Canceled'
 import OrderCancel from './Components/CardOrder/OrderActions/OrderCancel/OrderCancel'
@@ -25,6 +24,9 @@ import Category from './Page/Category/Category'
 import AllProducts from './Page/All Products/AllProducts'
 import NewRelease from './Page/NewRelease/NewRelease'
 import BestSeller from './Page/BestSeller/BestSeller'
+import Ordered from './Page/Order/Ordered/Ordered'
+import Processing from './Page/Order/Processing/Processing'
+import Returned from './Page/Order/Returned/Returned'
 
 export const AppRouter: React.FC = () => {
   return (
@@ -57,8 +59,10 @@ export const AppRouter: React.FC = () => {
           <Route path='products/details/:id' element={<ProductDetail />} />
           <Route path='orders' element={<Order />}>
             <Route index element={<AllOders />} />
+            <Route path='ordered' element={<Ordered />} />
+            <Route path='processing' element={<Processing />} />
             <Route path='completed' element={<Completed />} />
-            <Route path='uncompleted' element={<Uncompleted />} />
+            <Route path='returned' element={<Returned />} />
             <Route path='canceled' element={<Canceled />} />
             <Route path='details/:id' element={<OrderDetails />} />
             <Route path='canceled/:id' element={<OrderCancel />} />

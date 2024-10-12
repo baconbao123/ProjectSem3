@@ -203,7 +203,6 @@ namespace AuthenticationJWT.Controllers
                                item.Name,
                                item.Description,
                                item.Version,
-                               // Lấy tên đối tác công ty
                                CompanyPartnerName = partner.Name,
                                CompanyPartnerId = partner.Id,
                                item.ImageThumbPath,
@@ -215,7 +214,6 @@ namespace AuthenticationJWT.Controllers
                                item.UpdateAt,
                                UpdatedBy = u.Username,
                                CreatedBy = u2.Username,
-                               // Lấy danh sách các danh mục của sản phẩm
                                Categories = (from pc in db.ProductCategory
                                              join cate in db.Category on pc.CategoryId equals cate.Id
                                              where pc.ProductId == item.Id && cate.Status == 1

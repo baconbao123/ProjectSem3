@@ -48,8 +48,12 @@ const cartSlice = createSlice({
     // add Product to Cart
     addProductToCart: (state, action: PayloadAction<Product>) => {
       if (state.userId) {
-        state.items.push(action.payload)
-        saveCartToLocalStorage(state.userId, state.items)
+        const existingProductIndex = state.items.findIndex((item) => item.Id === action.payload.Id)
+
+        if (existingProductIndex === -1) {
+          state.items.push(action.payload)
+          saveCartToLocalStorage(state.userId, state.items)
+        }
       }
     },
 
