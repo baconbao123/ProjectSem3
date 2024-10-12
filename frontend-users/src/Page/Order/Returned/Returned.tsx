@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Row } from 'react-bootstrap'
 import CardOrder from '../../../Components/CardOrder/CardOrder'
-import './Completed.scss'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoaded, setLoading } from '../../../Store/loadingSlice'
 import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder'
@@ -9,7 +8,7 @@ import NotFoundOrder from '../../../Components/NotFoundOrder/NotFoundOrder'
 import { RootState } from '../../../Store/store'
 import { $axios } from '../../../axios'
 
-const Completed: React.FC = () => {
+const Returned: React.FC = () => {
   const [orders, setOrders] = useState<any | []>([])
   const dispatch = useDispatch()
   const isLoading = useSelector((state: RootState) => state.loading.isLoading)
@@ -20,7 +19,6 @@ const Completed: React.FC = () => {
       try {
         const res = await $axios.get(`OrderProductFE/GetOrderByUser/${userId}`)
         setOrders(res.data.data)
-        console.log(res.data)
       } catch (error) {
         console.log(error)
       } finally {
@@ -44,9 +42,9 @@ const Completed: React.FC = () => {
             ))}
           </>
         ) : orders && orders.length > 0 ? (
-          orders.filter((o: any) => o.status === 3).length > 0 ? (
+          orders.filter((o: any) => o.status === 4).length > 0 ? (
             orders
-              .filter((o: any) => o.status === 3)
+              .filter((o: any) => o.status === 4)
               .map((o: any, index: any) => (
                 <Row className={`row-allOrder ${index > 0 ? 'mt-4' : ''}`} key={index}>
                   <CardOrder key={o.idOrder} order={o} />
@@ -63,4 +61,4 @@ const Completed: React.FC = () => {
   )
 }
 
-export default Completed
+export default Returned

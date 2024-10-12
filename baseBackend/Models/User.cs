@@ -15,7 +15,9 @@ public class User
     public string Password { get; set; }
     [Required]
     public string Email { get; set; }
+    public string? UserCode { get; set; }
     public string? Phone { get; set; }
+
     public string? Avatar { get; set; }
     public string? RefreshToken { get; set; }
 

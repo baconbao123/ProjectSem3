@@ -12,17 +12,21 @@ public class OrderServiceImpl : OrderService
         this.context = context;
     }
 
-    public async Task<Orders> CreateOrderAsync(CreateOrderDto createOrderDto)
+    public async Task<Orders> CreateOrderAsync(CreateOrderDto createOrderDto, string userId)
     {
+        float totalBasePrice = createOrderDto.Products.Sum(p => p.BasePrice * p.Quantity);
+        float totalSellPrice = createOrderDto.Products.Sum(p => p.SellPrice * p.Quantity);
         var order = new Orders
         {
             UserId = createOrderDto.UserId,
             AddressId = createOrderDto.AddressId,
-            BasePrice = createOrderDto.BasePrice,
-            TotalPrice = "0",
+            BasePrice = totalBasePrice.ToString(),
+            TotalPrice = totalSellPrice.ToString(),
+            SellPrice = totalSellPrice.ToString(),
             CreatedAt = DateTime.Now,
             UpdateAt = DateTime.Now,
-            Code = Guid.NewGuid().ToString(),
+            Status = 1,
+            Code = DateTime.Now.ToString("ddHHmmss"),
         };
 
         await context.Orders.AddAsync(order);
@@ -34,8 +38,8 @@ public class OrderServiceImpl : OrderService
             OderId = order.Id,
             ProductId = productDTO.ProductId,
             Quantity = productDTO.Quantity,
-            BasePrice = (productDTO.Quantity * productDTO.SellPrice).ToString(),
-            SellPrice = "0",
+            BasePrice = (productDTO.Quantity * productDTO.BasePrice).ToString(),
+            ProductPrice = productDTO.SellPrice.ToString(),
             CreatedAt = DateTime.Now,
             UpdateAt = DateTime.Now
         }).ToList();

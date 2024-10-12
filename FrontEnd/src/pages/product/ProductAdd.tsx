@@ -28,6 +28,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add"; // Import icon thêm mới
 import "@assets/styles/product.scss";
 import { Email } from "@mui/icons-material";
+import {Image} from "primereact/image";
 
 interface ProductAddProps {
   loadDataTable: () => void;
@@ -147,7 +148,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         // Xử lý hình ảnh hiện có
         if (product[0].ProductImages) {
           setExistingImages(
-            product[0].ProductImages.map((img: any) => img.ImagePath)
+            product[0].ProductImages
           );
         }
         setItem(product[0]);
@@ -917,15 +918,11 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             <div className="d-flex flex-wrap gap-3">
               {existingImages.map((imageUrl, index) => (
                 <div key={index} className="position-relative">
-                  <img
-                    src={`${baseUrl}${imageUrl}`}
+                  <Image
+                    src={`${baseUrl + imageUrl}`}
                     alt={`Existing ${index}`}
                     className="img-thumbnail"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      objectFit: "cover",
-                    }}
+                    height='50px'
                   />
                   {/* Nút xóa hình ảnh hiện có */}
                   <IconButton
@@ -954,7 +951,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           Cancel
         </button>
         <button
-          className="btn btn-primary"
+          className="btn btn-general"
           onClick={form === "edit" ? updateProduct : addNewProduct}
         >
           {form === "edit" ? "Update Product" : "Add Product"}

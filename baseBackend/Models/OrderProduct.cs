@@ -13,7 +13,7 @@ public class OrderProduct
     public int Quantity { get; set; }
     public float Profit { get; set; }
     public string BasePrice { get; set; }
-    public string SellPrice { get; set; }
+    public string ProductPrice { get; set; }
 
     public int Version { get; set; }
 
@@ -21,7 +21,6 @@ public class OrderProduct
     public DateTime? UpdateAt { get; set; }
     public int CreatedBy { get; set; }
     public int UpdatedBy { get; set; }
-
     public DateTime? DeletedAt { get; set; }
 
     public OrderProduct()

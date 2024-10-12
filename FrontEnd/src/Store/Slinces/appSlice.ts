@@ -9,6 +9,8 @@ export const appSlice = createSlice({
         showToast: false,
         showMenu: false,
         showModal: false,
+        showModal2: false,
+        showModal3: false,
         modalComponent: '',
         skeleton: false,
         userName: '',
@@ -16,7 +18,9 @@ export const appSlice = createSlice({
         userPhone: '',
         userId: '',
         permission: [],
-        isInit: false
+        isInit: false,
+        theme: 'lara-light-blue',
+        defaultColor: '#3b82f6'
     },
     reducers: {
        setLoading: (state, action) => {
@@ -34,6 +38,12 @@ export const appSlice = createSlice({
         },
         setShowModal: (state, action) => {
            state.showModal = action.payload;
+        },
+        setShowModal2: (state, action) => {
+            state.showModal2 = action.payload;
+        },
+        setShowModal3: (state, action) => {
+            state.showModal3 = action.payload;
         },
         setModalComponent: (state, action) => {
            state.modalComponent = action.payload;
@@ -55,7 +65,13 @@ export const appSlice = createSlice({
         },
         setIsInit: (state, action) => {
             state.isInit = action.payload;
-        }
+        },
+        setTheme: (state, action) => {
+            state.theme = action.payload;
+        },
+        setDefaultColor: (state, action) => {
+            state.defaultColor = action.payload;
+        },
     },
 });
 
@@ -72,7 +88,12 @@ export const
         setUserId,
         setUserPhone,
         setPermission,
-        setIsInit
+        setIsInit,
+        setShowModal2,
+        setShowModal3,
+        setTheme,
+        setDefaultColor
+
     }
     = appSlice.actions;
 

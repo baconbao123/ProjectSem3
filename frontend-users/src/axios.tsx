@@ -4,7 +4,7 @@ import Cookies from "js-cookie"
 export const $axios = axios.create({
     baseURL: import.meta.env.VITE_API_BACKEND,
     headers: {
-        'Authorization': 'Bearer ' + Cookies.get('token') ? Cookies.get('tooken') : ''
+        'Authorization': 'Bearer ' +( Cookies.get('token') ? Cookies.get('token') : '')
     }
 })
 

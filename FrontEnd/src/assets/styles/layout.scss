@@ -1,41 +1,42 @@
 @import "variable";
 @import "helper";
 
-$default-color:#06b6d4;
-.theme-layout {
-  @import "button";
-  font-size: 12px;
-  .container-content {
-    //margin-top: 4rem;
-    .row .menu-part, .row .content.part {
-      padding: 0;
-    }
-  }
-  .layout-admin {
-    width: 100%;
-    margin-top: 4rem;
 
-  }
-  .default-layout {
-    display: flex;
-    .content-layout {
+  .theme-layout {
+
+    @import "button";
+    font-size: 12px;
+    .container-content {
+      //margin-top: 4rem;
+      .row .menu-part, .row .content.part {
+        padding: 0;
+      }
+    }
+    .layout-admin {
+      width: 100%;
+      margin-top: 4rem;
 
     }
+    .default-layout {
+      display: flex;
+      .content-layout {
+
+      }
+    }
+
+    @import "top-bar";
+    @import "menu-side";
+    @import "main";
+    @import "modal";
   }
 
-  @import "top-bar";
-  @import "menu-side";
-  @import "main";
-  @import "modal";
-}
+  .error-page {
 
-.error-page {
-
-  display: grid;
-  place-items: center; /* Căn giữa theo cả chiều ngang và chiều dọc */
-  min-height: 100vh;
-  .error-page-image {
-    width: 25%;
+    display: grid;
+    place-items: center; /* Căn giữa theo cả chiều ngang và chiều dọc */
+    min-height: 100vh;
+    .error-page-image {
+      width: 25%;
+    }
   }
-}
 
