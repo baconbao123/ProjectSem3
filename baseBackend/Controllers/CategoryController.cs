@@ -55,6 +55,7 @@ public class CategoryController : ControllerBase
             currentCategory.Name,
             currentCategory.Description,
             currentCategory.CategoryCode,
+            currentCategory.imgThumbCategory,
             currentCategory.Status,
             currentCategory.CreatedAt,
             currentCategory.UpdateAt,
@@ -105,10 +106,10 @@ public class CategoryController : ControllerBase
 
         return Ok(new { data = category });
     }
-    // POST api/<CategoryController>
+
     [HttpPost]
     [Authorize]
-    public IActionResult Post([FromBody] List<CategoryRequest> requests)
+    public async Task<IActionResult> Post([FromForm] CategoryRequest request)
     {
         var errorMessages = new List<object>();
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
@@ -118,85 +119,109 @@ public class CategoryController : ControllerBase
             return Unauthorized(new { message = "User ID is not provided." });
         }
 
-        var categories = new List<Category>();
-        var existingCategoryCodes = db.Category.Select(c => c.CategoryCode).ToHashSet(); // Fetch existing codes
-        foreach (var request in requests)
+        // Validate the model
+        if (!TryValidateModel(request))
         {
-            if (!TryValidateModel(request))
+            return BadRequest(new
             {
-                errorMessages.Add(new { message = $"Validation failed for category: {request.Name}", errors = ModelState.Values.SelectMany(v => v.Errors) });
-                continue;
-            }
+                message = $"Validation failed for category: {request.Name}",
+                errors = ModelState.Values.SelectMany(v => v.Errors)
+            });
+        }
 
-            int level = 0; // Default level is 0
-            if (request.ParentId.HasValue)
-            {
-                var parentCategory = db.Category.FirstOrDefault(c => c.Id == request.ParentId);
-                if (parentCategory == null)
-                {
-                    errorMessages.Add(new { message = $"Parent category not found for category: {request.Name}" });
-                    continue;
-                }
-                // Set the level based on the parent category's level
-                level = parentCategory.Level + 1;
-            }
-            var nameCategory = db.Category.FirstOrDefault(c => c.Name == request.Name && c.DeletedAt == null);
+        // Check for existing category name
+        var existingCategory = db.Category.FirstOrDefault(c => c.Name == request.Name && c.DeletedAt == null);
+        if (existingCategory != null)
+        {
+            return BadRequest(new { message = $"Name category '{request.Name}' already exists." });
+        }
 
-            if (nameCategory != null)
-            {
+        // Generate unique category code
+        var existingCategoryCodes = db.Category.Select(c => c.CategoryCode).ToHashSet();
+        string categoryCode;
+        try
+        {
+            categoryCode = GenerateUniqueCategoryCode(request.Name, existingCategoryCodes);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Error generating category code for {request.Name}.", details = ex.Message });
+        }
 
-                errorMessages.Add(new { message = $"Name category {request.Name} already exists." });
-            }
-            if (request.Name == null)
-            {
-                errorMessages.Add(new { message = $"Name category is require." });
-            }
-            string categoryCode;
+        // Handle image upload
+        string imagePath = null;
+        if (request.ImgThumbCategory != null && request.ImgThumbCategory.Length > 0)
+        {
             try
             {
-                categoryCode = GenerateUniqueCategoryCode(request.Name, existingCategoryCodes);
-                existingCategoryCodes.Add(categoryCode); // Add the new code to the set
+                imagePath = await SaveImageAsync(request.ImgThumbCategory);
             }
             catch (Exception ex)
             {
-                errorMessages.Add(new { message = $"Error generating category code for {request.Name}.", details = ex.Message });
-                continue;
+                return BadRequest(new { message = $"Error uploading image for {request.Name}.", details = ex.Message });
             }
+        }
 
-            var category = new Category
+        // Determine category level
+        int level = 0;
+        if (request.ParentId.HasValue)
+        {
+            var parentCategory = db.Category.FirstOrDefault(c => c.Id == request.ParentId);
+            if (parentCategory == null)
             {
-                Name = request.Name,
-                CategoryCode = categoryCode,
-                Description = request.Description,
-                ParentId = request.ParentId,
-                Level = level,
-                Status = request.Status ?? 0,
-                Version = 0,
-                UpdateAt = DateTime.Now,
-                CreatedAt = DateTime.Now,
-                UpdatedBy = int.Parse(userId),
-                CreatedBy = int.Parse(userId)
-            };
-
-            categories.Add(category);
+                return BadRequest(new { message = $"Parent category not found for category: {request.Name}" });
+            }
+            level = parentCategory.Level + 1;
         }
 
-        if (errorMessages.Count > 0)
+        var category = new Category
         {
-            return BadRequest(new { message = "Some categories failed validation or processing.", errors = errorMessages });
+            Name = request.Name,
+            CategoryCode = categoryCode,
+            Description = request.Description,
+            ParentId = request.ParentId,
+            Level = level,
+            Status = request.Status ?? 0,
+            Version = 0,
+            UpdateAt = DateTime.Now,
+            CreatedAt = DateTime.Now,
+            UpdatedBy = int.Parse(userId),
+            CreatedBy = int.Parse(userId),
+            imgThumbCategory = imagePath
+        };
+
+        db.Category.Add(category);
+        db.SaveChanges();
+
+        return Ok(new { data = category });
+    }
+
+    private async Task<string> SaveImageAsync(IFormFile imageFile)
+    {
+        if (imageFile == null || imageFile.Length == 0)
+            throw new ArgumentException("Invalid image file.");
+
+        // Define the path to save the image
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "categories");
+
+        // Ensure the directory exists
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
         }
 
-        if (categories.Count > 0)
+        // Generate a unique file name to prevent conflicts
+        var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        // Save the file to the server
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
         {
-            db.Category.AddRange(categories);
-            db.SaveChanges();
-        }
-        else
-        {
-            return BadRequest(new { message = "No categories to add." });
+            await imageFile.CopyToAsync(fileStream);
         }
 
-        return Ok(new { data = categories });
+        // Return the relative path to be stored in the database
+        return $"/images/categories/{uniqueFileName}";
     }
 
     // Generate a unique category code
@@ -248,7 +273,7 @@ public class CategoryController : ControllerBase
     // PUT api/<CategoryController>/5
     [Authorize]
     [HttpPut("{id}")]
-    public IActionResult Put(int id, [FromBody] CategoryRequest request)
+    public async Task<IActionResult> Put(int id, [FromForm] CategoryRequest request)
     {
         var userId = User.Claims.FirstOrDefault(c => c.Type == "Myapp_User_Id")?.Value;
 
@@ -267,16 +292,19 @@ public class CategoryController : ControllerBase
         {
             return BadRequest(new { message = "Category cannot be its own parent." });
         }
+
         // Nếu danh mục có Level = 0, không cho phép thay đổi ParentId
         if (category.Level == 0 && request.ParentId.HasValue)
         {
             return BadRequest(new { message = "Cannot update a root category to become a subcategory." });
         }
+
         // Kiểm tra xem danh mục cha mới có phải là con của chính nó không
         if (IsSubCategoryOf(category.Id, request.ParentId))
         {
             return BadRequest(new { message = "Cannot make a category a subcategory of its own subcategories." });
         }
+
         if (category.Version != request.Version)
         {
             return BadRequest(new { type = "reload", message = "Data has changed, please reload." });
@@ -309,6 +337,20 @@ public class CategoryController : ControllerBase
             newLevel = parentCategory.Level + 1;
         }
 
+        // Handle image upload
+        if (request.ImgThumbCategory != null && request.ImgThumbCategory.Length > 0)
+        {
+            try
+            {
+                var imagePath = await SaveImageAsync(request.ImgThumbCategory);
+                category.imgThumbCategory = imagePath;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Error uploading image for {request.Name}.", details = ex.Message });
+            }
+        }
+
         // Update category properties
         category.Name = request.Name;
         category.Description = request.Description;
@@ -319,6 +361,7 @@ public class CategoryController : ControllerBase
         category.Version = request.Version + 1;
         category.UpdateAt = DateTime.Now;
         category.UpdatedBy = int.Parse(userId);
+
         // Disable all subcategories before deleting the category
         UpdateSubCategoryStatus(category.Id, category.Status);
         // Update all subcategories with the new level
@@ -329,6 +372,7 @@ public class CategoryController : ControllerBase
 
         return Ok(new { data = category });
     }
+
     // Method to check if a category is a subcategory of another
     private bool IsSubCategoryOf(int categoryId, int? parentId)
     {

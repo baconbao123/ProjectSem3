@@ -91,21 +91,17 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const [newCompanyType, setNewCompanyType] = useState("");
   const [newCompanyStatus, setNewCompanyStatus] = useState<boolean>(true);
   const [addCompanyError, setAddCompanyError] = useState<string>("");
-  // States for Add Category Dialog
-  const [openAddCategory, setOpenAddCategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategoryDescription, setNewCategoryDescription] = useState(""); // Thêm Description
-  const [newCategoryParentId, setNewCategoryParentId] = useState<string>(""); // Thêm ParentId
-  const [newCategoryStatus, setNewCategoryStatus] = useState<boolean>(true); // Thêm Status
-  const [addCategoryError, setAddCategoryError] = useState<string>(""); // Thêm error state
-  const [newCategories, setNewCategories] = useState([
-    {
-      name: "",
-      description: "",
-      parentId: "",
-      status: true,
-    },
-  ]);
+   // States for Add Category Dialog
+   const [openAddCategory, setOpenAddCategory] = useState(false);
+   const [addCategoryError, setAddCategoryError] = useState<string>(""); // Added error state
+   const [newCategory, setNewCategory] = useState({
+    name: "",
+    description: "",
+    parentId: "",
+    status: true,
+    imgFile: null as File | null,
+    imgPreview: "",
+  });
   const [newCompanys, setNewCompanys] = useState([
     {
       name: "",
@@ -497,90 +493,101 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   // ====================End company===================
 
   // Hàm mở và đóng Dialog Category
+ 
+  // Function to open Add Category Dialog
   const handleOpenAddCategory = () => {
-    setNewCategoryName("");
-    setNewCategoryDescription(""); // Reset Description
-    setNewCategoryParentId("");
-    setNewCategoryStatus(true);
+    setNewCategory({
+      name: "",
+      description: "",
+      parentId: "",
+      status: true,
+      imgFile: null,
+      imgPreview: "",
+    });
     setAddCategoryError("");
     setOpenAddCategory(true);
   };
 
+  // Function to close Add Category Dialog
   const handleCloseAddCategory = () => {
     setOpenAddCategory(false);
   };
-  const handleNewCategoryChange = (
-    index: number,
-    field: string,
-    value: any
-  ) => {
-    const updatedCategories = [...newCategories];
-    updatedCategories[index] = { ...updatedCategories[index], [field]: value };
-    setNewCategories(updatedCategories);
+
+  // Handler for new category field changes
+  const handleNewCategoryChange = (field: string, value: any) => {
+    setNewCategory((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  // Hàm thêm một danh mục mới vào danh sách danh mục mới
-  const addNewCategoryField = () => {
-    setNewCategories([
-      ...newCategories,
-      { name: "", description: "", parentId: "", status: true },
-    ]);
+  // Handler to remove Category Image
+  const handleRemoveCategoryImage = () => {
+    setNewCategory((prev) => ({
+      ...prev,
+      imgFile: null,
+      imgPreview: "",
+    }));
   };
 
-  // Hàm xóa một danh mục khỏi danh sách danh mục mới
-  const removeNewCategory = (index: number) => {
-    const updatedCategories = [...newCategories];
-    updatedCategories.splice(index, 1);
-    setNewCategories(updatedCategories);
-  };
-  // Sửa đổi hàm handleAddCategory thành handleAddCategories
-
-  const handleAddCategories = async () => {
-    // Kiểm tra tất cả các danh mục có tên hay không
-    for (let i = 0; i < newCategories.length; i++) {
-      if (!newCategories[i].name.trim()) {
-        setAddCategoryError(`Category name is required for category ${i + 1}`);
-        return;
-      }
+  // Function to add a new category
+  const handleAddCategory = async () => {
+    // Validate that the category name and image are present
+    if (!newCategory.name.trim()) {
+      setAddCategoryError("Category name is required.");
+      return;
     }
 
+   
+
+    dispatch(setLoading(true));
     try {
-      dispatch(setLoading(true));
-      const dataForm = newCategories.map((category) => ({
-        Name: category.name,
-        Description: category.description,
-        ParentId: category.parentId ? parseInt(category.parentId) : null,
-        Status: category.status ? 1 : 0,
-      }));
-      const res = await $axios.post("Category", dataForm); // Gửi danh sách danh mục
+      const formData = new FormData();
+      formData.append("Name", newCategory.name);
+      formData.append("Description", newCategory.description);
+      formData.append(
+        "ParentId",
+        newCategory.parentId ? newCategory.parentId : ""
+      );
+      formData.append("Status", newCategory.status ? "1" : "0");
+      if ( newCategory.imgFile) {
+        formData.append("imgThumbCategory",  newCategory.imgFile);
+      }
 
-      // Giả sử API trả về danh sách các danh mục đã thêm
-      const addedCategories: Category[] = res.data.data;
+      const res = await $axios.post("Category", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      setCategories((prev) => [...prev, ...addedCategories]);
-      setCategoryIds((prev) => [
-        ...prev,
-        ...addedCategories.map((cat) => cat.Id),
-      ]);
+      // Assume API returns the added category
+      const addedCategory: Category = res.data.data;
+
+      setCategories((prev) => [...prev, addedCategory]);
+      setCategoryIds((prev) => [...prev, addedCategory.Id]);
       setOpenAddCategory(false);
-      setNewCategories([
-        { name: "", description: "", parentId: "", status: true },
-      ]); // Reset danh sách danh mục mới
+      setNewCategory({
+        name: "",
+        description: "",
+        parentId: "",
+        status: true,
+        imgFile: null,
+        imgPreview: "",
+      });
+      setAddCategoryError("");
       dispatch(
         setToast({
           status: "success",
-          message: "Categories added successfully",
+          message: "Category added successfully",
         })
       );
     } catch (err: any) {
-      console.error("Failed to add categories", err);
+      console.error("Failed to add category", err);
       setAddCategoryError(
-        err.response?.data?.message || "Failed to add categories"
+        err.response?.data?.message || "Failed to add category"
       );
       dispatch(
         setToast({
           status: "error",
-          message: err.response?.data?.message || "Failed to add categories",
+          message: err.response?.data?.message || "Failed to add category",
         })
       );
     } finally {
@@ -1121,102 +1128,141 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Dialog Thêm Category Mới */}
+     {/* Dialog to Add New Category */}
 
-      <Dialog
+     <Dialog
         open={openAddCategory}
         onClose={handleCloseAddCategory}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Add New Categories</DialogTitle>
+        <DialogTitle>Add New Category</DialogTitle>
         <DialogContent>
-          {newCategories.map((category, index) => (
-            <div
-              key={index}
-              className="category-form mb-4 p-3"
-              style={{ border: "1px solid #ccc", borderRadius: "8px" }}
-            >
-              <h5>Category {index + 1}</h5>
-              <TextField
-                margin="dense"
-                label="Category Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={category.name}
+          <div
+            className="category-form mb-4 p-3"
+            style={{ border: "1px solid #ccc", borderRadius: "8px" }}
+          >
+          
+            <TextField
+              margin="dense"
+              label="Category Name"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={newCategory.name}
+              onChange={(e) => handleNewCategoryChange("name", e.target.value)}
+              required
+         
+            />
+            <TextField
+              margin="dense"
+              label="Description"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={newCategory.description}
+              onChange={(e) =>
+                handleNewCategoryChange("description", e.target.value)
+              }
+            />
+            <FormControl fullWidth margin="dense">
+              <label className="label-form">Parent Category</label>
+              <select
+                value={newCategory.parentId}
                 onChange={(e) =>
-                  handleNewCategoryChange(index, "name", e.target.value)
+                  handleNewCategoryChange("parentId", e.target.value)
                 }
-                required
-              />
-              <TextField
-                margin="dense"
-                label="Description"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={category.description}
-                onChange={(e) =>
-                  handleNewCategoryChange(index, "description", e.target.value)
-                }
-              />
-              <FormControl fullWidth margin="dense">
-                <label className="label-form">Parent Category</label>
-                <select
-                  value={category.parentId}
-                  onChange={(e) =>
-                    handleNewCategoryChange(index, "parentId", e.target.value)
-                  }
-                  className="form-control"
-                >
-                  <option value="">Select Parent Category</option>
-                  {categories
-                    .filter((cat) => cat.Status !== 0 && cat.Id !== id) // Loại bỏ danh mục hiện tại để tránh chọn chính nó làm Category cha
-                    .map((cat) => (
-                      <option key={cat.Id} value={cat.Id}>
-                        {"- ".repeat(cat.Level) + " " + cat.Name}
-                      </option>
-                    ))}
-                </select>
-              </FormControl>
+                className="form-control"
+              >
+                <option value="">Select Parent Category</option>
+                {categories
+                  .filter((cat) => cat.Status !== 0 && cat.Id !== id) // Remove current category to prevent selecting itself
+                  .map((cat) => (
+                    <option key={cat.Id} value={cat.Id}>
+                      {"- ".repeat(cat.Level) + " " + cat.Name}
+                    </option>
+                  ))}
+              </select>
+            </FormControl>
 
-              <FormControl component="fieldset" margin="dense">
-                <label className="label-form">Status</label>
-                <Switch
-                  checked={category.status}
-                  onChange={(e) =>
-                    handleNewCategoryChange(index, "status", e.target.checked)
+            <FormControl component="fieldset" margin="dense">
+              <label className="label-form">Status</label>
+              <Switch
+                checked={newCategory.status}
+                onChange={(e) =>
+                  handleNewCategoryChange("status", e.target.checked)
+                }
+                color="primary"
+              />
+            </FormControl>
+
+            {/* Category Image Upload */}
+            <div className="mt-3">
+              <label className="label-form">
+                Category Image 
+              </label>
+              <FileUpload
+                name="imgThumbCategory"
+                url="" // Not needed because we handle upload manually
+                accept="image/*"
+                maxFileSize={2000000} // 2MB
+                onSelect={(e) => {
+                  if (e.files && e.files.length > 0) {
+                    const file = e.files[0];
+                    setNewCategory({
+                      ...newCategory,
+                      imgFile: file,
+                      imgPreview: URL.createObjectURL(file),
+                    });
                   }
-                  color="primary"
-                />
-              </FormControl>
-              {newCategories.length > 1 && (
-                <IconButton
-                  color="secondary"
-                  onClick={() => removeNewCategory(index)}
-                  style={{ marginTop: 8 }}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                }}
+                onRemove={() => {
+                  setNewCategory({
+                    ...newCategory,
+                    imgFile: null,
+                    imgPreview: "",
+                  });
+                }}
+                customUpload
+                uploadHandler={() => {}}
+              />
+              {newCategory.imgPreview && (
+                <div className="mt-2 position-relative d-inline-block">
+                  <img
+                    src={newCategory.imgPreview}
+                    alt={`Category Image Preview`}
+                    className="img-thumbnail"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <IconButton
+                    size="small"
+                    onClick={handleRemoveCategoryImage}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      backgroundColor: "rgba(255, 255, 255, 0.7)",
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" color="error" />
+                  </IconButton>
+                </div>
+              )}
+              {addCategoryError && (
+                <div className="text-danger mt-2">{addCategoryError}</div>
               )}
             </div>
-          ))}
-
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={addNewCategoryField}
-            startIcon={<AddIcon />}
-          >
-            Add More Category
-          </Button>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseAddCategory} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleAddCategories} color="primary">
+          <Button onClick={handleAddCategory} color="primary">
             Add
           </Button>
         </DialogActions>

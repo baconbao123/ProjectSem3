@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text;
 
 namespace AuthenticationJWT.Controllers
 {
@@ -500,9 +502,10 @@ namespace AuthenticationJWT.Controllers
             string manufacturerCode = manufacturer.Length >= 3 ?
                                       manufacturer.Substring(0, 3).ToUpper() :
                                       manufacturer.ToUpper().PadRight(3, '0');
+            string normalizedString = RemoveDiacritics(manufacturerCode);
 
             string productNumber = productCount.ToString("D2");
-            string productCode = $"{categoryCode}{manufacturerCode}{productNumber}";
+            string productCode = $"{categoryCode}{normalizedString}{productNumber}";
 
             // Ensure the generated code is unique
             while (db.Product.Any(p => p.Code == productCode))
@@ -514,7 +517,32 @@ namespace AuthenticationJWT.Controllers
 
             return productCode;
         }
+        private string RemoveDiacritics(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text;
 
+            // Chuẩn hóa chuỗi về FormD để tách dấu phụ
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            // Chuẩn hóa lại về FormC sau khi loại bỏ dấu phụ
+            var result = stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+
+            // Thay thế các ký tự đặc biệt trong tiếng Việt
+            result = result.Replace('đ', 'd').Replace('Đ', 'D');
+
+            return result;
+        }
 
         [Authorize]
         [HttpPut("{id}")]
