@@ -34,7 +34,10 @@ const MenuSide : React.FC = () => {
                   }
               })}
           </div>
-          <div className='bottom-menu' onClick={() => dispatch(setShowMenu(!showMenu))}>
+          <div className='bottom-menu' onClick={() =>  {
+              dispatch(setShowMenu(!showMenu))
+              localStorage.setItem('showMenu', showMenu ? 0 : 1)
+          }}>
               <MenuOutlinedIcon className={showMenu ? 'd-none' : ''}/>
               <MenuOpenOutlinedIcon className={!showMenu ? 'd-none' : ''} />
           </div>

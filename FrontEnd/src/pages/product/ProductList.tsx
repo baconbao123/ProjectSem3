@@ -71,7 +71,7 @@ const ProductList: React.FC = () => {
   const [componentTitle, setComponentTitle] = useState<string>("Add component");
   const [showComponent, setShowComponent] = useState<ShowComponent>("");
   const [currentId, setCurrentId] = useState<number | null>(null);
-  const [filter, setFilter] = useState<{ Name: string; Status: number }>({
+  const [filter, setFilter] = useState<{ Name: string;Code: string, Status: number }>({
     Name: "",
     Status: -1,
   });
@@ -81,7 +81,7 @@ const ProductList: React.FC = () => {
     dispatch(setLoading(true));
     setField([
       { key: "No", label: "No", class: "th__no" },
-      { key: "ImageThumbPath", label: "Image", class: "" },
+      { key: "ImageThumbPath", label: "Image", class: "text-center" },
       {
         key: "Name",
         label: "Name",
@@ -158,13 +158,10 @@ const ProductList: React.FC = () => {
           return false;
         }
 
-        if (
-          key === "Name" &&
-          !item[key as keyof Product]
-            .toString()
-            .toLowerCase()
-            .includes((value as string).toLowerCase())
-        ) {
+        if (key === "Name" && !item[key as keyof Product].toString().toLowerCase().includes((value as string).toLowerCase())) {
+          return false;
+        }
+        if (key === "Code" && !item[key as keyof Product].toString().toLowerCase().includes((value as string).toLowerCase())) {
           return false;
         }
       }
@@ -309,39 +306,50 @@ const ProductList: React.FC = () => {
     const handleChangeName = (e: any) => {
       setFilter((prev) => ({ ...prev, Name: e.target.value }));
     };
+    const handleChangeCode = (e: any) => {
+      setFilter((prev) => ({ ...prev, Code: e.target.value }));
+    };
     return (
-      <div className="search-container">
-        <div>
-          <input
-            value={filter.Name}
-            onChange={handleChangeName}
-            className="form-control test-position"
-            placeholder="Search name..."
-          />
+        <div className="search-container">
+          <div>
+            <input
+                value={filter.Name}
+                onChange={handleChangeName}
+                className="form-control test-position"
+                placeholder="Search name..."
+            />
+          </div>
+          <div>
+            <input
+                value={filter.Code}
+                onChange={handleChangeCode}
+                className="form-control test-position"
+                placeholder="Search code..."
+            />
+          </div>
+          <Select
+              className="search-form width-200 custom-form"
+              value={filter.Status}
+              onChange={handleChangeStatus}
+              displayEmpty
+          >
+            <MenuItem value={-1}>
+              <span className="placeholder-text">Select status</span>
+            </MenuItem>
+            <MenuItem value={1}>Active</MenuItem>
+            <MenuItem value={0}>Disable</MenuItem>
+          </Select>
         </div>
-        <Select
-          className="search-form width-200 custom-form"
-          value={filter.Status}
-          onChange={handleChangeStatus}
-          displayEmpty
-        >
-          <MenuItem value={-1}>
-            <span className="placeholder-text">Select status</span>
-          </MenuItem>
-          <MenuItem value={1}>Active</MenuItem>
-          <MenuItem value={0}>Disable</MenuItem>
-        </Select>
-      </div>
     );
   };
 
   const button: React.FC = () => {
     return (
-      <div>
-        <button onClick={showModalAdd} className="btn btn-general">
-          Add New
-        </button>
-      </div>
+        <div>
+          <button onClick={showModalAdd} className="btn btn-general">
+            Add New
+          </button>
+        </div>
     );
   };
 
@@ -465,7 +473,7 @@ const ProductList: React.FC = () => {
                                 src={baseUrl + imageThumbPath}
                                 alt={item.Name}
                                 className="image-product"
-                                width="70"
+                                height="70"
                                 preview
                               />
                             ) : (

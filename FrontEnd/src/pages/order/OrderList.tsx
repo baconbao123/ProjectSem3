@@ -15,6 +15,8 @@ import Cookies from "js-cookie";
 import $axios, {authorization} from "@src/axios.ts";
 import RoleAdd from "@pages/role/RoleAdd.tsx";
 import OrderAdd from "@pages/order/OrderAdd.tsx";
+import OrderDetail from "@pages/order/OderDetail.tsx";
+import OrderCancel from "@pages/order/OrderCancel.tsx";
 import Swal from 'sweetalert2'
 import _ from 'lodash';
 import RoleDetail from "@pages/role/RoleDetail.tsx";
@@ -39,14 +41,16 @@ const ResourceList : React.FC = () => {
     const [componentTitle, setComponentTitle] = useState<any>( "Add component");
     const [showComponent, setShowComponent] = useState('')
     const [currentId, setCurrentId] = useState(null);
-    const [filter, setFilter] = useState({order_code: '', status: -1});
+    const [filter, setFilter] = useState({order_code: '', user_code: '' , status: -1});
     useEffect(() => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
             {key: "user_name", label: "User Buy", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "user_code", label: "User code", class: "width-100", sortable: true, sortValue: 'none'},
             {key: "order_code", label: "Order Code", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "base_price", label: "Base Price", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "sell_price", label: "Sell Price", class: "width-300", sortable: true, sortValue: 'none'},
             {key: "total_price", label: "Total Price", class: "width-300"},
             {key: "status", label: "Status", class: "width-200 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
@@ -97,16 +101,26 @@ const ResourceList : React.FC = () => {
                     continue
                 }
 
-                if (key === 'status' && item[key] !== value) {
+                if (key === 'status') {
                     if (value === 5) {
                         if (item['cancel']) {
                             return true
                         }
                     }
+
+                    if (item['cancel']) {
+                        return false
+                    }
+                    if (item[key] === value) {
+                        return true
+                    }
                     return false
                 }
 
                 if (key === 'order_code' && !item[key].toLowerCase().includes(value.toLowerCase())) {
+                    return false
+                }
+                if (key === 'user_code' && !item[key].toLowerCase().includes(value.toLowerCase())) {
                     return false
                 }
             }
@@ -140,7 +154,10 @@ const ResourceList : React.FC = () => {
         return  (<OrderAdd loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const handleComponentDetail: React.FC = () => {
-        return  (<RoleDetail id={currentId} />)
+        return  (<OrderDetail id={currentId} />)
+    }
+    const handleComponentCancel: React.FC = () => {
+        return  (<OrderCancel  loadDataTable={loadDataTable} form={'edit'} id={currentId} />)
     }
     const showModalAdd = () => {
         dispatch(setShowModal(true))
@@ -155,8 +172,14 @@ const ResourceList : React.FC = () => {
     }
     const showModalDetail = (item: any) => {
         setCurrentId(item.id)
-        setComponentTitle("Detail role")
+        setComponentTitle("Detail order")
         setShowComponent('view')
+        dispatch(setShowModal(true))
+    }
+    const showModalCancel = (item: any) => {
+        setCurrentId(item.id)
+        setComponentTitle("Cancel order")
+        setShowComponent('cancel')
         dispatch(setShowModal(true))
     }
     const deleteItem = (item: any) => {
@@ -216,6 +239,9 @@ const ResourceList : React.FC = () => {
         const setChangeName = (e: any) => {
             setFilter(prev => ({...prev, order_code: e.target.value}))
         }
+        const setChanngeUserCode = (e: any) => {
+            setFilter(prev => ({...prev, user_code: e.target.value}))
+        }
         return (
             <div className='search-container'>
                 <div>
@@ -224,21 +250,27 @@ const ResourceList : React.FC = () => {
                         onChange={e => setChangeName(e)}
                         className='form-control test-position' placeholder="Search order code"/>
                 </div>
-            <Select
-                className="search-form width-200 custom-form"
-                value={filter.status}
-                onChange={e => setChangeStatus(e)}
-                displayEmpty
-            >
-                <MenuItem value={-1}>
-                    <span className='placeholder-text'>Select status</span>
-                </MenuItem>
-                <MenuItem value={1}>Order</MenuItem>
-                <MenuItem value={2}>Uncompleted</MenuItem>
-                <MenuItem value={3}>Processing</MenuItem>
-                <MenuItem value={4}>Completed</MenuItem>
-                <MenuItem value={5}>Cancel</MenuItem>
-            </Select>
+                <div>
+                    <input
+                        value={filter.user_code}
+                        onChange={e => setChanngeUserCode(e)}
+                        className='form-control test-position' placeholder="Search user code"/>
+                </div>
+                <Select
+                    className="search-form width-200 custom-form"
+                    value={filter.status}
+                    onChange={e => setChangeStatus(e)}
+                    displayEmpty
+                >
+                    <MenuItem value={-1}>
+                        <span className='placeholder-text'>Select status</span>
+                    </MenuItem>
+                    <MenuItem value={1}>Order</MenuItem>
+                    <MenuItem value={2}>Processing</MenuItem>
+                    <MenuItem value={3}>Completed</MenuItem>
+                    <MenuItem value={4}>Return</MenuItem>
+                    <MenuItem value={5}>Cancel</MenuItem>
+                </Select>
             </div>
         )
     }
@@ -369,7 +401,7 @@ const ResourceList : React.FC = () => {
                                                                     )
                                                                         :item[field.key] === 1 ? (
                                                                 <div className='justify-content-center d-flex'>
-                                                                      <div className='status-disable'>
+                                                                      <div className=' status-uncompleted '>
                                                                           Order
                                                                       </div>
                                                                 </div>
@@ -378,24 +410,24 @@ const ResourceList : React.FC = () => {
                                                                     :
                                                                 item[field.key] === 2 ? (
                                                                         <div className='justify-content-center d-flex'>
-                                                                            <div className='status-uncompleted'>
-                                                                                Uncompleted
+                                                                            <div className='status-process'>
+                                                                                Processing
                                                                             </div>
                                                                         </div>
 
                                                                     ) :
                                                                     item[field.key] === 3 ? (
                                                                             <div className='justify-content-center d-flex'>
-                                                                                <div className='status-process'>
-                                                                                    Processing
+                                                                                <div className='status-success'>
+                                                                                    Completed
                                                                                 </div>
                                                                             </div>
 
                                                                         ) :
                                                                     item[field.key] === 4 ? (
                                                                             <div className='justify-content-center d-flex'>
-                                                                                <div className='status-success'>
-                                                                                    Completed
+                                                                                <div className=' status-disable'>
+                                                                                    Returned
                                                                                 </div>
                                                                             </div>
 
@@ -418,14 +450,14 @@ const ResourceList : React.FC = () => {
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
                                                                 <span
-                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') ? '' : 'btn-disable'}`}
-                                                                    onClick={() => checkPermission('Order', 'update') && showModalEdit(item)}
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') && !item.cancel && item.status < 3  ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Order', 'update') && !item.cancel && showModalEdit(item)}
                                                                   >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
                                                                 <span
-                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') ? '' : 'btn-disable'}`}
-                                                                    onClick={() => checkPermission('Order', 'update') && deleteItem(item)}
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Order', 'update') && !item.cancel  && item.status < 3 ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Order', 'update') && !item.cancel  && item.status <3 && showModalCancel(item)}
                                                                     >
                                                                     <RestoreOutlinedIcon  />
                                                                 </span>
@@ -433,8 +465,10 @@ const ResourceList : React.FC = () => {
                                                         )
                                                     }
                                                     return (
-                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                            {item[field.key] ? item[field.key] : '-'}
+                                                        <TableCell className={field.class + ''} key={crypto.randomUUID()}>
+                                                            {item[field.key] ? item[field.key] : (
+                                                                <div className='text-center'>-</div>
+                                                            )}
                                                         </TableCell>
                                                     )
                                                 })
@@ -498,12 +532,11 @@ const ResourceList : React.FC = () => {
                     content={
                         showComponent === 'add' ? handleComponentAdd :
                         showComponent === 'edit' ? handleComponentEdit :
-                        showComponent === 'view' ? handleComponentDetail : ''
+                        showComponent === 'view' ? handleComponentDetail :
+                        showComponent === 'cancel' ? handleComponentCancel : ''
                     }
                     title={componentTitle}
                 />
-
-
 
             <MainLayOut
                 header={header}

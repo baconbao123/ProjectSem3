@@ -36,7 +36,7 @@ public class UserController : ControllerBase
                         user.Status,
                         user.Version,
                         user.Avatar,
-
+                        user.UserCode,
                     } into groupedUsers
                     select new
                     {
@@ -47,6 +47,7 @@ public class UserController : ControllerBase
                         Status = groupedUsers.Key.Status,
                         Version = groupedUsers.Key.Version,
                         Avatar = groupedUsers.Key.Avatar,
+                        UserCode = groupedUsers.Key.UserCode,
                         Roles = groupedUsers
                                 .Where(r => r != null)
                                 .Select(r => new
@@ -88,6 +89,7 @@ public class UserController : ControllerBase
                         user.UpdatedBy,
                         user.CreatedAt,
                         user.UpdateAt,
+                        user.UserCode
                     } into groupedUsers
                     select new
                     {
@@ -104,6 +106,7 @@ public class UserController : ControllerBase
                         UpdatedBy = groupedUsers.Key.UpdatedBy,
                         CreatedAt = groupedUsers.Key.CreatedAt,
                         UpdatedAt = groupedUsers.Key.UpdateAt,
+                        UserCode = groupedUsers.Key.UserCode,
                         role = groupedUsers
                                 .Where(r => r != null)
                                 .Select(r => new
@@ -174,6 +177,8 @@ public class UserController : ControllerBase
 
         db.User.Add(element);
         db.SaveChanges();
+        element.UserCode = $"ACU-{element.Id}";
+
 
         foreach (var item in roleItems)
         {
