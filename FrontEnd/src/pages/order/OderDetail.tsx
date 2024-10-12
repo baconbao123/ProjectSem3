@@ -45,7 +45,7 @@ const OrderDetail : React.FC<OrderDetail> = ({ id}) => {
     const [filter, setFilter] = useState({product_name: '', product_code: ''});
     useEffect(() => {
         loadData()
-        setField([\
+        setField([
             {key: "no", label: "No", class: "th__no", sortable: false},
             {key: "product_image", label: "Image", class: "text-center"},
             {key: "product_code", label: "Product Code", class: "text-center"},

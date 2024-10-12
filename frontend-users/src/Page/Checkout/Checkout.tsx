@@ -15,7 +15,7 @@ import Swal from 'sweetalert2'
 import RequiredLogin from '../../Components/RequiredLogin/RequiredLogin'
 
 const Checkout: React.FC = () => {
-  const [paymentMethod, setPaymentMethod] = useState<string>('Paypal')
+  const [paymentMethod, setPaymentMethod] = useState<string>('COD')
   const [viewAddAddress, setViewAddAddress] = useState<boolean>(false)
   const [selectedAddress, setSelectedAddress] = useState<any>(null)
   const [checkedProducts, setCheckedProducts] = useState<any[]>([])
@@ -57,15 +57,27 @@ const Checkout: React.FC = () => {
         ProductId: product.Id,
         Quantity: product.quantity,
         SellPrice: product.SellPrice,
-        BasePrice: product.BasePrice,
+        BasePrice: product.BasePrice
       }))
     }
 
-    console.log(orderData);
-    
-
     try {
       await $axios.post('OrderProductFE', orderData)
+
+      const storedProducts = localStorage.getItem(`productChecked_${userId}`)
+      if (storedProducts) {
+        const checkedProductIds = JSON.parse(storedProducts).map((product: any) => product.Id)
+
+        // Retrieve the cart items
+        const cartItems = localStorage.getItem(`cart_${userId}`)
+        if (cartItems) {
+          const updatedCart = JSON.parse(cartItems).filter((item: any) => !checkedProductIds.includes(item.Id))
+
+          localStorage.setItem(`cart_${userId}`, JSON.stringify(updatedCart))
+        }
+
+        localStorage.removeItem(`productChecked_${userId}`)
+      }
 
       await Swal.fire({
         title: 'Order successful!',
@@ -201,23 +213,11 @@ const Checkout: React.FC = () => {
                     type='radio'
                     className='radio'
                     name='paymentMethod'
-                    value='COD'
+                    value={paymentMethod}
                     onChange={(e: any) => setPaymentMethod(e.value)}
                     checked
                   />{' '}
                   &nbsp; &nbsp; <span>Cash On Delivery</span>
-                </div>
-
-                <div className='div-paypal' style={{ marginTop: '10px' }}>
-                  <input
-                    type='radio'
-                    className='radio'
-                    name='paymentMethod'
-                    value='Paypal'
-                    onChange={(e: any) => setPaymentMethod(e.value)}
-                  />{' '}
-                  &nbsp; &nbsp;
-                  <span>Paypal</span>
                 </div>
               </div>
             </Row>

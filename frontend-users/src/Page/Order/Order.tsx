@@ -16,20 +16,25 @@ const Order: React.FC = () => {
         <Container>
           <div className='heading-order'>
             <Row className='row-heading'>
-              <Col lg={3}>
+              <Col lg={2}>
                 <Link to='/orders' className={`url ${location.pathname === '/orders' ? 'active' : ''}`}>
                   <div className='heading-title'>All Orders</div>
                 </Link>
               </Col>
-              <Col lg={3}>
-                <Link
-                  to='/orders/uncompleted'
-                  className={`url ${location.pathname === '/orders/uncompleted' ? 'active' : ''}`}
-                >
-                  <div className='heading-title3'>Uncompleted</div>
+              <Col lg={2}>
+                <Link to='/orders/ordered' className={`url ${location.pathname === '/orders/ordered' ? 'active' : ''}`}>
+                  <div className='heading-title3'>Ordered</div>
                 </Link>
               </Col>
-              <Col lg={3}>
+              <Col lg={2}>
+                <Link
+                  to='/orders/processing'
+                  className={`url ${location.pathname === '/orders/processing' ? 'active' : ''}`}
+                >
+                  <div className='heading-title3'>Processing</div>
+                </Link>
+              </Col>
+              <Col lg={2}>
                 <Link
                   to='/orders/completed'
                   className={`url ${location.pathname === '/orders/completed' ? 'active' : ''}`}
@@ -37,12 +42,20 @@ const Order: React.FC = () => {
                   <div className='heading-title'>Completed</div>
                 </Link>
               </Col>
-              <Col lg={3}>
+              <Col lg={2}>
+                <Link
+                  to='/orders/returned'
+                  className={`url ${location.pathname === '/orders/returned' ? 'active' : ''}`}
+                >
+                  <div className='heading-title'>Returned</div>
+                </Link>
+              </Col>
+              <Col lg={2}>
                 <Link
                   to='/orders/canceled'
                   className={`url ${location.pathname === '/orders/canceled' ? 'active' : ''}`}
                 >
-                  <div className='heading-title'>Cancel</div>
+                  <div className='heading-title'>Canceled</div>
                 </Link>
               </Col>
             </Row>

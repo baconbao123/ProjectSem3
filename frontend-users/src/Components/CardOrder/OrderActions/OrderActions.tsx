@@ -1,126 +1,85 @@
 import { Button } from 'primereact/button'
-import React, { useState } from 'react'
+import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import { Dialog } from 'primereact/dialog'
-import { Rating, RatingChangeEvent } from 'primereact/rating'
-import { Order } from '../../../Interfaces/Order'
-import CardProductOrder from '../../CardProduct/Order/CardProductOrder'
 import './OrderActions.scss'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { calculateTotalOrderPrice } from '../../../utils'
 import { useDispatch } from 'react-redux'
 import { addProductsToCart } from '../../../Store/cartSlice'
+import { $axios } from '../../../axios'
 
 export interface CardOrderProps {
-  order: Order
+  order: {
+    id: number
+    user_id: number
+    user_name: string
+    base_price: string
+    total_price: string
+    code: string
+    status: number
+    products: {
+      product_code: string
+      product_id: number
+      product_name: string
+      product_image: string
+      base_price: string
+      sell_price: string
+      quantity: number
+    }[]
+  }
 }
-
 const OrderActions: React.FC<CardOrderProps> = ({ order }) => {
-  const [rateVisible, setRateVisible] = useState<boolean>(false)
-  const [rating, setRating] = useState<number | undefined>(0)
-  const [isRated, setIsRated] = useState<boolean>(false)
-
   const location = useLocation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const handleBuyAgain = () => {
-    if (order.Products && order.Products.length > 0) {
-      dispatch(addProductsToCart(order.Products))
-      navigate('/checkout/cart')
+  const handleBuyAgain = async () => {
+    if (order.products && order.products.length > 0) {
+      try {
+        const productIds = order.products.map((product) => product.product_id)
+
+        const productPromises = productIds.map((id) => $axios.get(`ProductFE/${id}`))
+        const productResponses = await Promise.all(productPromises)
+
+        const products = productResponses.map((response) => {
+          const productData = response.data.data[0]
+          if (productData) {
+            return productData
+          } else {
+            throw new Error('Invalid product data response')
+          }
+        })
+
+        dispatch(addProductsToCart(products))
+        navigate('/checkout/cart')
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      }
+    } else {
+      console.warn('No products found in order to buy again.')
     }
   }
 
-  const handleConfirmRate = () => {
-    setRateVisible(false)
-    setIsRated(true)
-  }
-
-  const footerContent = (
-    <div>
-      <Button className='bntReturn' label='Return' onClick={() => setRateVisible(false)} /> &nbsp;
-      <Button label='Confirm' onClick={handleConfirmRate} />
-    </div>
-  )
-
-  const handleRating = (e: RatingChangeEvent) => {
-    setRating(e.value !== null ? e.value : undefined)
-  }
+  const totalOrderPrice =
+    order.products && order.products.length > 0 ? calculateTotalOrderPrice(order.products).toFixed(2) : '0.00'
 
   return (
     <Container>
       <Row>
         <Col lg={4} className='col-orderAction'>
           {/* COMPLETED */}
-          {order.status === 'COMPLETED' ? (
-            <>
-              {/* Btn Rate */}
-              <Button
-                label='Rate'
-                className='btn-action-rate'
-                onClick={() => setRateVisible(!rateVisible)}
-                disabled={isRated}
-              />{' '}
-              &nbsp;
-              {rateVisible && (
-                <Dialog
-                  header={`ORDERED ID: ${order.idOrder}`}
-                  visible={rateVisible}
-                  style={{ width: '50vw' }}
-                  onHide={() => {
-                    if (!rateVisible) return
-                    setRateVisible(false)
-                  }}
-                  footer={footerContent}
-                >
-                  <div className='h1Rating'>RATING</div>
-                  <Rating className='large-rating' value={rating} onChange={handleRating} cancel={false} />
-                  {order.Products.map((p) => (
-                    <CardProductOrder product={p} />
-                  ))}
-                </Dialog>
-              )}
-              {/* Btn Buy Again */}
-              <Button label='Buy Again' className='btn-action' onClick={handleBuyAgain} /> &nbsp;
-              {/* More */}
-              {location.pathname !== `/orders/details/${order.idOrder}` && (
-                <Link to={`/orders/details/${order.idOrder}`} className='btn-action-more'>
-                  More
-                </Link>
-              )}
-            </>
-          ) : order.status === 'CANCELED' ? (
-            <>
-              {/* CANCELED */}
-              {/* Btn Buy Again */}
-              <Button label='Buy Again' className='btn-action' onClick={handleBuyAgain} /> &nbsp;
-              {/* More */}
-              {location.pathname !== `/orders/details/${order.idOrder}` && (
-                <Link to={`/orders/canceled/${order.idOrder}`} className='btn-action-more'>
-                  More
-                </Link>
-              )}
-            </>
-          ) : (
-            <>
-              {/* UNCOMPLETED */}
-              {/* Btn Rate */}
-              <Button label='Rate' className='btn-action-rate' disabled /> &nbsp;
-              {/* Btn Buy Again */}
-              <Button label='Buy Again' className='btn-action' onClick={handleBuyAgain} /> &nbsp;
-              {/* More */}
-              {location.pathname !== `/orders/details/${order.idOrder}` && (
-                <Link to={`/orders/details/${order.idOrder}`} className='btn-action-more'>
-                  More
-                </Link>
-              )}
-            </>
+          <Button label='Buy Again' className='btn-action' onClick={handleBuyAgain} /> &nbsp;
+          {/* More */}
+          {location.pathname !== `/orders/details/${order.id}` && (
+            <Link to={`/orders/details/${order.id}`} className='btn-action-more'>
+              More
+            </Link>
           )}
         </Col>
         <Col lg={5}></Col>
         <Col lg={3} className='total-order'>
           Total Order Price: &nbsp;
-          <span style={{ fontWeight: '600' }}>$ {calculateTotalOrderPrice(order.Products).toFixed(2)}</span>
+          <span style={{ fontWeight: '600' }}>$ {totalOrderPrice}</span>
         </Col>
       </Row>
     </Container>

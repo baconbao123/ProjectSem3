@@ -16,7 +16,6 @@ public class OrderServiceImpl : OrderService
     {
         float totalBasePrice = createOrderDto.Products.Sum(p => p.BasePrice * p.Quantity);
         float totalSellPrice = createOrderDto.Products.Sum(p => p.SellPrice * p.Quantity);
-
         var order = new Orders
         {
             UserId = createOrderDto.UserId,
@@ -24,12 +23,10 @@ public class OrderServiceImpl : OrderService
             BasePrice = totalBasePrice.ToString(),
             TotalPrice = totalSellPrice.ToString(),
             SellPrice = totalSellPrice.ToString(),
-            Status = 1,
             CreatedAt = DateTime.Now,
             UpdateAt = DateTime.Now,
+            Status = 1,
             Code = DateTime.Now.ToString("ddHHmmss"),
-            CreatedBy = int.Parse(userId),
-            UpdatedBy = int.Parse(userId)
         };
 
         await context.Orders.AddAsync(order);
@@ -41,12 +38,10 @@ public class OrderServiceImpl : OrderService
             OderId = order.Id,
             ProductId = productDTO.ProductId,
             Quantity = productDTO.Quantity,
-            BasePrice = (productDTO.BasePrice).ToString(),
-            ProductPrice = (productDTO.SellPrice).ToString(),
+            BasePrice = (productDTO.Quantity * productDTO.BasePrice).ToString(),
+            ProductPrice = productDTO.SellPrice.ToString(),
             CreatedAt = DateTime.Now,
-            UpdateAt = DateTime.Now,
-            CreatedBy = int.Parse(userId),
-            UpdatedBy = int.Parse(userId)
+            UpdateAt = DateTime.Now
         }).ToList();
 
         await context.OrderProduct.AddRangeAsync(orderProducts);

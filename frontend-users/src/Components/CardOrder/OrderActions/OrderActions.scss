@@ -5,16 +5,6 @@
   justify-content: start;
   align-items: center;
 
-  .btn-action-rate {
-    border-radius: 5px;
-    background-color: $btn-color;
-    border-color: $btn-color;
-
-    &:hover {
-      background-color: $btn-bgColor-hover;
-      border-color: $btn-bgColor-hover;
-    }
-  }
 
   .btn-action-more,
   .btn-action {
@@ -39,13 +29,6 @@
     border: 1px solid $btn-color;
     font-weight: 600;
   }
-}
-
-.h1Rating {
-  font-size: 30px;
-  font-weight: 600;
-  text-align: center;
-  color: $prime-color;
 }
 
 .total-order {
