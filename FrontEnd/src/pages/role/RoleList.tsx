@@ -391,8 +391,10 @@ const ResourceList : React.FC = () => {
                                                         )
                                                     }
                                                     return (
-                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                            {item[field.key] ? item[field.key] : '-'}
+                                                        <TableCell className={field.class + ''} key={crypto.randomUUID()}>
+                                                            {item[field.key] ? item[field.key] : (
+                                                                <div className='text-center'>-</div>
+                                                            )}
                                                         </TableCell>
                                                     )
                                                 })

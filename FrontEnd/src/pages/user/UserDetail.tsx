@@ -30,6 +30,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({id}) => {
     const [createdByName, setCreatedByName] = useState(null);
     const [updatedBy, setUpdatedBy] = useState(null);
     const [updatedByName, setUpdatedByName] = useState(null);
+    const [userCode, setUserCode] = useState(null);
     const inputFileRef = useRef('');
     useEffect(() => {
         loadDataInit()
@@ -43,6 +44,9 @@ const ResourceAdd : React.FC<ResourceAdd> = ({id}) => {
             }
             if (res.data.data && res.data.data.email) {
                 setEmail(res.data.data.email)
+            }
+            if (res.data.data && res.data.data.UserCode) {
+                setUserCode(res.data.data.UserCode)
             }
             if (res.data.data && res.data.data.status) {
                 setStatus(res.data.data.status)
@@ -112,6 +116,9 @@ const ResourceAdd : React.FC<ResourceAdd> = ({id}) => {
                     <div><span className='label-form me-3 '>Email: </span> <span> {email ? email : '-'}</span></div>
                 </div>
                 <div className='col-6 mb-3'>
+                    <div><span className='label-form me-3 '>User Code: </span> <span> {userCode ? userCode : '-'}</span></div>
+                </div>
+                <div className='col-6 mb-3'>
                     <div><span className='label-form me-3 '>Phone: </span> <span> {phone ? phone : '-'}</span></div>
                 </div>
 
@@ -150,7 +157,9 @@ const ResourceAdd : React.FC<ResourceAdd> = ({id}) => {
                         <span> {updatedAt ? updatedAt : '-'}</span></div>
                 </div>
                 <div className='col-6 mb-3'>
-                    <div><span className='label-form me-3 '>Role: </span> {role.map(item  => (  <Tag key={crypto.randomUUID()} className='me-2' severity="info" value={item.label}></Tag>))}</div>
+                    <div><span className='label-form me-3 '>Role: </span> {role.map(item => (
+                        <Tag key={crypto.randomUUID()} className='me-2' severity="info" value={item.label}></Tag>))}
+                    </div>
                 </div>
 
 

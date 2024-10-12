@@ -271,3 +271,9 @@ public class OrderRequest()
     public int Version { get; set; }
 
 }
+
+public class OrderCancel()
+{
+    [Required(ErrorMessage = "Cancel is required.")]
+    public string Cancel { get; set; }
+}
