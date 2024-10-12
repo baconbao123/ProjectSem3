@@ -1,6 +1,6 @@
 
 import React, {useEffect, useState} from "react";
-import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
+import {setLoading, setShowModal, setShowModal3, setToast} from "@src/Store/Slinces/appSlice.ts";
 import {useDispatch} from "react-redux";
 import $axios from "@src/axios.ts";
 import { InputText } from 'primereact/inputtext';
@@ -32,7 +32,7 @@ const UserForgot : React.FC<UserForgot> = ({loadDataTable, id}) => {
         $axios.put(`User/changePass/${id}`,dataForm).then(res => {
             console.log("check res", res)
             loadDataTable()
-            dispatch(setToast({status: 'success', message: 'Success', data: 'Edit user successful'}))
+            dispatch(setToast({status: 'success', message: 'Success', data: 'Change password successful'}))
             dispatch(setShowModal(false))
             dispatch(setLoading(false))
         })
@@ -89,7 +89,10 @@ const UserForgot : React.FC<UserForgot> = ({loadDataTable, id}) => {
                 </div>
 
             <div className=' group-btn'>
-                <button onClick={() => dispatch(setShowModal(false))} type="button"
+                <button onClick={() => {
+                    dispatch(setShowModal(false))
+                    dispatch(setShowModal3(false))
+                }} type="button"
                         className="btn btn-outline-secondary">Cancel
                 </button>
                         <button onClick={() => save()} className='btn btn-general ps-3 pe-3'>Change password</button>

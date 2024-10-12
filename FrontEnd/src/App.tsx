@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.scss';
 import {RouterProvider} from "react-router-dom";
 import router from "./Router";
@@ -7,12 +7,17 @@ import $axios, {authorization} from "./axios";
 import {useDispatch, useSelector} from 'react-redux';
 // @ts-ignore
 import Cookies from "js-cookie";
+import {setDefaultColor, setShowMenu, setTheme} from "@src/Store/Slinces/appSlice.ts";
 
 
 const Toast = React.lazy(() => import("./components/Toast"))
 const Loading = React.lazy(() => import("./components/Loading"))
 
 const App = () => {
+    const theme = useSelector((state: any) => state.app.theme)
+    const defaultColor = useSelector((state: any) => state.app.defaultColor)
+
+    const dispatch = useDispatch();
     const initUserData = async () => {
         try {
             // Kiểm tra token
@@ -46,14 +51,32 @@ const App = () => {
         if(!localStorage.getItem('id')  && window.location.pathname  !== '/login') {
             initUserData()
         }
+        if (localStorage.getItem('theme')) {
+            dispatch(setTheme(localStorage.getItem('theme')))
+        }
+        if (localStorage.getItem('default-color')) {
+            dispatch(setDefaultColor(localStorage.getItem('default-color')))
+        }
+        if (localStorage.getItem('showMenu')) {
+            dispatch(setShowMenu(localStorage.getItem('showMenu') == 1 ? true : false))
+        }
     }, []);
+    useEffect(() => {
+        document.documentElement.style.setProperty('--default-color', defaultColor);
+
+    }, [defaultColor]);
     return (
         <div className="theme-layout">
-                <RouterProvider  router={router} />
-                <Toast />
-                <Loading />
+            <link
+                id="theme-link"
+                rel="stylesheet"
+                href={`https://cdn.jsdelivr.net/npm/primereact/resources/themes/${theme}/theme.css`}
+            />
+            <RouterProvider router={router}/>
+            <Toast/>
+            <Loading/>
         </div>
     );
 }
 
-export  default App;
+export default App;

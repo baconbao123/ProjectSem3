@@ -61,7 +61,7 @@ public class MyContext : DbContext
          {
              Id = 1,
              Username = "SA",
-             Email = "SA@gmail.com",
+             Email = "SA",
              Password = "$2a$11$JMz6ct.S/0IsA0cr7u22fOyBOHXBG2u68Aa9Q6xgGJQtPoVft/YGK",
              Version = 0,
              Status = 1,

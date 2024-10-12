@@ -1,5 +1,8 @@
 @import "./assets/styles/layout.scss";
 
+:root {
+  --default-color: #{#14b8a6}; /* Ánh xạ biến SCSS sang biến CSS */
+}
 input::-ms-reveal,
 input::-ms-clear {
   display: none;

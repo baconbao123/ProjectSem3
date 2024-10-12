@@ -10,7 +10,7 @@ import {
     TableRow,
     TextField} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
+import {setLoading, setShowModal, setShowModal2, setToast} from "@src/Store/Slinces/appSlice.ts";
 import {useDispatch} from "react-redux";
 import $axios, {authorization} from "@src/axios.ts";
 import Cookies from "js-cookie";
@@ -23,6 +23,7 @@ import KeyboardDoubleArrowRightOutlinedIcon from "@mui/icons-material/KeyboardDo
 import _ from 'lodash';
 import defaultImage from  '@src/images/default.png'
 import { Image } from 'primereact/image';
+import Modal2 from "@pages/common/Modal2.tsx";
 
 interface ResourceAdd {
     loadDataTable: any,
@@ -45,6 +46,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     const [currentPage, setCurrentPage] =  useState(1)
     const [product_name, setProductName] = useState('')
     const [filter, setFilter] = useState({product_name: '', product_code: ''});
+    const [returnReason,setReturnReason]=useState('')
     useEffect(() => {
         loadData()
         setField([
@@ -153,7 +155,43 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
         })
     }
 
+    const returnMethod = () => {
+        dispatch(setShowModal2(true))
+
+    }
+    const confirmReturn = () => {
+        setError({})
+        const dataForm = {
+            returnReason: returnReason,
+            Version: item.version
+        }
+        dispatch(setLoading(true))
+        $axios.put(`Order/return/${id}`,dataForm).then(res => {
+            console.log("check res", res)
+            loadDataTable()
+            dispatch(setToast({status: 'success', message: 'Success', data: 'Order is updated successful'}))
+            dispatch(setShowModal(false))
+            dispatch(setShowModal2(false))
+        })
+            .catch(err => {
+                console.log(err)
+                console.log("check err")
+                if (err.response.data.Errors) {
+                    setError(err.response.data.Errors)
+                }
+                if (err.response.data.type === 'reload') (
+                    dispatch(setToast({status: 'error', message: 'Error', data: err.response.data.message}))
+                )
+                else  {
+                    dispatch(setToast({status: 'error', message: 'Error', data: 'Some thing went wrong'}))
+                }
+            })
+            .finally( () => {
+                dispatch(setLoading(false))
+            })
+    }
     const confirm = () => {
+
         setError({})
         const dataForm = {
             action: 'processing',
@@ -214,6 +252,33 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             <Steps model={stepProcess} activeIndex={index - 1} readOnly={true} className="m-2 pt-4"/>
         )
     }
+    const contenModal = () => {
+        return (
+            <div className='container-fluid'>
+                <div className='row  '>
+                    <div className=''>
+                        <div className=''>
+                            <div className='label-form'>Return reason <span className='text-danger'>*</span></div>
+                            <textarea className="form-control"
+                                      value={returnReason}
+                                      onChange={e => setReturnReason(e.target.value)}
+                                      style={{height: '100px'}} placeholder="Enter return reason"
+                                      id="floatingTextarea2"/>
+
+                        </div>
+                        {ShowError('Cancel')}
+                    </div>
+
+                </div>
+                <div className=' group-btn'>
+                    <button onClick={() => dispatch(setShowModal2(false))} type="button"
+                            className="btn btn-outline-secondary">Cancel
+                    </button>
+                    <button onClick={() => confirmReturn()} className='btn btn-general ps-3 pe-3'>Confirm</button>
+                </div>
+            </div>
+        )
+    }
     const content: React.FC = () => {
         const setOnchangePage = (e: any) => {
             setPerPage(e.target.value);
@@ -222,9 +287,8 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             if (total - itemTo > 0) {
                 setItemFrom(itemTo);
                 if (total - itemTo >= perPage) {
-                    setItemTo(itemTo + perPage );
-                }
-                else if (total - itemTo < perPage) {
+                    setItemTo(itemTo + perPage);
+                } else if (total - itemTo < perPage) {
                     setItemTo(total);
                 }
             }
@@ -233,8 +297,7 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             if (itemFrom - perPage > 0) {
                 setItemTo(itemFrom);
                 setItemFrom(itemFrom - perPage)
-            }
-            else  {
+            } else {
                 setItemFrom(1)
                 setItemTo(perPage)
             }
@@ -244,10 +307,10 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             setItemTo(perPage)
         }
         const setLastPage = () => {
-            setItemFrom(total > perPage  ?  total - perPage :1)
-            setItemTo(total > perPage  ? total: perPage)
+            setItemFrom(total > perPage ? total - perPage : 1)
+            setItemTo(total > perPage ? total : perPage)
         }
-        const getSortValue = (value:string) => {
+        const getSortValue = (value: string) => {
             switch (value.toLowerCase()) {
                 case 'none':
                     return 'ascending'
@@ -434,6 +497,10 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     }
     return (
         <div className='container-fluid'>
+            <Modal2
+                content={contenModal}
+                title={'Return  confirm'}
+            />
             {(status !== -1) ? step(status) : ''}
             <div className='col-6'>
             <div className='mt-3 d-flex align-items-center mb-3'>
@@ -466,6 +533,10 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                 </button>
                 {!item.cancel && status !== 4 && status == 2? (
                 <button onClick={() => save()} className='btn btn-general ps-3 pe-3'>Completed</button>
+
+                ) : ''}
+                {!item.cancel && status !== 4 && status == 2? (
+                    <button onClick={() => returnMethod()} className='btn btn-general ps-3 pe-3'>Returned</button>
 
                 ) : ''}
 

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import './OrderDetails.scss'
 import { Link, useParams } from 'react-router-dom'
 import { Steps } from 'primereact/steps'
-import axios from 'axios'
 import CardProductOrder from '../../../CardProduct/Order/CardProductOrder'
 import OrderActions from '../OrderActions'
+import { $axios } from '../../../../axios'
 
 const OrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -14,17 +14,10 @@ const OrderDetails: React.FC = () => {
   useEffect(() => {
     const fetchOrderId = async () => {
       try {
-        const res = await axios.get(`https://bookstore123.free.mockoapp.net/orders/details/${id}`)
-        setOrderDetail(res.data)
-
-        //  Set the last active step that has a datetime
-        const lastActiveIndex = Object.keys(res.data.statusDetail)
-          .reverse()
-          .findIndex((key) => res.data.statusDetail[key])
-
-        // Active last index has datetime
-        if (lastActiveIndex !== -1) {
-          setActiveTracking(Object.keys(res.data.statusDetail).length - 1 - lastActiveIndex)
+        const res = await $axios.get(`OrderProductFE/GetOrderById/${id}`)
+        setOrderDetail(res.data.data)
+        if (res.data.data.status) {
+          setActiveTracking(res.data.data.status - 1)
         }
       } catch (err) {
         console.log(err)
@@ -34,22 +27,25 @@ const OrderDetails: React.FC = () => {
     fetchOrderId()
   }, [id])
 
+  const steps = [{ label: 'ORDERED' }, { label: 'PROCESSING' }, { label: 'COMPLETED' }, { label: 'RETURNED' }]
+
+  // Filter the steps based on the current order status
+  const filteredSteps = steps.slice(0, orderDetail ? orderDetail.status : 0)
+
+  // Model in tracking
+  const items = filteredSteps.map((step, index) => ({
+    label: step.label,
+    disable: orderDetail && orderDetail.status < index + 1,
+    command: () => handleStepSelect({ index })
+  }))
+
   // Handle Tracking Order
   const handleStepSelect = (e: { index: number }) => {
-    const stepLable = items[e.index]?.label
-    if (orderDetail.statusDetail[stepLable]) {
+    if (orderDetail && orderDetail.status >= e.index + 1) {
+      // Adjust check based on status
       setActiveTracking(e.index)
     }
   }
-
-  // Model in tracking
-  const items = orderDetail?.statusDetail
-    ? Object.keys(orderDetail.statusDetail).map((key, index) => ({
-        label: key,
-        disable: !orderDetail.statusDetail[key],
-        command: () => handleStepSelect({ index })
-      }))
-    : []
 
   return (
     <div className='container-order-detail'>
@@ -63,32 +59,37 @@ const OrderDetails: React.FC = () => {
               </Link>
             </div>
             <div className='heading-right-order'>
-              <span>ORDERED ID: {id}</span> |&nbsp;
-              <span className='status'>{orderDetail.status}</span>
+              <span>ORDER CODE: {orderDetail.code}</span> |&nbsp;
+              <span className='status'>
+                {orderDetail.status === 1
+                  ? 'ORDERED'
+                  : orderDetail.status === 2
+                    ? 'PROCESSING'
+                    : orderDetail.status === 3
+                      ? 'COMPLETED'
+                      : 'RETURNED'}
+              </span>
             </div>
           </div>
 
-          {/* Infor Delivery */}
+          {/* Info Delivery */}
           <div className='container-information'>
             <span className='infor-title'>Store Pickup:</span> &nbsp;{' '}
             <span className='infor-content'>Shradha Bookstore</span> <br />
             <span className='infor-title'>Order ID:</span> &nbsp;{' '}
             <span className='infor-content'>{orderDetail.idOrder}</span> <br />
             <span className='infor-title'>Customer Name:</span> &nbsp;{' '}
-            <span className='infor-content'>{orderDetail.User.name}</span> <br />
-            <span className='infor-title'>Address:</span> &nbsp;{' '}
-            <span className='infor-content'>{orderDetail.User.Address}</span> <br />
-            <span className='infor-title'>Phone:</span> &nbsp;{' '}
-            <span className='infor-content'>{orderDetail.User.Phone}</span>
+            <span className='infor-content'>{orderDetail.user_name}</span> <br />
+            <span className='infor-title'>Address:</span> &nbsp; <span className='infor-content'>NVC</span> <br />
+            <span className='infor-title'>Phone:</span> &nbsp; <span className='infor-content'>01234123</span>
           </div>
 
-          {/* Order Tracking */}
           <div className='container-order-tracking'>
             <Steps model={items} readOnly={false} activeIndex={activeTracking} onSelect={handleStepSelect} />
             {orderDetail && (
               <div className='active-step-info'>
                 <span className='order-label'>{items[activeTracking]?.label}:</span> &nbsp;
-                <span className='order-datetime'>{orderDetail.statusDetail[items[activeTracking]?.label]}</span>
+                <span className='order-datetime'>12:12</span>
               </div>
             )}
           </div>
@@ -108,9 +109,11 @@ const OrderDetails: React.FC = () => {
           {/* Products In Order */}
           <div className='container-products'>
             <span className='title-product'>Products</span> <br />
-            {orderDetail.Products.map((p: any, index: any) => (
-              <CardProductOrder key={index} product={p} />
-            ))}
+            {orderDetail && orderDetail.products && orderDetail.products.length > 0 ? (
+              orderDetail.products.map((p: any, index: any) => <CardProductOrder key={index} product={p} />)
+            ) : (
+              <span>No products available for this order.</span>
+            )}
             <div className='mt-4'>
               <OrderActions order={orderDetail} />
             </div>

@@ -107,6 +107,7 @@ public class CategoryRequest()
     public string Name { get; set; }
     [StringLength(200, ErrorMessage = "Description cannot be longer than 200 characters.")]
     public string? Description { get; set; }
+    public IFormFile? ImgThumbCategory { get; set; }
 
     public int? ParentId { get; set; }
     [Required(ErrorMessage = "Status is required.")]
@@ -276,4 +277,11 @@ public class OrderCancel()
 {
     [Required(ErrorMessage = "Cancel is required.")]
     public string Cancel { get; set; }
+    public int Version { get; set; }
+}
+public class OrderReturn()
+{
+    [Required(ErrorMessage = "Return reason is required.")]
+    public string returnReason { get; set; }
+    public int Version { get; set; }
 }

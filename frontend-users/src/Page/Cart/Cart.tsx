@@ -9,7 +9,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../Store/store'
 import { setUserId } from '../../Store/cartSlice'
 import RequiredLogin from '../../Components/RequiredLogin/RequiredLogin'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 const Cart: React.FC = () => {
   // Voucher
@@ -27,8 +28,7 @@ const Cart: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items)
   const userIdAuth = useSelector((state: RootState) => state.auth.userId)
 
-  // Set Category in Product
-  const uniqueCategory = [...new Set(cartItems.map((item) => item.CategoryName))]
+  const navigate = useNavigate()
 
   const dispatch = useDispatch()
 
@@ -77,19 +77,30 @@ const Cart: React.FC = () => {
     setTotal((prevTotal) => prevTotal + newTotal)
   }
 
+  const handlePaymentClick = () => {
+    if (selectedItems.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Select product',
+        text: 'Please select a product to proceed with payment.',
+        confirmButtonText: 'OK'
+      })
+    } else {
+      navigate('/checkout')
+    }
+  }
+
   // Handle Voucher
   // Fetch voucher By User Id
   useEffect(() => {
     const claimedVouchers = localStorage.getItem(`voucherClaimed_${userIdAuth}`)
     if (claimedVouchers) {
       const parsedVouchers = JSON.parse(claimedVouchers)
-      // Ensure each voucher has a userId
       const vouchersWithUserId = parsedVouchers.map((v: any) => ({
         ...v,
-        userId: userIdAuth // Ensure userId is included
+        userId: userIdAuth
       }))
       setVouchers(vouchersWithUserId)
-      console.log(vouchersWithUserId) // Debug log
     }
   }, [userIdAuth])
 
@@ -198,9 +209,7 @@ const Cart: React.FC = () => {
                       <span className='span-total'>{formattedPrice}</span>
                     </div>
                     <div className='payment'>
-                      <Link to='/checkout'>
-                        <Button label='PAYMENT' className='btn-payment' />
-                      </Link>
+                      <Button label='PAYMENT' className='btn-payment' onClick={handlePaymentClick} />
                     </div>
                   </Row>
                 </div>

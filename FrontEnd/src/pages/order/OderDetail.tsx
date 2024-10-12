@@ -45,7 +45,7 @@ const OrderDetail : React.FC<OrderDetail> = ({ id}) => {
     const [filter, setFilter] = useState({product_name: '', product_code: ''});
     useEffect(() => {
         loadData()
-        setField([\
+        setField([
             {key: "no", label: "No", class: "th__no", sortable: false},
             {key: "product_image", label: "Image", class: "text-center"},
             {key: "product_code", label: "Product Code", class: "text-center"},
@@ -360,25 +360,79 @@ const OrderDetail : React.FC<OrderDetail> = ({ id}) => {
     return (
         <div className='container-fluid'>
             {(status !== -1) ? step(status) : ''}
-            <div className='col-6'>
-                <div className='mt-3 d-flex align-items-center mb-3'>
-                    {/*{status > 1 && status < 4 && !item.cancel ? (*/}
-                    {/*    <>*/}
-                    {/*        <div className='label-form me-3'>Status</div>*/}
-                    {/*        <Select*/}
-                    {/*            className="search-form width-200 custom-form"*/}
-                    {/*            style={{height: '38px'}}*/}
-                    {/*            value={status}*/}
-                    {/*            onChange={e => setStatus(e.target.value)}*/}
-                    {/*        >*/}
-                    {/*            <MenuItem value={2}>Processing</MenuItem>*/}
-                    {/*            <MenuItem value={3}>Completed</MenuItem>*/}
-                    {/*        </Select>*/}
-                    {/*    </>*/}
-                    {/*) : ''*/}
-                    {/*}*/}
+            <div className='card p-2 mb-2'>
+                <div className='row'>
+                    <div className='col-6'>
+                        <span className='label-form'>User: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.user_name ? item.user_name : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>User phone: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.user_phone ? item.user_phone : "-"}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>User code: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.user_code ? item.user_code : "-"}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Order code: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.order_code ? item.order_code : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Created by: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.user_created ? item.user_created : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Updated by: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.user_updated ? item.user_updated : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Created at: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.created_at ? item.created_at : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Updated at: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.updated_at ? item.updated_at : '-'}</span>
+                    </div>
                 </div>
             </div>
+            <div className='card p-2 mb-2'>
+                <div className='row'>
+                    <div className='col-6'>
+                        <span className='label-form'>Address: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.address ? item.address : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Address detail: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.address_detail? item.address_detail : '-'}</span>
+                    </div>
+                    <div className='col-6'>
+                        <span className='label-form'>Phone in address: </span> <span
+                        style={{fontSize: ' 16px;'}}>{item.address_phone ? item.address_phone : '-'}</span>
+                    </div>
+                </div>
+            </div>
+            {item.cancel ? (
+                <div className='card p-2 mb-2'>
+                    <div className='row'>
+                        <div >
+                            <span className='label-form'>Reason canceled    : </span> <span
+                            style={{fontSize: ' 16px;'}} className='text-danger'>{item.reason_cancel ? item.reason_cancel : '-'}</span>
+                        </div>
+                    </div>
+                </div>
+            ) : ''}
+            {item.status === 4 ? (
+                <div className='card p-2 mb-2'>
+                    <div className='row'>
+                        <div >
+                            <span className='label-form'>Reason return    : </span> <span
+                            style={{fontSize: ' 16px;'}} className='text-danger'>{item.reason_return ? item.reason_return : '-'}</span>
+                        </div>
+                    </div>
+                </div>
+            ) : ''}
+
             <div className='card p-2'>
                 {content()}
             </div>

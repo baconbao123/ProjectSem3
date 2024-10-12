@@ -46,20 +46,30 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
   }, [isChecked])
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked
-    setLocalChecked(checked)
-    onCheck(product.Id, checked)
+    const checked = e.target.checked;
+    setLocalChecked(checked);
+    onCheck(product.Id, checked);
 
     // Only update the total based on the checkbox state
     if (checked) {
-      updateTotal(totalPrice)
+      // Check if the product already exists in localStorage
+      const storedProducts = getCheckedProducts();
+      const productExists = storedProducts.some((p: any) => p.Id === product.Id);
+      
+      if (productExists) {
+        // Remove the existing product from localStorage
+        const updatedProducts = storedProducts.filter((p: any) => p.Id !== product.Id);
+        localStorage.setItem(`productChecked_${userId}`, JSON.stringify(updatedProducts));
+      }
+
+      updateTotal(totalPrice);
     } else {
-      updateTotal(-totalPrice)
+      updateTotal(-totalPrice);
     }
 
-    // Update localStorage
-    updateLocalStorage(checked)
-  }
+    // Update localStorage with the new state
+    updateLocalStorage(checked);
+  };
 
   // Retrieve existing checked products from localStorage
   const getCheckedProducts = () => {
@@ -125,7 +135,8 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
         </div>
       </Col>
       <Col lg={5} className='content-books'>
-        <span className='title'>{sliceText(product.Name, 90)}</span>
+        <span className='title'>{product.Name ? sliceText(product.Name, 90) : 'No title available'}</span>
+
         {product.SellPrice ? (
           <div className='card-price'>
             <span className='sell-price'>$ {product.SellPrice}</span>
