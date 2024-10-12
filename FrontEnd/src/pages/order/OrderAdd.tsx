@@ -8,8 +8,7 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    TextField
-} from "@mui/material";
+    TextField} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
 import {useDispatch} from "react-redux";
@@ -56,8 +55,9 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             {key: "quantity", label: "Quantity", class: "text-center"},
             {key: "base_price", label: "Base Price", class: "text-center"},
             {key: "sell_price", label: "Sell Price", class: "text-center"},
-            {key: "sale", label: "Sale", class: "width-100"},
+            {key: "sale", label: "Sale", class: "width-100 text-center"},
             {key: "total_price", label: "Total Price", class: "text-center"},
+
         ])
     }, [])
     const loadData = ()  => {
@@ -122,30 +122,17 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
 
     }, [filter, product]);
     const save = () => {
-        let action = ''
-        if (status == '1') {
-            action = 'order'
-        }
-        else if (status == '2') {
-            action = 'uncompleted'
-        }
-        else if (status == '3') {
-            action = 'processing'
-        }
-        else if (status == '4') {
-            action = 'completed'
-        }
         setError({})
         const dataForm = {
-            action: action,
-            Status: status,
+            action: 'completed',
+            Status: 3,
             Version: item.version
         }
         dispatch(setLoading(true))
         $axios.put(`Order/${id}`,dataForm).then(res => {
             console.log("check res", res)
             loadDataTable()
-            dispatch(setToast({status: 'success', message: 'Success', data: 'Edit resource successful'}))
+            dispatch(setToast({status: 'success', message: 'Success', data: 'Order is updated successful'}))
             dispatch(setShowModal(false))
         })
         .catch(err => {
@@ -166,6 +153,37 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
         })
     }
 
+    const confirm = () => {
+        setError({})
+        const dataForm = {
+            action: 'processing',
+            Status: 2,
+            Version: item.version
+        }
+        dispatch(setLoading(true))
+        $axios.put(`Order/${id}`,dataForm).then(res => {
+            console.log("check res", res)
+            loadDataTable()
+            dispatch(setToast({status: 'success', message: 'Success', data: 'Order is confirmed '}))
+            dispatch(setShowModal(false))
+        })
+            .catch(err => {
+                console.log(err)
+                console.log("check err")
+                if (err.response.data.Errors) {
+                    setError(err.response.data.Errors)
+                }
+                if (err.response.data.type === 'reload') (
+                    dispatch(setToast({status: 'error', message: 'Error', data: err.response.data.message}))
+                )
+                else  {
+                    dispatch(setToast({status: 'error', message: 'Error', data: 'Some thing went wrong'}))
+                }
+            })
+            .finally( () => {
+                dispatch(setLoading(false))
+            })
+    }
     const ShowError: React.FC = (key) => {
         let data = []
         if (error[key] && error[key].length > 0) {
@@ -182,13 +200,13 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             label: "Order",
         },
         {
-            label: "Uncompleted",
-        },
-        {
             label: "Processing",
         },
         {
             label: "Completed",
+        },
+        {
+            label: "Returned",
         }
     ];
     const step = (index: any) => {
@@ -340,9 +358,10 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
                                                         )
                                                     } else {
                                                         return (
-                                                            <TableCell className={field.class}
-                                                                       key={crypto.randomUUID()}>
-                                                                {item[field.key] ? item[field.key] : '-'}
+                                                            <TableCell className={field.class + ''} key={crypto.randomUUID()}>
+                                                                {item[field.key] ? item[field.key] : (
+                                                                    <div className='text-center'>-</div>
+                                                                )}
                                                             </TableCell>
                                                         )
                                                     }
@@ -415,24 +434,25 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
     }
     return (
         <div className='container-fluid'>
-            {status !== -1 ? step(status) : ''}
+            {(status !== -1) ? step(status) : ''}
             <div className='col-6'>
             <div className='mt-3 d-flex align-items-center mb-3'>
-                    <div className='label-form me-3'>Status </div>
-                    <Select
-                        className="search-form width-200 custom-form"
-                        style={{height:'38px'}}
-                        value={status}
-                        onChange={e => setStatus(e.target.value)}
-                    >
-                        <MenuItem value={1}>Order</MenuItem>
-                        <MenuItem value={2}>Uncompleted</MenuItem>
-                        <MenuItem value={3}>Processing</MenuItem>
-                        <MenuItem value={4}>Completed</MenuItem>
-
-                    </Select>
-                    {ShowError('Status')}
-                </div>
+                {/*{status > 1 && status < 4 && !item.cancel ? (*/}
+                {/*    <>*/}
+                {/*        <div className='label-form me-3'>Status</div>*/}
+                {/*        <Select*/}
+                {/*            className="search-form width-200 custom-form"*/}
+                {/*            style={{height: '38px'}}*/}
+                {/*            value={status}*/}
+                {/*            onChange={e => setStatus(e.target.value)}*/}
+                {/*        >*/}
+                {/*            <MenuItem value={2}>Processing</MenuItem>*/}
+                {/*            <MenuItem value={3}>Completed</MenuItem>*/}
+                {/*        </Select>*/}
+                {/*    </>*/}
+                {/*) : ''*/}
+                {/*}*/}
+            </div>
             </div>
             <div className='card p-2'>
                 {content()}
@@ -442,10 +462,17 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             </div>
             <div className=' group-btn'>
                 <button onClick={() => dispatch(setShowModal(false))} type="button"
-                        className="btn btn-outline-secondary">Cancel
+                        className="btn btn-outline-secondary">Close
                 </button>
+                {!item.cancel && status !== 4 && status == 2? (
+                <button onClick={() => save()} className='btn btn-general ps-3 pe-3'>Completed</button>
 
-                <button onClick={() => save()} className='btn btn-general ps-3 pe-3'>Save</button>
+                ) : ''}
+
+                {!item.cancel && status === 1 ? (
+                    <button onClick={() => confirm()} className='btn btn-general ps-3 pe-3'>Processing</button>
+
+                ) : ''}
             </div>
         </div>
     )

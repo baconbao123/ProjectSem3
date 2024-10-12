@@ -1,41 +1,46 @@
 @import "variable";
 @import "helper";
+//@import "primereact/resources/themes/lara-light-cyan/theme.css";
+//$default-color:#06b6d4;
+//@import "primereact/resources/themes/lara-light-blue/theme.css";
+//$default-color: #3b82f6;
+@import "primereact/resources/themes/lara-light-indigo/theme.css";
+$default-color:#6366f1;
+  .theme-layout {
 
-$default-color:#06b6d4;
-.theme-layout {
-  @import "button";
-  font-size: 12px;
-  .container-content {
-    //margin-top: 4rem;
-    .row .menu-part, .row .content.part {
-      padding: 0;
+    @import "button";
+    font-size: 12px;
+    .container-content {
+      //margin-top: 4rem;
+      .row .menu-part, .row .content.part {
+        padding: 0;
+      }
+    }
+    .layout-admin {
+      width: 100%;
+      margin-top: 4rem;
+
+    }
+    .default-layout {
+      display: flex;
+      .content-layout {
+
+      }
+    }
+
+    @import "top-bar";
+    @import "menu-side";
+    @import "main";
+    @import "modal";
+  }
+
+  .error-page {
+
+    display: grid;
+    place-items: center; /* Căn giữa theo cả chiều ngang và chiều dọc */
+    min-height: 100vh;
+    .error-page-image {
+      width: 25%;
     }
   }
-  .layout-admin {
-    width: 100%;
-    margin-top: 4rem;
-
-  }
-  .default-layout {
-    display: flex;
-    .content-layout {
-
-    }
-  }
-
-  @import "top-bar";
-  @import "menu-side";
-  @import "main";
-  @import "modal";
-}
-
-.error-page {
-
-  display: grid;
-  place-items: center; /* Căn giữa theo cả chiều ngang và chiều dọc */
-  min-height: 100vh;
-  .error-page-image {
-    width: 25%;
-  }
-}
 

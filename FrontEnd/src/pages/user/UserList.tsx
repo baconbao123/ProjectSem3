@@ -44,11 +44,12 @@ const ResourceList : React.FC = () => {
         dispatch(setLoading(true))
         setField([
             {key: "No", label: "No", class: "th__no"},
-            {key: "Avatar", label: "Avatar", class: "width-200 th__action "},
-            {key: "UserName", label: "Name", class: "width-300", sortable: true, sortValue: 'none'},
+            {key: "Avatar", label: "Avatar", class: "width-100 th__action "},
+            {key: "UserName", label: "Name", class: "width-200", sortable: true, sortValue: 'none'},
+            {key: "UserCode", label: "User Code", class: "width-100",  sortable: true, sortValue: 'none'},
             {key: "Email", label: "Email", class: "width-300",  sortable: true, sortValue: 'none'},
             {key: "Roles", label: "Roles", class: "width-200 ", sortable: true, sortValue: 'none'},
-            {key: "Phone", label: "Phone", class: "width-200 ", sortable: true, sortValue: 'none'},
+            {key: "Phone", label: "Phone", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Status", label: "Status", class: "width-100 ", sortable: true, sortValue: 'none'},
             {key: "Action", label: "Action", class: "width-200 th__action "},
         ])
@@ -396,7 +397,7 @@ const ResourceList : React.FC = () => {
                                                     if (field.key === "Avatar") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <Image src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + item[field.key]} height="100"  onError={(e) => {
+                                                                <Image src={import.meta.env.VITE_BASE_URL_LOCALHOST + 'images/' + item[field.key]} height="70"  onError={(e) => {
                                                                     e.target.onerror = null; // Ngăn lặp lại lỗi
                                                                     e.target.src = defaultImage; // Đổi sang ảnh mặc định
                                                                 }} preview />
@@ -435,8 +436,10 @@ const ResourceList : React.FC = () => {
                                                         )
                                                     }
                                                     return (
-                                                        <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                        {item[field.key] ? item[field.key] : '-'}
+                                                        <TableCell className={field.class + ''} key={crypto.randomUUID()}>
+                                                        {item[field.key] ? item[field.key] : (
+                                                            <div className='text-center'>-</div>
+                                                        )}
                                                         </TableCell>
                                                     )
                                                 })
