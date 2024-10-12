@@ -107,6 +107,7 @@ public class CategoryRequest()
     public string Name { get; set; }
     [StringLength(200, ErrorMessage = "Description cannot be longer than 200 characters.")]
     public string? Description { get; set; }
+    public IFormFile? ImgThumbCategory { get; set; }
 
     public int? ParentId { get; set; }
     [Required(ErrorMessage = "Status is required.")]
