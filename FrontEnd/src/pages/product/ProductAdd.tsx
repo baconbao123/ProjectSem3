@@ -10,7 +10,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Tooltip
+  Tooltip,
+  MenuItem,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import {
@@ -28,7 +29,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add"; // Import icon thêm mới
 import "@assets/styles/product.scss";
 import { Email } from "@mui/icons-material";
-import {Image} from "primereact/image";
+import { Image } from "primereact/image";
 
 interface ProductAddProps {
   loadDataTable: () => void;
@@ -91,10 +92,10 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const [newCompanyType, setNewCompanyType] = useState("");
   const [newCompanyStatus, setNewCompanyStatus] = useState<boolean>(true);
   const [addCompanyError, setAddCompanyError] = useState<string>("");
-   // States for Add Category Dialog
-   const [openAddCategory, setOpenAddCategory] = useState(false);
-   const [addCategoryError, setAddCategoryError] = useState<string>(""); // Added error state
-   const [newCategory, setNewCategory] = useState({
+  // States for Add Category Dialog
+  const [openAddCategory, setOpenAddCategory] = useState(false);
+  const [addCategoryError, setAddCategoryError] = useState<string>(""); // Added error state
+  const [newCategory, setNewCategory] = useState({
     name: "",
     description: "",
     parentId: "",
@@ -147,9 +148,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
         // Xử lý hình ảnh hiện có
         if (product[0].ProductImages) {
-          setExistingImages(
-            product[0].ProductImages
-          );
+          setExistingImages(product[0].ProductImages);
         }
         setItem(product[0]);
         if (currentForm === "copy") {
@@ -171,9 +170,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     try {
       const [authorsResponse, categoriesResponse, companiesResponse] =
         await Promise.all([
-          $axios.get("Author"),
-          $axios.get("Category"),
-          $axios.get("CompanyPartner"),
+          $axios.get("/Common/author"),
+          $axios.get("/Common/category"),
+          $axios.get("/Common/companypartner"),
         ]);
 
       setAuthors(
@@ -227,8 +226,76 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     setExistingImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  // Validate
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string[]> = {};
+  
+    // Kiểm tra Name
+    if (!name.trim()) {
+      newErrors.Name = ["Name product is required."];
+    }
+  
+    // Kiểm tra Status (thường là checkbox nên có giá trị mặc định)
+  
+    // Kiểm tra Company Partner
+    if (companyPartnerId === 0) {
+      newErrors.CompanyPartnerId = ["Please select a Company Partner."];
+    }
+  
+    // Kiểm tra Base Price
+    if (basePrice <= 0) {
+      newErrors.BasePrice = ["Base Price must be greater than 0."];
+    }
+  
+    // Kiểm tra Sell Price
+    if (sellPrice <= 0) {
+      newErrors.SellPrice = ["Sell Price must be greater than 0."];
+    }
+  
+    // Kiểm tra Quantity
+    if (quantity < 0) {
+      newErrors.Quantity = ["Quantity cannot be negative."];
+    }
+  
+    // Kiểm tra Authors
+    if (authorIds.length === 0) {
+      newErrors.AuthorIds = ["At least one author must be selected."];
+    }
+  
+    // Kiểm tra Categories
+    if (categoryIds.length === 0) {
+      newErrors.CategoryIds = ["At least one category must be selected."];
+    }
+  
+    // Kiểm tra Description
+    if (!description.trim()) {
+      newErrors.Description = ["Description is required."];
+    }
+  
+    // Kiểm tra Thumbnail
+    if (!selectedThumb) {
+      newErrors.ImageThumbPath = ["Thumbnail image is required."];
+    }
+  
+    // Kiểm tra Product Images
+    if (productImages.length === 0) {
+      newErrors.ProductImages = ["At least one product image is required."];
+    }
+  
+    setError(newErrors);
+  
+    // Trả về true nếu không có lỗi
+    return Object.keys(newErrors).length === 0;
+  };
   const addNewProduct = async () => {
-    setError({});
+   
+   setError({});
+
+   // Validate form
+   if (!validateForm()) {
+    
+     return;
+   }
     const formData = new FormData();
     formData.append("Name", name);
     formData.append("Description", description);
@@ -278,6 +345,12 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
   const updateProduct = async () => {
     setError({});
+
+  // Validate form
+  if (!validateForm()) {
+   
+    return;
+  }
     const formData = new FormData();
     formData.append("Name", name);
     formData.append("Description", description);
@@ -356,7 +429,10 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     }
     try {
       dispatch(setLoading(true));
-      const res = await $axios.post("Author", { Name: newAuthorName , Status: 1 });
+      const res = await $axios.post("Author", {
+        Name: newAuthorName,
+        Status: 1,
+      });
       const newAuthor: Author = res.data.data;
       setAuthors((prev) => [...prev, newAuthor]);
       setAuthorIds((prev) => [...prev, newAuthor.Id]);
@@ -427,7 +503,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           errors.push(`Valid email is required for category ${index + 1}`);
         }
         if (!company.phone || company.phone.length !== 10) {
-          errors.push(`Phone number must be exactly 10 digits for category ${index + 1}`);
+          errors.push(
+            `Phone number must be exactly 10 digits for category ${index + 1}`
+          );
         }
         if (!company.address.trim()) {
           errors.push(`Address is required for category ${index + 1}`);
@@ -493,7 +571,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   // ====================End company===================
 
   // Hàm mở và đóng Dialog Category
- 
+
   // Function to open Add Category Dialog
   const handleOpenAddCategory = () => {
     setNewCategory({
@@ -538,8 +616,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
       return;
     }
 
-   
-
     dispatch(setLoading(true));
     try {
       const formData = new FormData();
@@ -550,8 +626,8 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         newCategory.parentId ? newCategory.parentId : ""
       );
       formData.append("Status", newCategory.status ? "1" : "0");
-      if ( newCategory.imgFile) {
-        formData.append("imgThumbCategory",  newCategory.imgFile);
+      if (newCategory.imgFile) {
+        formData.append("imgThumbCategory", newCategory.imgFile);
       }
 
       const res = await $axios.post("Category", formData, {
@@ -599,19 +675,18 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     <div className="container-fluid">
       <div className="row">
         {/* Các trường Name, Status */}
-        <div className="col-6">
-          <div>
-            <label className="label-form">
-              Name <span className="text-danger">*</span>
-            </label>
-            <input
-              value={name}
-              className="form-control"
-              placeholder="Enter name"
-              onChange={(e) => setName(e.target.value)}
-            />
-            <ShowError key="Name" />
-          </div>
+        <div className="col-6 mt-2">
+          <TextField
+            value={name}
+            type="text"
+            onChange={(e) => setName(e.target.value)}
+            className="form-control"
+            label="Name product"
+            variant="outlined"
+            error={!!error.Name}
+            helperText={error.Name ? error.Name[0] : ""}
+            required
+          />
           <div className="mt-3">
             <label className="label-form">
               Status <span className="text-danger">*</span>
@@ -620,7 +695,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
               <input
                 checked={status}
                 onChange={(e) => setStatus(e.target.checked)}
-                className="form-check-input form-switch switch-input"
+                className={`form-check-input form-switch switch-input ${
+                  error.Status ? "is-invalid" : ""
+                }`}
                 type="checkbox"
                 id="statusSwitch"
               />
@@ -629,39 +706,37 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </div>
         </div>
         <div className="col-6"></div>
-        {/* Các trường BasePrice, SellPrice, Quantity, Company Partner */}
-        <div className="col-6">
-          <label className="label-form">
-            Company Partner <span className="text-danger">*</span>
-          </label>
-          <div className="d-flex align-items-center">
-            <select
-              value={companyPartnerId}
-              onChange={handleCompanyChange}
-              className="form-control"
-            >
-              <option value={0}>--Select--</option>
-              {companies.map((company) => (
-                <option key={company.Id} value={company.Id}>
-                  {company.Name}
-                </option>
-              ))}
-            </select>
-            <IconButton
-              color="primary"
-              onClick={handleOpenAddCompany}
-              style={{ marginLeft: 8 }}
-            >
-              <AddIcon />
-            </IconButton>
-          </div>
-          <ShowError key="CompanyPartnerId" />
+        {/* Các trường Company Partner */}
+        <div className="col-6 mt-3">
+          <TextField
+            select
+            label="Company Partner"
+            value={companyPartnerId}
+            onChange={handleCompanyChange}
+            variant="outlined"
+            fullWidth
+            error={!!error.CompanyPartnerId}
+            helperText={error.CompanyPartnerId ? error.CompanyPartnerId[0] : ""}
+            required
+          >
+            <MenuItem value={0}>--Select--</MenuItem>
+            {companies.map((company) => (
+              <MenuItem key={company.Id} value={company.Id}>
+                {company.Name}
+              </MenuItem>
+            ))}
+          </TextField>
+          {/* <IconButton
+            color="primary"
+            onClick={handleOpenAddCompany}
+            style={{ marginLeft: 8 }}
+          >
+            <AddIcon />
+          </IconButton> */}
         </div>
         <div className="col-6"></div>
+        {/* Các trường BasePrice, SellPrice, Quantity */}
         <div className="col-4 mt-3">
-          <label className="label-form">
-            Base Price <span className="text-danger">*</span>
-          </label>
           <TextField
             value={basePrice}
             type="number"
@@ -669,14 +744,13 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="form-control"
             label="Base Price"
             variant="outlined"
+            error={!!error.BasePrice}
+            helperText={error.BasePrice ? error.BasePrice[0] : ""}
+            required
           />
-          <ShowError key="BasePrice" />
         </div>
 
         <div className="col-4 mt-3">
-          <label className="label-form">
-            Sell Price <span className="text-danger">*</span>
-          </label>
           <TextField
             value={sellPrice}
             type="number"
@@ -684,14 +758,13 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="form-control"
             label="Sell Price"
             variant="outlined"
+            error={!!error.SellPrice}
+            helperText={error.SellPrice ? error.SellPrice[0] : ""}
+            required
           />
-          <ShowError key="SellPrice" />
         </div>
 
         <div className="col-4 mt-3">
-          <label className="label-form">
-            Quantity <span className="text-danger">*</span>
-          </label>
           <TextField
             value={quantity}
             type="number"
@@ -699,10 +772,13 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="form-control"
             label="Quantity"
             variant="outlined"
+            error={!!error.Quantity}
+            helperText={error.Quantity ? error.Quantity[0] : ""}
+            required
           />
-          <ShowError key="Quantity" />
         </div>
 
+        {/* Trường Description */}
         <div className="col-12">
           <div>
             <label className="label-form">
@@ -719,61 +795,61 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </div>
         </div>
 
-        {/* Các trường Author và Category */}
+        {/* Các trường Author */}
         <div className="col-6 mt-3">
-      <label className="label-form">
-        Authors <span className="text-danger">*</span>
-      </label>
-      <div className="d-flex align-items-center">
-        <Autocomplete
-          multiple
-          options={authors}
-          value={authors.filter((author) => authorIds.includes(author.Id))}
-          getOptionLabel={(option) => {
-            const index = authors.findIndex((a) => a.Id === option.Id) + 1;
-            return `${option.Name} (Author #${index})`; // Thêm số thứ tự tác giả
-          }}
-          onChange={(event, newValue) => {
-            setAuthorIds(newValue.map((author) => author.Id));
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              placeholder="Select authors"
+          <label className="label-form">
+            Authors <span className="text-danger">*</span>
+          </label>
+          <div className="d-flex align-items-center">
+            <Autocomplete
+              multiple
+              options={authors}
+              value={authors.filter((author) => authorIds.includes(author.Id))}
+              getOptionLabel={(option) => {
+                const index = authors.findIndex((a) => a.Id === option.Id) + 1;
+                return `${option.Name} (Author #${index})`; // Thêm số thứ tự tác giả
+              }}
+              onChange={(event, newValue) => {
+                setAuthorIds(newValue.map((author) => author.Id));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  placeholder="Select authors"
+                  error={!!error.AuthorIds}
+                  helperText={error.AuthorIds ? error.AuthorIds[0] : ""}
+                />
+              )}
+              renderOption={(props, option) => (
+                <Tooltip
+                  title={
+                    <div>
+                      <strong>Id:</strong> {option.Id} <br />
+                      <strong>Name author:</strong> {option.Name} <br />
+                      <strong>Biology:</strong> {option.Biography} <br />
+                    </div>
+                  }
+                  arrow
+                >
+                  <li {...props}>{option.Name}</li>
+                </Tooltip>
+              )}
+              style={{ flexGrow: 1 }}
             />
-          )}
-          renderOption={(props, option) => (
-            <Tooltip 
-              title={
-                <div>
-                   <strong>Id:</strong> {option.Id} <br />
-                  <strong>Name author:</strong> {option.Name} <br />
-                  <strong>Biology:</strong> {option.Biography} <br />
-
-                </div>
-              }
-              arrow
+            {/* <IconButton
+              color="primary"
+              onClick={handleOpenAddAuthor}
+              style={{ marginLeft: 8 }}
             >
-              <li {...props}>
-                {option.Name} 
-              </li>
-            </Tooltip>
-          )}
-          style={{ flexGrow: 1 }}
-        />
-        <IconButton
-          color="primary"
-          onClick={handleOpenAddAuthor}
-          style={{ marginLeft: 8 }}
-        >
-          <AddIcon />
-        </IconButton>
-      </div>
-      {/* Hiển thị lỗi nếu có */}
-      <ShowError key="AuthorIds" />
-    </div>
+              <AddIcon />
+            </IconButton> */}
+          </div>
+          {/* Hiển thị lỗi nếu có */}
+          <ShowError key="AuthorIds" />
+        </div>
 
+        {/* Các trường Category */}
         <div className="col-6 mt-3">
           <label className="label-form">
             Categories <span className="text-danger">*</span>
@@ -796,17 +872,33 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
                   {...params}
                   variant="outlined"
                   placeholder="Select categories"
+                  error={!!error.CategoryIds}
+                  helperText={error.CategoryIds ? error.CategoryIds[0] : ""}
                 />
+              )}
+              renderOption={(props, option) => (
+                <Tooltip
+                  title={
+                    <div>
+                      <strong>Id:</strong> {option.Id} <br />
+                      <strong>Name category:</strong> {option.Name} <br />
+                      {/* Bạn có thể thêm các thông tin khác nếu cần */}
+                    </div>
+                  }
+                  arrow
+                >
+                  <li {...props}>{option.Name}</li>
+                </Tooltip>
               )}
               style={{ flexGrow: 1 }}
             />
-            <IconButton
+            {/* <IconButton
               color="primary"
               onClick={handleOpenAddCategory}
               style={{ marginLeft: 8 }}
             >
               <AddIcon />
-            </IconButton>
+            </IconButton> */}
           </div>
           <ShowError key="CategoryIds" />
         </div>
@@ -922,7 +1014,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
                     src={`${baseUrl + imageUrl}`}
                     alt={`Existing ${index}`}
                     className="img-thumbnail"
-                    height='50px'
+                    height="50px"
                   />
                   {/* Nút xóa hình ảnh hiện có */}
                   <IconButton
@@ -943,6 +1035,8 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </div>
         )}
       </div>
+
+      {/* Modal Footer */}
       <div className="modal-footer mt-3 d-flex gap-3">
         <button
           className="btn btn-secondary"
@@ -953,10 +1047,12 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         <button
           className="btn btn-general"
           onClick={form === "edit" ? updateProduct : addNewProduct}
+           
         >
           {form === "edit" ? "Update Product" : "Add Product"}
         </button>
       </div>
+
       <Toast />
       {/* Dialog Thêm Author Mới */}
       <Dialog open={openAddAuthor} onClose={handleCloseAddAuthor}>
@@ -1128,9 +1224,9 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
           </Button>
         </DialogActions>
       </Dialog>
-     {/* Dialog to Add New Category */}
+      {/* Dialog to Add New Category */}
 
-     <Dialog
+      <Dialog
         open={openAddCategory}
         onClose={handleCloseAddCategory}
         maxWidth="sm"
@@ -1142,7 +1238,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="category-form mb-4 p-3"
             style={{ border: "1px solid #ccc", borderRadius: "8px" }}
           >
-          
             <TextField
               margin="dense"
               label="Category Name"
@@ -1152,7 +1247,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
               value={newCategory.name}
               onChange={(e) => handleNewCategoryChange("name", e.target.value)}
               required
-         
             />
             <TextField
               margin="dense"
@@ -1198,9 +1292,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
             {/* Category Image Upload */}
             <div className="mt-3">
-              <label className="label-form">
-                Category Image 
-              </label>
+              <label className="label-form">Category Image</label>
               <FileUpload
                 name="imgThumbCategory"
                 url="" // Not needed because we handle upload manually
