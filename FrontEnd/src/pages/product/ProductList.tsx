@@ -30,6 +30,7 @@ import _ from "lodash";
 import ProductDetail from "./ProductDetail";
 import { Link } from "react-router-dom";
 import ProductAdd from "./ProductAdd";
+import {checkPermission} from "@src/Service/common.ts";
 
 
 type ShowComponent = "add" | "edit" | "copy" | "view" | "";
@@ -346,9 +347,11 @@ const ProductList: React.FC = () => {
   const button: React.FC = () => {
     return (
         <div>
-          <button onClick={showModalAdd} className="btn btn-general">
-            Add New
-          </button>
+          {checkPermission('Product', 'create') ? (
+              <button onClick={showModalAdd} className="btn btn-general">
+                Add New
+              </button>
+          ) : ''}
         </div>
     );
   };
@@ -503,27 +506,27 @@ const ProductList: React.FC = () => {
                         return (
                           <TableCell className={fieldItem.class} key="action">
                             <span
-                              className="m-2 btn-icon p-1"
-                              onClick={() => showModalDetail(item)}
+                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'read') ? '' : 'btn-disable'}`}
+                                onClick={() => checkPermission('Product', 'read') && showModalDetail(item)}
                             >
                               <RemoveRedEyeOutlinedIcon />
                             </span>
                             <span
-                              className="m-2 btn-icon p-1"
-                              onClick={() => showModalEdit(item)}
+                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'update') ? '' : 'btn-disable'}`}
+                                onClick={() => checkPermission('Product', 'update') && showModalEdit(item)}
                             >
                               <EditOutlinedIcon />
                             </span>
                             <span
-                              className="m-2 btn-icon p-1"
-                              onClick={() => deleteItem(item)}
+                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'delete') ? '' : 'btn-disable'}`}
+                                onClick={() => checkPermission('Product', 'delete') && deleteItem(item)}
                             >
                               <DeleteOutlineOutlinedIcon />
                             </span>
                             {/* Nút Copy */}
                             <span
-                              className="m-2 btn-icon p-1"
-                              onClick={() => showModalCopy(item)}
+                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'update') ? '' : 'btn-disable'}`}
+                                onClick={() => checkPermission('Product', 'update') && showModalCopy(item)}
                             >
                               <FileCopyOutlinedIcon />
                             </span>

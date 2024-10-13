@@ -24,12 +24,13 @@ $axios.interceptors.response.use(
             location.href = '/403'
         }
         else if (error.response && error.response.status === 500) {
-            // location.href = '/500'
+            location.href = '/500'
         }
         else if (error.response && error.response.status === 404 && window.location.pathname  !== '/404') {
             location.href = '/404'
         }
         else if (error.response && error.response.status === 400) {
+            // location.href = '/400'
         }
         if (error.response && error.response.status === 401 && window.location.pathname  !== '/login' )
         {
