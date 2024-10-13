@@ -20,7 +20,7 @@ const MenuSide : React.FC = () => {
           <div className="menu-container">
               {MenuSideBar.map(item => {
                   const IconComponent = item.icon;
-                  if (!item.hide && checkPermission(item.code,'read')) {
+                  if (!item.hide && (checkPermission(item.code,'read') || item.show)) {
                       return (
                         <Link   to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.code}>
                             <Tooltip title={item.title}   placement="right" disableHoverListener={showMenu}>

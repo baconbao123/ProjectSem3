@@ -205,7 +205,7 @@ const ResourceList : React.FC = () => {
                         color="inherit"
                         to="/"
                     >
-                     <HomeIcon className='icon-breadcrum' />
+                        Home
                     </Link>
                     <Link
                         to='/user'
