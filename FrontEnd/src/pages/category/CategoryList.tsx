@@ -21,6 +21,7 @@ import CategoryDetail from "./CategoryDetail";
 
 import {Link} from "react-router-dom";
 import CategoryAdd from "./CategoryAdd";
+import {checkPermission} from "@src/Service/common.ts";
 const CategoryList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -252,7 +253,11 @@ const CategoryList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
-                <div onClick={ showModalAdd} className="btn btn-general">Add new </div>
+                {checkPermission('Category', 'create') ? (
+                    <button onClick={showModalAdd} className="btn btn-general">
+                        Add New
+                    </button>
+                ) : ''}
             </div>
         )
     }
@@ -384,13 +389,22 @@ const CategoryList : React.FC = () => {
                                                     if (field.key === "Action") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Category', 'read') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Category', 'read') && showModalDetail(item)}
+                                                                  >
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Category', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Category', 'update') && showModalEdit(item)}
+                                                                    >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Category', 'delete') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Category', 'delete') && deleteItem(item)}
+                                                                    >
                                                                     <DeleteOutlineOutlinedIcon  />
                                                                 </span>
                                                             </TableCell>

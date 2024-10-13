@@ -249,8 +249,12 @@ const exportToCSV = () => {
 }
 const button: React.FC = () => {
     return (
+
         <div className="d-flex" style={{ gap: '0.5rem' }}>
-            <div onClick={showModalAdd} className="btn btn-general">Add new</div>
+            {checkPermission('Author', 'create') ? (
+                <div onClick={showModalAdd} className="btn btn-general">Add new</div>
+            ) : ''}
+
             <div onClick={exportToExcel} className="btn btn-export btn-warning">Export to Excel</div>
             <div onClick={exportToCSV} className="btn btn-export btn-warning">Export to CSV</div>
         </div>
@@ -384,13 +388,22 @@ const button: React.FC = () => {
                                                     if (field.key === "Action") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()} >
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Author', 'read') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Author', 'read') && showModalDetail(item)}
+                                                                >
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Author', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Author', 'update') && showModalEdit(item)}
+                                                                >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('Author', 'delete') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('Author', 'delete') && deleteItem(item)}
+                                                                >
                                                                     <DeleteOutlineOutlinedIcon  />
                                                                 </span>
                                                             </TableCell>

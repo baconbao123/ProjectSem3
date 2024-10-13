@@ -14,19 +14,20 @@ public class CategoriesFEController : Controller
     }
 
     [HttpGet]
-    public IActionResult GetAllCategoriesWithProduct()
+    public IActionResult GetAllCategoriesWithProducts()
     {
         // Fetch all active categories (both parent and child) that are not deleted
         var categories = context.Category
-                .Where(c => c.Status == 1 && c.DeletedAt == null)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Name,
-                    c.ParentId,
-                    c.Level
-                })
-                .ToList();
+            .Where(c => c.Status == 1 && c.DeletedAt == null)
+            .Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.ParentId,
+                c.Level,
+                c.imgThumbCategory,
+            })
+            .ToList();
 
         if (!categories.Any())
         {
@@ -73,6 +74,7 @@ public class CategoriesFEController : Controller
                 category.Id,
                 category.Name,
                 category.ParentId,
+                category.imgThumbCategory,
                 category.Level,
                 Products = distinctProducts
             });

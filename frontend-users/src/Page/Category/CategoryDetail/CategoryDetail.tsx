@@ -21,6 +21,7 @@ interface Filter {
 const CategoryDetail: React.FC = () => {
   const [products, setProducts] = useState<any | []>([])
   const [categoriesSidebar, setCategoriesSidebar] = useState<string[]>([])
+  const [parentCategoryName, setParentCategoryName] = useState<string>('')
   // Fiter
   const [selectFilter, setSelectFilter] = useState<string>('newest')
   const [filteredProduct, setFilteredProduct] = useState<any | []>([])
@@ -66,13 +67,33 @@ const CategoryDetail: React.FC = () => {
         const parentCategory = allCategories.find((cate: any) => cate.Name.toLowerCase() === category?.toLowerCase())
 
         if (parentCategory) {
-          setProducts(parentCategory.Products)
+          const allProducts = parentCategory.Products
+          setParentCategoryName(parentCategory.Name)
 
           const childCategory = allCategories.filter(
-            (cate: any) => cate.ParentId === parentCategory.Id && cate.Level === 1
+            (cate: any) => cate.ParentId === parentCategory.Id && cate.Level === 1 && cate.Products.length > 0
           )
 
           setCategoriesSidebar(childCategory.map((cate: any) => cate.Name))
+
+          // Filter products by genres
+          if (genres) {
+            const matchedCategory = childCategory.find(
+              (child: any) => child.Name.toLowerCase() === genres.toLowerCase()
+            )
+            if (matchedCategory) {
+              const filteredProducts = allProducts.filter((product: any) => {
+                return matchedCategory.Products.some((catProd: any) => catProd.Id === product.Id)
+              })
+              setProducts(filteredProducts)
+            } else {
+              // If no matching category, set products to an empty array
+              setProducts([])
+            }
+          } else {
+            // If no genres, set all products from the parent category
+            setProducts(allProducts)
+          }
         }
 
         setSelectFilter('newest')
@@ -85,9 +106,9 @@ const CategoryDetail: React.FC = () => {
 
     dispatch(setLoading())
     fetchProducts()
-  }, [category, genres])
+  }, [category, genres, dispatch])
 
-  //   Filter
+  // Filter products based on selectFilter
   useEffect(() => {
     let sortedProducts = [...products]
 
@@ -137,7 +158,11 @@ const CategoryDetail: React.FC = () => {
               <Row>
                 {/* Sidebar */}
                 <Col lg={3} style={{ marginTop: '3px' }}>
-                  <GenresSidebar genres={genres || ''} categoryNames={categoriesSidebar} />
+                  <GenresSidebar
+                    genres={genres || ''}
+                    categoryNames={categoriesSidebar}
+                    parentCategory={parentCategoryName}
+                  />
                 </Col>
                 <Col lg={9} style={{ paddingTop: '10px', backgroundColor: 'white' }}>
                   <Row className='row-filter'>

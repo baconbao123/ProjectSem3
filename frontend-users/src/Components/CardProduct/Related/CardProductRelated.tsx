@@ -2,7 +2,7 @@ import { Card } from 'primereact/card'
 import { Button } from 'primereact/button'
 import { RiPaypalLine } from 'react-icons/ri'
 import { BsCartPlus } from 'react-icons/bs'
-import './CardProduct.scss'
+import './CardProductRelated.scss'
 import { Link, useNavigate } from 'react-router-dom'
 import { sliceText } from '../../../utils'
 import { useDispatch, useSelector } from 'react-redux'
@@ -15,7 +15,7 @@ interface CardProductProps {
   product: Product
 }
 
-export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
+export const CardProductRelated: React.FC<CardProductProps> = ({ product }) => {
   console.log(product)
 
   const userId = useSelector((state: RootState) => state.auth.userId)
@@ -33,7 +33,7 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
       icon: 'success',
       title: 'Product has been added to the cart',
       showConfirmButton: false,
-      timer: 1000
+      timer: 1200
     })
   }
 
@@ -43,20 +43,7 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
       return
     }
 
-    const previousProductKey = `buynowProduct_${userId}`
-    localStorage.removeItem(previousProductKey)
-
-    const currentProduct = {
-      Id: product.Id,
-      Name: product.Name,
-      ImageThumbPath: product.ImageThumbPath,
-      SellPrice: product.SellPrice,
-      quantity: 1
-    }
-
-    localStorage.setItem(previousProductKey, JSON.stringify([currentProduct]))
-
-    navigate('/checkout/buynow')
+    navigate('/checkout')
   }
 
   const header = (
@@ -84,7 +71,7 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
   )
 
   return (
-    <div className='card-product'>
+    <div className='card-product-related'>
       <Card
         title={<Link to={`/products/details/${product.Id}`}>{sliceText(product.Name, 35)}</Link>}
         subTitle={product.CompanyPartnerName}

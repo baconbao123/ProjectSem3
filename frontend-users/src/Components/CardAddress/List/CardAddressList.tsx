@@ -14,6 +14,7 @@ interface CardAddressProps {
   addresses: any
   selectedId: string
   setSelectedId: (id: string) => void
+  setViewAddAddressParent: any
 }
 
 interface AddressData {
@@ -26,10 +27,14 @@ interface AddressData {
   DetailAddress: string
 }
 
-const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, setSelectedId }) => {
+const CardAddressList: React.FC<CardAddressProps> = ({
+  addresses,
+  selectedId,
+  setSelectedId,
+  setViewAddAddressParent
+}) => {
   const [viewAddAddress, setViewAddAddress] = useState<boolean>(false)
-  console.log(addresses);
-  
+  console.log(addresses)
 
   const [assignName, setAssignName] = useState<string>('')
   const [assign, setAssign] = useState<boolean>(false)
@@ -69,6 +74,7 @@ const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, se
 
       setIndex(false)
       setAssign(false)
+      setViewAddAddressParent(false)
       setAssignName('')
       setAddress('')
       setDetailAddress('')

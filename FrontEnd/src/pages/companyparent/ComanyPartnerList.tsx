@@ -21,6 +21,7 @@ import _ from 'lodash';
 import {Link} from "react-router-dom";
 import CompanyAdd from "./CompanyAdd";
 import CompanyDetail from "./CompanyDetail";
+import {checkPermission} from "@src/Service/common.ts";
 const CompanyList : React.FC = () => {
     const dispatch = useDispatch();
 
@@ -239,7 +240,11 @@ const CompanyList : React.FC = () => {
     const button: React.FC = () => {
         return (
             <div>
-                <div onClick={ showModalAdd} className="btn btn-general">Add new </div>
+                {checkPermission('CompanyPartner', 'create') ? (
+                    <button onClick={showModalAdd} className="btn btn-general">
+                        Add New
+                    </button>
+                ) : ''}
             </div>
         )
     }
@@ -371,13 +376,22 @@ const CompanyList : React.FC = () => {
                                                     if (field.key === "Action") {
                                                         return (
                                                             <TableCell className={field.class} key={crypto.randomUUID()}>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalDetail(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('CompanyPartner', 'read') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('CompanyPartner', 'read') && showModalDetail(item)}
+                                                                >
                                                                     <RemoveRedEyeOutlinedIcon  />
                                                                 </span>
-                                                                <span className='m-2 btn-icon p-1' onClick={() => showModalEdit(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('CompanyPartner', 'update') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('CompanyPartner', 'update') && showModalEdit(item)}
+                                                                >
                                                                  <EditOutlinedIcon/>
                                                                 </span>
-                                                                <span className='m-2 btn-icon btn-delete p-1' onClick={() => deleteItem(item)}>
+                                                                <span
+                                                                    className={`m-2 btn-icon p-1 ${checkPermission('CompanyPartner', 'delete') ? '' : 'btn-disable'}`}
+                                                                    onClick={() => checkPermission('CompanyPartner', 'delete') && deleteItem(item)}
+                                                                >
                                                                     <DeleteOutlineOutlinedIcon  />
                                                                 </span>
                                                             </TableCell>
