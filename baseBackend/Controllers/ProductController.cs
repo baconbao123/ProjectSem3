@@ -78,6 +78,7 @@ namespace AuthenticationJWT.Controllers
         }
 
         // get products with category
+        // get products with category
         [Authorize]
         [HttpGet("category")]
         public IActionResult GetAllCategoriesWithProducts()
@@ -90,7 +91,8 @@ namespace AuthenticationJWT.Controllers
                     c.Id,
                     c.Name,
                     c.ParentId,
-                    c.Level
+                    c.Level,
+                    c.imgThumbCategory,
                 })
                 .ToList();
 
@@ -139,6 +141,7 @@ namespace AuthenticationJWT.Controllers
                     category.Id,
                     category.Name,
                     category.ParentId,
+                    category.imgThumbCategory,
                     category.Level,
                     Products = distinctProducts
                 });

@@ -35,7 +35,8 @@ const Home = () => {
     const fetchProducts = async () => {
       try {
         const res = await $axios.get('ProductFE')
-        setProductsData(res.data.data)
+        const allCategories = res.data.data
+        setProductsData(allCategories)
       } catch (err) {
         console.log(err)
       }
@@ -240,7 +241,12 @@ const Home = () => {
                 <div className='banner-group mb-2'>
                   <Container style={{ height: '200px' }}>
                     <Row>
-                      <CategoryCarousel />
+                      <CategoryCarousel
+                        categoryParent={category.Name}
+                        categories={products.filter(
+                          (subCategory: any) => subCategory.ParentId === category.Id && subCategory.Products.length > 0
+                        )}
+                      />
                     </Row>
                   </Container>
                 </div>
