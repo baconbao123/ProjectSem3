@@ -20,9 +20,8 @@ public class AuthController : ControllerBase
         db = myContext;
     }
 
-
-    [HttpPost("Login")]
-    public IActionResult Login([FromBody] Login request)
+    [HttpPost("Login2")]
+    public IActionResult Login2([FromBody] Login request)
     {
 
         if (ModelState.IsValid)
@@ -48,6 +47,65 @@ public class AuthController : ControllerBase
             return Ok(new { token = token });
         }
         return BadRequest("Invalid Request Body");
+    }
+
+    [HttpPost("Login")]
+    public IActionResult Login([FromBody] Login request)
+    {
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid Request Body");
+        }
+
+        User? user = null;
+        if (request.Email == "SA")
+        {
+            user = db.User.FirstOrDefault(item => item.Email == request.Email);
+        }
+        else
+        {
+            user = (from u in db.User
+                    join map in db.MapRole on u.Id equals map.UserId
+                    join role in db.Role on map.RoleId equals role.Id
+                    where u.Email == request.Email
+                          && role.Name == "Admin"
+                          && u.DeletedAt == null
+                          && u.Status == 1
+                    select u).FirstOrDefault();
+
+        }
+
+
+
+        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
+        {
+            return Unauthorized("Invalid user credentials.");
+        }
+
+        var token = IssueToken(user);
+
+        // Nếu người dùng chọn Remember Me, tạo RefreshToken và cập nhật lại DB.
+        if (request.Remember)
+        {
+            user.RefreshToken = GenerateRefreshToken();
+
+            // Xử lý lỗi cấu hình bằng TryParse
+            if (int.TryParse(_configuration["Jwt:ExpiredRefreshToken"], out int days))
+            {
+                user.Expired = DateTime.UtcNow.AddDays(days);
+            }
+            else
+            {
+                return StatusCode(500, "Invalid configuration for refresh token expiration.");
+            }
+
+            db.SaveChanges();
+
+            return Ok(new { token, refreshToken = user.RefreshToken });
+        }
+
+        return Ok(new { token });
     }
 
     [HttpPost("RefreshToken")]

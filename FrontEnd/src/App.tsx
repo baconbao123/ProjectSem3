@@ -7,7 +7,7 @@ import $axios, {authorization} from "./axios";
 import {useDispatch, useSelector} from 'react-redux';
 // @ts-ignore
 import Cookies from "js-cookie";
-import {setDefaultColor, setShowMenu, setTheme} from "@src/Store/Slinces/appSlice.ts";
+import {setDefaultColor, setLoading, setShowMenu, setTheme} from "@src/Store/Slinces/appSlice.ts";
 
 
 const Toast = React.lazy(() => import("./components/Toast"))
@@ -37,18 +37,22 @@ const App = () => {
                 const permissionRes = await $axios.get(`/Auth/getPermision/${id}`);
                 const permissions = permissionRes.data.data;
 
-                if (permissions) {
                     // Lưu quyền vào localStorage
-                    localStorage.setItem("permission", JSON.stringify(permissions));
+                localStorage.setItem("permission", JSON.stringify(permissions));
+                if (!localStorage.getItem('init')) {
+                    location.reload()
+                    localStorage.setItem('init', 'init')
                 }
-                location.reload()
+                else {
+                    dispatch(setLoading(false))
+                }
             }
         } catch (error) {
             console.error('Error during user data initialization:', error);
         }
     }
     useEffect( () => {
-        if(!localStorage.getItem('id')  && window.location.pathname  !== '/login') {
+        if(window.location.pathname  !== '/login') {
             initUserData()
         }
         if (localStorage.getItem('theme')) {

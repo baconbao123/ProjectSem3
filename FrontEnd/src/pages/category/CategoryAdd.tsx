@@ -355,15 +355,15 @@ const CategoryAdd: React.FC<CategoryAddProps> = ({ loadDataTable, form, id }) =>
                 });
               }
             }}
-            onRemove={(e) => {
-              setCategory({
-                ...category,
-                imgFile: null,
-                imgPreview: "",
-              });
-            }}
+            // onRemove={(e) => {
+            //   setCategory({
+            //     ...category,
+            //     imgFile: null,
+            //     imgPreview: "",
+            //   });
+            // }}
             customUpload
-            uploadHandler={() => {}} // Không cần thực hiện upload tự động
+            // uploadHandler={() => {}} // Không cần thực hiện upload tự động
             // headerTemplate={() => null} // Ẩn header
             // itemTemplate={() => null} // Ẩn danh sách tệp
           />

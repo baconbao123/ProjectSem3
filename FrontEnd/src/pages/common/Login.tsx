@@ -99,6 +99,8 @@ const Login: React.FC = () => {
                     Cookies.set('refreshToken', res.data.refreshToken, { expires: 7 });
                 }
                 location.replace('/')
+                initUserData()
+
             }
             )
             .catch((err) => {
