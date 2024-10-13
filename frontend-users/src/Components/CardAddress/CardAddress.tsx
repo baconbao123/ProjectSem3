@@ -8,6 +8,7 @@ import { InputSwitch } from 'primereact/inputswitch'
 
 export interface CardAddressState {
   Id: string
+  UserId: string
   AssignName: string
   Assign: boolean
   Phone: string
@@ -34,10 +35,21 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
 
   const handleChange = () => {
     setSelectedId(cardAdress.Id)
-    onSelectAddress(cardAdress) 
+    onSelectAddress(cardAdress)
   }
 
+  const handleUpdateAddress = (e: any) => {
+    e.preventDefault()
+    // setViewUpdateAddress(false)
+
+    try {
+
+    } catch(error) {
+      console.log(error);
+      
+    }
   
+  }
 
   return (
     <div className='container-card-address-master'>
@@ -128,7 +140,7 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
                 <span className='span-confirm'>Allow someone else to receive it for you</span>
               </div>
               <div className='row-address-3 mt-3'>
-                <Button type='submit' label='Save' className='save' onClick={() => setViewUpdateAddress(false)} />
+                <Button type='submit' label='Save' className='save' onClick={(e) => handleUpdateAddress(e)} />
               </div>
             </form>
           </Dialog>
