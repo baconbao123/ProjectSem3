@@ -162,15 +162,35 @@ namespace AuthenticationJWT.Controllers
                 return BadRequest(new { message = "Category not found or not active." });
             }
 
+            // Kiểm tra xem category có phải là category cha không
+            var isParentCategory = db.Category.Any(c => c.ParentId == categoryId);
+
+            List<int> categoryIdsToSearch;
+
+            if (isParentCategory)
+            {
+                // Nếu là category cha, lấy tất cả category con
+                categoryIdsToSearch = db.Category
+                    .Where(c => c.ParentId == categoryId && c.Status == 1)
+                    .Select(c => c.Id)
+                    .ToList();
+            }
+            else
+            {
+                // Nếu không, chỉ lấy category hiện tại
+                categoryIdsToSearch = new List<int> { categoryId };
+            }
+
             var products = (from pc in db.ProductCategory
                             join p in db.Product on pc.ProductId equals p.Id
-                            where pc.CategoryId == categoryId && pc.DeletedAt == null && p.DeletedAt == null
+                            where categoryIdsToSearch.Contains(pc.CategoryId) && pc.DeletedAt == null && p.DeletedAt == null
                             orderby p.CreatedAt descending
                             select new
                             {
                                 p.Id,
                                 p.Name,
-
+                                p.ImageThumbPath,
+                                p.Code,
                                 p.Description,
                                 p.SellPrice,
                                 p.Quantity,

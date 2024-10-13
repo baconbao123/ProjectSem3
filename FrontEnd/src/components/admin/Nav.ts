@@ -14,12 +14,14 @@ import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import DiscountOutlinedIcon from '@mui/icons-material/DiscountOutlined';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import ShoppingCartCheckoutOutlinedIcon from '@mui/icons-material/ShoppingCartCheckoutOutlined';
+import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
 const MenuTopBar = [
     {link: '/admin', title: 'Administration', icon: BadgeIcon, code: 'admin'},
     {link: '/home', title: 'Home Page', icon: HomeIcon, code: 'home'},
 ]
 
 const MenuSideBar = [
+    {link: '/', title: 'Dashboard', icon: InsertChartOutlinedIcon,  code: 'Dashboard'},
     {link: '/user', title: 'User', icon: PersonOutlineOutlinedIcon,  code: 'User'},
     {link: '/product', title: 'Product', icon: Inventory2OutlinedIcon  , code: 'Product'},
     {link: '/order', title: 'Order', icon: ShoppingCartCheckoutOutlinedIcon  , code: 'Order'},

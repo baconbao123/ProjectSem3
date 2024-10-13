@@ -64,8 +64,76 @@ public class CommonController : ControllerBase
                             }).ToList();
             return Ok(new { data = listData });
         }
+        else if (resource == "author")
+        {
+            var listData = (from item in db.Author
+                            where item.DeletedAt == null
+                            orderby item.CreatedAt descending
+                            select item).ToList();
+
+            return Ok(new { data = listData, total = listData.Count() });
+        }
+        else if (resource == "category")
+        {
+            var categories = db.Category
+                      .Where(c => c.DeletedAt == null).ToList();
+
+
+            var listData = new List<object>();
+
+
+            var rootCategories = categories.Where(c => c.ParentId == null).ToList();
+
+
+            foreach (var rootCategory in rootCategories)
+            {
+                GetCategoryWithLevel(categories, rootCategory, 0, listData);
+            }
+
+            return Ok(new { data = listData, total = listData.Count() });
+        }
+        else if (resource == "companypartner")
+        {
+            var listData = (from item in db.CompanyPartner
+                            where item.DeletedAt == null
+                            orderby item.CreatedAt descending
+                            select item).ToList();
+
+            return Ok(new { data = listData, total = listData.Count() });
+        }
         return BadRequest(new { message = "Data not found" });
 
+    }
+    private void GetCategoryWithLevel(List<Category> categories, Category currentCategory, int level, List<object> listData)
+    {
+        var parentCategory = categories.FirstOrDefault(c => c.Id == currentCategory.ParentId);
+        // Thêm danh mục hiện tại vào danh sách với cấp bậc.
+        listData.Add(new
+        {
+            currentCategory.Id,
+            currentCategory.Name,
+            currentCategory.Description,
+            currentCategory.CategoryCode,
+            currentCategory.imgThumbCategory,
+            currentCategory.Status,
+            currentCategory.CreatedAt,
+            currentCategory.UpdateAt,
+            currentCategory.CreatedBy,
+            currentCategory.UpdatedBy,
+            ParentName = parentCategory?.Name,
+            ParentCategoryCode = parentCategory?.CategoryCode,
+            ParentId = currentCategory.ParentId,
+            Level = level
+        });
+
+        // Tìm các danh mục con của danh mục hiện tại.
+        var subCategories = categories.Where(c => c.ParentId == currentCategory.Id).ToList();
+
+
+        foreach (var subCategory in subCategories)
+        {
+            GetCategoryWithLevel(categories, subCategory, level + 1, listData);
+        }
     }
 
     // POST api/<ResourceController>
