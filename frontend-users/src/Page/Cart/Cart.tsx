@@ -11,6 +11,7 @@ import { setUserId } from '../../Store/cartSlice'
 import RequiredLogin from '../../Components/RequiredLogin/RequiredLogin'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { calculateTotalPrice } from '../../utils'
 
 const Cart: React.FC = () => {
   // Voucher
@@ -24,6 +25,7 @@ const Cart: React.FC = () => {
 
   // Total
   const [total, setTotal] = useState<number>(0)
+  const [amounts, setAmounts] = useState<{ [key: string]: number }>({})
 
   const cartItems = useSelector((state: RootState) => state.cart.items)
   const userIdAuth = useSelector((state: RootState) => state.auth.userId)
@@ -39,15 +41,47 @@ const Cart: React.FC = () => {
     }
   }, [userIdAuth])
 
+  useEffect(() => {
+    if (userIdAuth) {
+      const storeProducts = JSON.parse(localStorage.getItem(`productChecked_${userIdAuth}`) || '[]')
+      const ids = storeProducts.map((item: any) => item.Id)
+      const amountsFromStorage = storeProducts.reduce((acc: { [key: string]: number }, item: any) => {
+        acc[item.Id] = item.quantity
+        return acc
+      }, {})
+
+      setSelectedItems(ids)
+      setCountItems(ids.length)
+      setSelectAllChecked(ids.length === cartItems.length)
+      setAmounts(amountsFromStorage)
+    }
+  }, [cartItems, userIdAuth])
+
   // Check Items
-  const handleCheck = (id: number, checked: boolean) => {
+  const handleCheck = (id: number, checked: boolean, totalPrice: number) => {
+    let newSelectedItems
     if (checked) {
-      setSelectedItems([...selectedItems, id])
+      newSelectedItems = [...selectedItems, id]
+      setTotal(total + totalPrice)
     } else {
-      setSelectedItems(selectedItems.filter((itemId) => itemId !== id))
+      newSelectedItems = selectedItems.filter((itemId) => itemId !== id)
+      setTotal(total - totalPrice)
     }
 
-    setCountItems(selectedItems.length + (checked ? 1 : -1))
+    // Cập nhật selectedItems
+    setSelectedItems(newSelectedItems)
+    setCountItems(newSelectedItems.length)
+
+    // Kiểm tra nếu tất cả các mục đã được chọn
+    setSelectAllChecked(newSelectedItems.length === cartItems.length)
+  }
+
+  const handleAmountChange = (productId: string, newAmount: number) => {
+    setAmounts((prev) => ({
+      ...prev,
+
+      [productId]: newAmount
+    }))
   }
 
   // Check All Items
@@ -58,24 +92,36 @@ const Cart: React.FC = () => {
       const allItemsId = cartItems.map((item) => item.Id)
       setSelectedItems(allItemsId)
       setCountItems(cartItems.length)
+
+      localStorage.removeItem(`productChecked_${userIdAuth}`)
+
+      const productsToStore = cartItems.map((item) => ({
+        ...item,
+
+        quantity: amounts[item.Id] || 1
+      }))
+
+      localStorage.setItem(`productChecked_${userIdAuth}`, JSON.stringify(productsToStore))
     } else {
       setSelectedItems([])
       setCountItems(0)
+      localStorage.removeItem(`productChecked_${userIdAuth}`)
     }
   }
 
   useEffect(() => {
-    if (selectedItems.length === cartItems.length) {
-      setSelectAllChecked(true)
-    } else {
-      setSelectAllChecked(false)
-    }
-  }, [selectedItems, cartItems.length])
+    let newTotal = 0
+    selectedItems.forEach((itemId) => {
+      const item = cartItems.find((p) => p.Id === itemId)
+      const itemAmount = amounts[itemId] || 1
+      if (item) {
+        const cardTotalPrice = calculateTotalPrice(item.SellPrice, itemAmount.toString())
+        newTotal += cardTotalPrice
+      }
+    })
 
-  // Handle total order
-  const handleTotal = (newTotal: number) => {
-    setTotal((prevTotal) => prevTotal + newTotal)
-  }
+    setTotal(newTotal)
+  }, [selectedItems, cartItems, amounts])
 
   const handlePaymentClick = () => {
     if (selectedItems.length === 0) {
@@ -103,13 +149,6 @@ const Cart: React.FC = () => {
       setVouchers(vouchersWithUserId)
     }
   }, [userIdAuth])
-
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumIntegerDigits: 1,
-    maximumFractionDigits: 1
-  }).format(total)
 
   return (
     <div className='cart-container'>
@@ -156,7 +195,8 @@ const Cart: React.FC = () => {
                         product={p}
                         onCheck={handleCheck}
                         isChecked={selectedItems.includes(p.Id)}
-                        updateTotal={handleTotal}
+                        onAmountChange={(newAmount: number) => handleAmountChange(p.Id.toString(), newAmount)}
+                        amount={amounts[p.Id] || 1} // Pass amount from state; default to 1 if not found
                       />
                     </Row>
                   ))}
@@ -206,7 +246,7 @@ const Cart: React.FC = () => {
                   <Row className='row-payment'>
                     <div className='payment-heading'>
                       <span className='span-title'>Total</span>
-                      <span className='span-total'>{formattedPrice}</span>
+                      <span className='span-total'>$ {total}</span>
                     </div>
                     <div className='payment'>
                       <Button label='PAYMENT' className='btn-payment' onClick={handlePaymentClick} />

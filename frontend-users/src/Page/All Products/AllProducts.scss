@@ -1,5 +1,17 @@
 @import '/global.scss';
 
+.container-all-books-content-skeleton {
+  background-color: $prime-bgColor-Pages;
+  padding-top: 10px;
+  padding-bottom: 30px;
+
+  .container-all-books-content-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px ;
+  }
+}
+
 .container-all-books-content {
   background-color: #f8f9fa;
   padding-top: 10px;
@@ -18,10 +30,9 @@
       .category-name {
         font-size: 20px;
         font-weight: 600;
-
       }
     }
-    
+
     // Content
     .block {
       margin-bottom: 20px;

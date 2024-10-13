@@ -47,7 +47,7 @@ const Login = () => {
 
     const loginData: LoginData = { Email, Password, Remember }
     try {
-      const res = await $axios.post('Auth/Login', loginData)
+      const res = await $axios.post('LoginFE', loginData)
 
       if (res.data.token) {
         Cookies.set('token', res.data.token, { expires: 0.1 })

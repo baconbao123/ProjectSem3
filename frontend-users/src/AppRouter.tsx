@@ -27,6 +27,7 @@ import BestSeller from './Page/BestSeller/BestSeller'
 import Ordered from './Page/Order/Ordered/Ordered'
 import Processing from './Page/Order/Processing/Processing'
 import Returned from './Page/Order/Returned/Returned'
+import CheckoutBuyNow from './Page/CheckoutBuyNow/CheckoutBuyNow'
 
 export const AppRouter: React.FC = () => {
   return (
@@ -54,6 +55,7 @@ export const AppRouter: React.FC = () => {
           <Route path='account' element={<Account />} />
           <Route path='checkout/cart' element={<Cart />} />
           <Route path='checkout' element={<Checkout />} />
+          <Route path='checkout/buynow' element={<CheckoutBuyNow />} />
           <Route path='checkout/compeleted' element={<CheckoutCompleted />} />
           <Route path='faq' element={<FAQ />} />
           <Route path='products/details/:id' element={<ProductDetail />} />

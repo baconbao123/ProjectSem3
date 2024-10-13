@@ -1,31 +1,24 @@
 import React, { useState } from 'react'
 import 'primeicons/primeicons.css'
 import './GenresSidebar.scss'
-
-// interface Category {
-//   name: string
-//   subCategories: string[]
-// }
+import { Link } from 'react-router-dom'
 
 interface GenresSidebar {
   genres: string
   categoryNames: string[]
+  parentCategory: any
 }
 
-const GenresSidebar: React.FC<GenresSidebar> = ({ genres, categoryNames }) => {
+const GenresSidebar: React.FC<GenresSidebar> = ({ genres, categoryNames, parentCategory }) => {
   const [showSubCategory, setShowSubcategory] = useState(true)
-
-  // const prices: Category = {
-  //   name: 'Price',
-  //   subCategories: ['0-$100', '$101-$200', '$300-$400']
-  // }
+  console.log(parentCategory)
 
   return (
     <div className='sidebar'>
       <ul className='category-list'>
         <li>
           <div className='category-name' onClick={() => setShowSubcategory(!showSubCategory)}>
-            <span className='name'>All Categories</span>
+            <span className='name'>{parentCategory}</span>
             {!showSubCategory && (
               <span>
                 <i className='pi pi-plus'></i>
@@ -41,30 +34,19 @@ const GenresSidebar: React.FC<GenresSidebar> = ({ genres, categoryNames }) => {
           {showSubCategory && (
             <ul className='subcategory-list'>
               {categoryNames.map((subcategory, index) => (
-                <li
-                  key={index}
-                  className='subcategory-item'
-                  style={{ color: subcategory === genres ? 'lightseagreen' : 'black' }}
-                >
-                  {subcategory}
+                <li key={index} className='subcategory-item'>
+                  <Link
+                    to={`/${parentCategory}/${subcategory}`}
+                    style={{ color: subcategory === genres ? 'lightseagreen' : 'black', textDecoration: 'none' }}
+                  >
+                    <span className='span-subcategry-item'>{subcategory}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
           )}
         </li>
       </ul>
-      {/* <ul className='prices-list'>
-        <li key={prices.name}>
-          <span className='price-name'>{prices.name}</span>
-          <ul className='subprices-list'>
-            {prices.subCategories.map((price, index) => (
-              <li key={index} className='subprice-item'>
-                <input type='checkbox' value={price} /> {price}
-              </li>
-            ))}
-          </ul>
-        </li>
-      </ul> */}
     </div>
   )
 }

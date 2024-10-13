@@ -11,21 +11,67 @@
 }
 
 .slick-center {
-  opacity: 1 !important; // Slide ở giữa sẽ không bị mờ
-  transform: scale(1.1); // Slide ở giữa phóng to một chút
+  opacity: 1 !important;
   width: 419px !important;
   z-index: 10;
 }
 
 .banner {
-    background-color: transparent;
-
+  background-color: transparent;
 }
+
 .banner-overlay-category {
   position: relative;
+  overflow: hidden;
 
   .banner-content {
     text-align: center;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    transition: color 0.3s;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+  }
+
+  &:hover .overlay {
+    opacity: 1;
+  }
+
+  &:hover .banner-content {
+    color: white;
+  }
+
+  .banner-link {
+    position: relative;
+    z-index: 3;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .banner-link:hover {
+    color: gray;
+  }
+
+  .category-name {
+    color: black;
+    font-size: 36px;
+  }
+
+  &:hover .category-name {
+    color: white;
   }
 }
 
