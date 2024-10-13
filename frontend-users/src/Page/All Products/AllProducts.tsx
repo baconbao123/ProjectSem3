@@ -36,7 +36,7 @@ const AllProducts: React.FC = () => {
     <>
       <BannerAllProducts />
       {isLoading ? (
-        <>
+        <div style={{minHeight: '100vh'}}>
           <div className='container-all-books-content-skeleton' style={{ paddingTop: '50px' }}>
             <Container className='container-all-books-content-container'>
               <Row className=''>
@@ -87,7 +87,7 @@ const AllProducts: React.FC = () => {
               </Row>
             </Container>
           </div>
-        </>
+        </div>
       ) : (
         <>
           <div className='container-all-books-content'>

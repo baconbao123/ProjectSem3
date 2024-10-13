@@ -3,32 +3,41 @@ $background-color: #f5f5f5;
 
 .checkout-completed-master {
   background-color: $background-color;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  padding-top: 180px; 
 
   .checkout-completed {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    padding: 40px;
+    height: 400px;
+    padding: 30px;
     border-radius: 8px;
+    background-color: white; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); 
 
     img.checkout-image {
       height: 400px;
       width: 400px;
-      object-fit: cover; // Đảm bảo hình ảnh giữ tỷ lệ
+      object-fit: cover;
+      border-radius: 8px; 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     }
 
     .content-checkout-completed {
-      margin-left: 20px; // Đặt khoảng cách giữa hình ảnh và nội dung
+      margin-left: 40px; 
       display: flex;
       flex-direction: column;
-      justify-content: center; // Căn giữa nội dung theo chiều dọc so với ảnh
+      justify-content: center;
       text-align: left;
+      align-items: center;
 
       h1 {
         font-size: 2.5rem;
         color: $primary-color;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         font-weight: bold;
       }
 
@@ -49,7 +58,8 @@ $background-color: #f5f5f5;
         color: white;
         font-size: 12px;
         font-weight: 600;
-        width: 170px;
+        width: 152px;
+        text-align: center;
 
         border: none;
         border-radius: 5px;
