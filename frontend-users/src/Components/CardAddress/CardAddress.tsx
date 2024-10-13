@@ -8,6 +8,7 @@ import { InputSwitch } from 'primereact/inputswitch'
 
 export interface CardAddressState {
   Id: string
+  UserId: string
   AssignName: string
   Assign: boolean
   Phone: string
@@ -20,13 +21,11 @@ interface CardAddressProps {
   cardAdress: CardAddressState
   selectedId: string
   setSelectedId: (id: string) => void
+  onSelectAddress: any
 }
 
-const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSelectedId }) => {
+const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSelectedId, onSelectAddress }) => {
   const [viewUpdateAddress, setViewUpdateAddress] = useState<boolean>(false)
-  
-
-  // data
   const [assignName, setAssignName] = useState<string>(cardAdress.AssignName)
   const [assign, setAssign] = useState<boolean>(cardAdress.Assign)
   const [phone, setPhone] = useState<string>(cardAdress.Phone)
@@ -36,6 +35,20 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
 
   const handleChange = () => {
     setSelectedId(cardAdress.Id)
+    onSelectAddress(cardAdress)
+  }
+
+  const handleUpdateAddress = (e: any) => {
+    e.preventDefault()
+    // setViewUpdateAddress(false)
+
+    try {
+
+    } catch(error) {
+      console.log(error);
+      
+    }
+  
   }
 
   return (
@@ -127,7 +140,7 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
                 <span className='span-confirm'>Allow someone else to receive it for you</span>
               </div>
               <div className='row-address-3 mt-3'>
-                <Button type='submit' label='Save' className='save' onClick={() => setViewUpdateAddress(false)} />
+                <Button type='submit' label='Save' className='save' onClick={(e) => handleUpdateAddress(e)} />
               </div>
             </form>
           </Dialog>

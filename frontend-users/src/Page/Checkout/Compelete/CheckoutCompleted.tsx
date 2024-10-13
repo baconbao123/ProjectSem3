@@ -10,7 +10,7 @@ const CheckoutCompleted: React.FC = () => {
   const userId = useSelector((state: RootState) => state.auth.userId)
 
   return (
-    <div className='checkout-completed-master' style={{ height: '100vh' }}>
+    <div className='checkout-completed-master'>
       {userId ? (
         <div className='checkout-completed'>
           <Container style={{ display: 'flex', justifyContent: 'center' }}>

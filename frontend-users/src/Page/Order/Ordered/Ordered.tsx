@@ -3,7 +3,7 @@ import { Container, Row } from 'react-bootstrap'
 import CardOrder from '../../../Components/CardOrder/CardOrder'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoaded, setLoading } from '../../../Store/loadingSlice'
-import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder'
+import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder/CardSkeletonOrder'
 import NotFoundOrder from '../../../Components/NotFoundOrder/NotFoundOrder'
 import { RootState } from '../../../Store/store'
 import { $axios } from '../../../axios'
@@ -31,7 +31,7 @@ const Ordered: React.FC = () => {
   }, [dispatch])
 
   return (
-    <div className='container-completed'>
+    <div className='container-completed' style={{ minHeight: '100vh'}}>
       <Container>
         {isLoading ? (
           <>

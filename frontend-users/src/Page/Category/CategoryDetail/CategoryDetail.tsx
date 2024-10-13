@@ -38,6 +38,11 @@ const CategoryDetail: React.FC = () => {
     {
       label: category,
       url: `/${category}`,
+      page: false
+    },
+    {
+      label: genres,
+      url: `/${genres}`,
       page: true
     }
   ]
@@ -108,7 +113,6 @@ const CategoryDetail: React.FC = () => {
     fetchProducts()
   }, [category, genres, dispatch])
 
-  // Filter products based on selectFilter
   useEffect(() => {
     let sortedProducts = [...products]
 
@@ -145,9 +149,9 @@ const CategoryDetail: React.FC = () => {
   }, [selectFilter, products])
 
   return (
-    <>
+    <div className='container-category-detail-books-master'>
       <Breadcrumb items={items} home={home} />
-      <div className='container-all-books'>
+      <div className='container-category-detail-books'>
         {isLoading ? (
           <div className='loading-category'>
             <Loading />
@@ -206,7 +210,7 @@ const CategoryDetail: React.FC = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }
 

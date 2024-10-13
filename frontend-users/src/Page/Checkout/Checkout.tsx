@@ -3,7 +3,6 @@ import './Checkout.scss'
 import { Col, Container, Row } from 'react-bootstrap'
 import { IoLocationSharp } from 'react-icons/io5'
 import CardCheckout from '../../Components/CardProduct/Checkout/CardCheckout'
-import { BiSolidDiscount } from 'react-icons/bi'
 import { Button } from 'primereact/button'
 import { Link, useNavigate } from 'react-router-dom'
 import { Dialog } from 'primereact/dialog'
@@ -29,23 +28,34 @@ const Checkout: React.FC = () => {
     if (storedProducts) {
       setCheckedProducts(JSON.parse(storedProducts))
     }
-  }, [])
 
-  // fetch api address by user
+    const storedAddress = localStorage.getItem(`selectedAddress_${userId}`)
+    if (storedAddress) {
+      setSelectedAddress(JSON.parse(storedAddress))
+    }
+  }, [userId])
+
   useEffect(() => {
     const fetchAddressUser = async () => {
-      const res = await $axios.get(`AddressUserFE/GetAdressByUser/${userId}`)
-      setAddresses(res.data)
-      console.log(addresses)
+      if (!userId) return
 
-      if (res.data.length > 0) {
-        setSelectedId(res.data[0].Id)
-        setSelectedAddress(res.data[0])
+      try {
+        const res = await $axios.get(`AddressUserFE/GetAdressByUser/${userId}`)
+        setAddresses(res.data)
+
+        if (res.data.length > 0) {
+          const defaultAddress = res.data[0]
+          setSelectedId(defaultAddress.Id)
+          setSelectedAddress(defaultAddress)
+          localStorage.setItem(`selectedAddress_${userId}`, JSON.stringify(defaultAddress))
+        }
+      } catch (error) {
+        console.error('Error fetching user addresses:', error)
       }
     }
 
     fetchAddressUser()
-  }, [])
+  }, [userId])
 
   const handlePayment = async () => {
     const orderData = {
@@ -68,11 +78,9 @@ const Checkout: React.FC = () => {
       if (storedProducts) {
         const checkedProductIds = JSON.parse(storedProducts).map((product: any) => product.Id)
 
-        // Retrieve the cart items
         const cartItems = localStorage.getItem(`cart_${userId}`)
         if (cartItems) {
           const updatedCart = JSON.parse(cartItems).filter((item: any) => !checkedProductIds.includes(item.Id))
-
           localStorage.setItem(`cart_${userId}`, JSON.stringify(updatedCart))
         }
 
@@ -88,8 +96,7 @@ const Checkout: React.FC = () => {
 
       navigate('/checkout/compeleted')
     } catch (error) {
-      console.log('errorMess', error)
-
+      console.error('errorMess', error)
       Swal.fire({
         title: 'Order Failed!',
         icon: 'error',
@@ -99,7 +106,6 @@ const Checkout: React.FC = () => {
     }
   }
 
-  // total product
   const totalAmount = checkedProducts.reduce((acc, product) => {
     return acc + parseFloat(product.SellPrice) * product.quantity
   }, 0)
@@ -135,7 +141,17 @@ const Checkout: React.FC = () => {
                       setViewAddAddress(false)
                     }}
                   >
-                    <CardAddressList addresses={addresses} selectedId={selectedId} setSelectedId={setSelectedId} />
+                    <CardAddressList
+                      setAddresses={setAddresses}
+                      addresses={addresses}
+                      selectedId={selectedId}
+                      setSelectedId={setSelectedId}
+                      onSelectAddress={(address: any) => {
+                        localStorage.removeItem(`selectedAddress_${userId}`)
+                        setSelectedAddress(address)
+                        localStorage.setItem(`selectedAddress_${userId}`, JSON.stringify(address))
+                      }}
+                    />
                   </Dialog>
                 </div>
               </div>
@@ -186,38 +202,24 @@ const Checkout: React.FC = () => {
               </div>
             </Row>
 
-            <Row className='row-voucher'>
-              <div className='heading-content'>
-                <div className='row-heading-content'>
-                  <BiSolidDiscount className='icon' /> &nbsp;
-                  <span>Voucher</span>
-                </div>
-                <div className='row-heading-voucher'>Select Voucher</div>
-              </div>
-              <div style={{ padding: '10px 20px' }}>
-                <Row>
-                  <Col lg={7}></Col>
-                  <Col lg={5}>Voucher</Col>
-                </Row>
-              </div>
-            </Row>
-
             <Row className='row-payment-method'>
-              <div className='payment-method-heading'>
-                <span>Payment Method</span>
-              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className='payment-method-heading'>
+                  <span>Payment Method</span>
+                </div>
 
-              <div style={{ marginLeft: '20px' }}>
-                <div className='div-cod'>
-                  <input
-                    type='radio'
-                    className='radio'
-                    name='paymentMethod'
-                    value={paymentMethod}
-                    onChange={(e: any) => setPaymentMethod(e.value)}
-                    checked
-                  />{' '}
-                  &nbsp; &nbsp; <span>Cash On Delivery</span>
+                <div style={{ marginLeft: '20px', marginRight: '30px' }}>
+                  <div className='div-cod'>
+                    <input
+                      type='radio'
+                      className='radio'
+                      name='paymentMethod'
+                      value={paymentMethod}
+                      onChange={(e: any) => setPaymentMethod(e.value)}
+                      checked
+                    />{' '}
+                    &nbsp; &nbsp; <span>Cash On Delivery</span>
+                  </div>
                 </div>
               </div>
             </Row>
@@ -231,16 +233,12 @@ const Checkout: React.FC = () => {
                   <Col lg={6}></Col>
                   <Col lg={6}>
                     <div className='bill-content mt-5'>
-                      <span>Total Order</span>
+                      <span>Total Product</span>
                       <span>$ 0</span>
                     </div>
                     <div className='bill-content'>
                       <span>Delivery fee</span>
                       <span>$ 0</span>
-                    </div>
-                    <div className='bill-content-bottom'>
-                      <span>Total Product</span>
-                      <span>$ {totalAmount}</span>
                     </div>
                     <div className='bill-content-bottom'>
                       <span>Total Order</span>

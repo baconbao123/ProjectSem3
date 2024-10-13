@@ -140,7 +140,17 @@ const CheckoutBuyNow: React.FC = () => {
                       setViewAddAddress(false)
                     }}
                   >
-                    <CardAddressList setViewAddAddressParent={setViewAddAddress} addresses={addresses} selectedId={selectedId} setSelectedId={setSelectedId} />
+                    <CardAddressList
+                      setAddresses={setAddresses}
+                      addresses={addresses}
+                      selectedId={selectedId}
+                      setSelectedId={setSelectedId}
+                      onSelectAddress={(address: any) => {
+                        localStorage.removeItem(`selectedAddress_${userId}`)
+                        setSelectedAddress(address)
+                        localStorage.setItem(`selectedAddress_${userId}`, JSON.stringify(address))
+                      }}
+                    />
                   </Dialog>
                 </div>
               </div>
@@ -236,16 +246,12 @@ const CheckoutBuyNow: React.FC = () => {
                   <Col lg={6}></Col>
                   <Col lg={6}>
                     <div className='bill-content mt-5'>
-                      <span>Total Order</span>
+                      <span>Total Product</span>
                       <span>$ 0</span>
                     </div>
                     <div className='bill-content'>
                       <span>Delivery fee</span>
                       <span>$ 0</span>
-                    </div>
-                    <div className='bill-content-bottom'>
-                      <span>Total Product</span>
-                      <span>$ {totalAmount}</span>
                     </div>
                     <div className='bill-content-bottom'>
                       <span>Total Order</span>

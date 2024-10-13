@@ -4,7 +4,7 @@ import CardOrder from '../../../Components/CardOrder/CardOrder'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../Store/store'
 import { setLoaded, setLoading } from '../../../Store/loadingSlice'
-import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder'
+import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder/CardSkeletonOrder'
 import NotFoundOrder from '../../../Components/NotFoundOrder/NotFoundOrder'
 import { $axios } from '../../../axios'
 
@@ -31,7 +31,7 @@ const Processing: React.FC = () => {
   }, [dispatch])
 
   return (
-    <div className='container-processing'>
+    <div className='container-processing' style={{ minHeight: '100vh'}}>
       <Container>
         {isLoading ? (
           <>

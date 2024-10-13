@@ -1,17 +1,23 @@
+@import '/global.scss';
 
-.filter {
+.container-category-detail-books-master {
+  min-height: 100vh;
+  background-color: $prime-bgColor-Pages;
+
+  .filter {
     .p-dropdown {
-        width: 100%;
+      width: 100%;
     }
 
     .p-dropdown-label {
-        font-size: 12px;
+      font-size: 12px;
     }
-}
+  }
 
-.loading-category {
+  .loading-category {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 80vh;
+  }
 }

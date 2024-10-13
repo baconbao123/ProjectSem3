@@ -6,7 +6,7 @@ import './Canceled.scss'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../Store/store'
 import { setLoaded, setLoading } from '../../../Store/loadingSlice'
-import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder'
+import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder/CardSkeletonOrder'
 import NotFoundOrder from '../../../Components/NotFoundOrder/NotFoundOrder'
 
 const Canceled: React.FC = () => {
@@ -32,7 +32,7 @@ const Canceled: React.FC = () => {
   }, [])
 
   return (
-    <div className='container-canceled'>
+    <div className='container-canceled' style={{ minHeight: '100vh' }}>
       <Container>
         {isLoading ? (
           <>

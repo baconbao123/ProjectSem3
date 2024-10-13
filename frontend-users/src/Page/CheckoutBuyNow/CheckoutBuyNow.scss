@@ -2,7 +2,8 @@
 
 .conatiner-checkout-products {
   background-color: $prime-bgColor-Pages;
-
+  padding-bottom: 30px;
+  padding-top: 10px;
   .container-checkout-content {
     .row-checkout {
       span {
@@ -141,7 +142,6 @@
       width: 1307px;
       margin-top: 20px;
       background-color: white;
-      padding-bottom: 20px;
 
       .payment-method-heading {
         padding: 20px 30px;
