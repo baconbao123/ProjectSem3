@@ -17,6 +17,8 @@ public class ProductFEController : Controller
     {
         var listData = (from item in context.Product
                         join partner in context.CompanyPartner on item.CompanyPartnerId equals partner.Id
+                        join productCategory in context.ProductCategory on item.Id equals productCategory.ProductId
+                        join category in context.Category on productCategory.CategoryId equals category.Id
                         where item.DeletedAt == null && item.Status == 1
                               && !context.ProductCategory.Any(pc => pc.ProductId == item.Id
                                                                 && context.Category.Any(c => c.Id == pc.CategoryId && c.Status != 1))
@@ -29,6 +31,7 @@ public class ProductFEController : Controller
                             item.Description,
                             item.ImageThumbPath,
                             // Fetch company partner name
+                            CategoryName = category.Name,
                             CompanyPartnerName = partner.Name,
                             item.Version,
                             item.Status,
@@ -103,7 +106,9 @@ public class ProductFEController : Controller
                                              cate.Id,
                                              cate.Name,
                                              cate.CategoryCode,
-                                             cate.Description
+                                             cate.Description,
+                                             cate.Level,
+                                             cate.ParentId
                                          }).ToList(),
 
                            Authors = (from ap in context.AuthorProduct
@@ -130,5 +135,37 @@ public class ProductFEController : Controller
             return BadRequest(new { message = "Data not found" });
         }
         return Ok(new { data = product });
+    }
+
+    [HttpGet("category/{categoryId}")]
+    public IActionResult GetProductByCategory(int categoryId)
+    {
+        var category = context.Category.FirstOrDefault(c => c.Id == categoryId && c.Status == 1);
+        if (category == null)
+        {
+            return BadRequest(new { message = "Category not found or not active." });
+        }
+
+        var products = (from pc in context.ProductCategory
+                        join p in context.Product on pc.ProductId equals p.Id
+                        where pc.CategoryId == categoryId && pc.DeletedAt == null && p.DeletedAt == null
+                        orderby p.CreatedAt descending
+                        select new
+                        {
+                            p.Id,
+                            p.Name,
+                            p.ImageThumbPath,
+                            p.Description,
+                            p.SellPrice,
+                            p.Quantity,
+                            p.CreatedAt,
+                        }).ToList();
+
+        if (!products.Any())
+        {
+            return BadRequest(new { message = "No products found in this category." });
+        }
+
+        return Ok(new { data = products, total = products.Count });
     }
 }

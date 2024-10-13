@@ -13,7 +13,7 @@ import { Dialog } from 'primereact/dialog'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../Store/store'
 import { setLoaded, setLoading } from '../../Store/loadingSlice'
-import Loading from '../../Components/Loading/Loading'
+import { Skeleton } from 'primereact/skeleton'
 
 interface AccountData {
   Id: string
@@ -240,8 +240,8 @@ const Account: React.FC = () => {
                   {/* avatar */}
                   <Col lg={4} className='col-avatar'>
                     {isLoading ? (
-                      <div className='mb-5' style={{ height: '100px' }}>
-                        <Loading />
+                      <div className='mb-7' style={{ height: '100px', display: 'flex', justifyContent: 'center' }}>
+                        <Skeleton shape='circle' size='15rem' className='mr-2'></Skeleton>
                       </div>
                     ) : (
                       <Avatar
@@ -308,13 +308,19 @@ const Account: React.FC = () => {
                             onChange={handleConfirmPasswordChange}
                           />
                         </div>
-                        
-                        {!passwordMatch && <p style={{ color: 'red', fontSize: '14px', marginLeft: '150px' }}>Password Do Not Match</p>}
-                        
+
+                        {!passwordMatch && (
+                          <p style={{ color: 'red', fontSize: '14px', marginLeft: '150px' }}>Password Do Not Match</p>
+                        )}
 
                         <div className='profile-group-dialog mt-3'>
                           <p></p>
-                          <Button type='submit'className='btn-update-dialog' label='Update Password' onClick={(e: any) => handleChangePassword(e)} />
+                          <Button
+                            type='submit'
+                            className='btn-update-dialog'
+                            label='Update Password'
+                            onClick={(e: any) => handleChangePassword(e)}
+                          />
                         </div>
                       </form>
                     </Dialog>

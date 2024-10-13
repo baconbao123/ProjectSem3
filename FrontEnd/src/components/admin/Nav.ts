@@ -21,7 +21,7 @@ const MenuTopBar = [
 ]
 
 const MenuSideBar = [
-    {link: '/', title: 'Dashboard', icon: InsertChartOutlinedIcon,  code: 'Dashboard'},
+    {link: '/', title: 'Dashboard', icon: InsertChartOutlinedIcon, show: true},
     {link: '/user', title: 'User', icon: PersonOutlineOutlinedIcon,  code: 'User'},
     {link: '/product', title: 'Product', icon: Inventory2OutlinedIcon  , code: 'Product'},
     {link: '/order', title: 'Order', icon: ShoppingCartCheckoutOutlinedIcon  , code: 'Order'},

@@ -5,7 +5,7 @@ import CardOrder from '../../../Components/CardOrder/CardOrder'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../Store/store'
 import { setLoaded, setLoading } from '../../../Store/loadingSlice'
-import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder'
+import CardSkeletonOrder from '../../../Components/CardSkeleton/CardSkeletonOrder/CardSkeletonOrder'
 import NotFoundOrder from '../../../Components/NotFoundOrder/NotFoundOrder'
 import { $axios } from '../../../axios'
 

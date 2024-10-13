@@ -41,7 +41,10 @@ const OrderCancel : React.FC<OrderCancel> = ({loadDataTable, form, id}) => {
     const dispatch = useDispatch();
 
     const save = () => {
-        let dataForm = {Cancel: cancelReason}
+        let dataForm = {
+            Cancel: cancelReason,
+            Version: item.version
+        }
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",

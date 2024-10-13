@@ -16,8 +16,8 @@ interface CardProductProps {
 }
 
 export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
-  console.log(product);
-  
+  console.log(product)
+
   const userId = useSelector((state: RootState) => state.auth.userId)
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -33,7 +33,7 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
       icon: 'success',
       title: 'Product has been added to the cart',
       showConfirmButton: false,
-      timer: 1200
+      timer: 1000
     })
   }
 
@@ -43,7 +43,20 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
       return
     }
 
-    navigate('/checkout')
+    const previousProductKey = `buynowProduct_${userId}`
+    localStorage.removeItem(previousProductKey)
+
+    const currentProduct = {
+      Id: product.Id,
+      Name: product.Name,
+      ImageThumbPath: product.ImageThumbPath,
+      SellPrice: product.SellPrice,
+      quantity: 1
+    }
+
+    localStorage.setItem(previousProductKey, JSON.stringify([currentProduct]))
+
+    navigate('/checkout/buynow')
   }
 
   const header = (
@@ -80,13 +93,7 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
       >
         {product.SellPrice && product.SellPrice !== '' && (
           <div className='card-price-sale'>
-            <p className='price-base'>$ {product.BasePrice}</p> &nbsp;&nbsp;
             <p className='price-sale'>$ {product.SellPrice}</p>
-          </div>
-        )}
-        {!product.SellPrice && product.SellPrice == '' && (
-          <div className='card-price'>
-            <p className='price-base'>$ {product.BasePrice}</p>
           </div>
         )}
       </Card>

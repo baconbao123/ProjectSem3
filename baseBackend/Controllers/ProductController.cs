@@ -78,6 +78,7 @@ namespace AuthenticationJWT.Controllers
         }
 
         // get products with category
+        // get products with category
         [Authorize]
         [HttpGet("category")]
         public IActionResult GetAllCategoriesWithProducts()

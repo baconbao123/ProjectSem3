@@ -41,6 +41,7 @@ import Papa from "papaparse"; // Import papaparse
 import SaleAdd from "./SaleAdd.tsx";
 import "@assets/styles/sale.scss"
 import SaleDetail from "./SaleDetail.tsx";
+import {checkPermission} from "@src/Service/common.ts";
 const SaleList: React.FC = () => {
   const dispatch = useDispatch();
 
@@ -383,9 +384,12 @@ const SaleList: React.FC = () => {
   const button: React.FC = () => {
     return (
       <div className="d-flex" style={{ gap: "0.5rem" }}>
-        <div onClick={showModalAdd} className="btn btn-general">
-          Add new
-        </div>
+        {/*<div onClick={showModalAdd} className="btn btn-general">*/}
+        {/*  Add new*/}
+        {/*</div>*/}
+        {checkPermission('Sale', 'create') ? (
+            <div onClick={showModalAdd} className="btn btn-general">Add new</div>
+        ) : ''}
         {/* <div onClick={exportToExcel} className="btn btn-export btn-warning">Export to Excel</div>
             <div onClick={exportToCSV} className="btn btn-export btn-warning">Export to CSV</div> */}
       </div>
@@ -612,20 +616,20 @@ const SaleList: React.FC = () => {
                               key={crypto.randomUUID()}
                             >
                               <span
-                                className="m-2 btn-icon p-1"
-                                onClick={() => showModalDetail(item)}
+                                  className={`m-2 btn-icon p-1 ${checkPermission('Sale', 'read') ? '' : 'btn-disable'}`}
+                                  onClick={() => checkPermission('Sale', 'read') && showModalDetail(item)}
                               >
                                 <RemoveRedEyeOutlinedIcon />
                               </span>
                               <span
-                                className="m-2 btn-icon p-1"
-                                onClick={() => showModalEdit(item)}
+                                  className={`m-2 btn-icon p-1 ${checkPermission('Sale', 'update') ? '' : 'btn-disable'}`}
+                                  onClick={() => checkPermission('Sale', 'update') && showModalEdit(item)}
                               >
                                 <EditOutlinedIcon />
                               </span>
                               <span
-                                className="m-2 btn-icon btn-delete p-1"
-                                onClick={() => deleteItem(item)}
+                                  className={`m-2 btn-icon p-1 ${checkPermission('Sale', 'delete') ? '' : 'btn-disable'}`}
+                                  onClick={() => checkPermission('Sale', 'delete') && deleteItem(item)}
                               >
                                 <DeleteOutlineOutlinedIcon />
                               </span>

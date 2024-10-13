@@ -14,6 +14,8 @@ interface CardAddressProps {
   addresses: any
   selectedId: string
   setSelectedId: (id: string) => void
+  setAddresses: any
+  onSelectAddress: any
 }
 
 interface AddressData {
@@ -26,10 +28,15 @@ interface AddressData {
   DetailAddress: string
 }
 
-const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, setSelectedId }) => {
+const CardAddressList: React.FC<CardAddressProps> = ({
+  addresses,
+  selectedId,
+  setSelectedId,
+  setAddresses,
+  onSelectAddress
+}) => {
   const [viewAddAddress, setViewAddAddress] = useState<boolean>(false)
-  console.log(addresses);
-  
+  console.log(addresses)
 
   const [assignName, setAssignName] = useState<string>('')
   const [assign, setAssign] = useState<boolean>(false)
@@ -37,7 +44,6 @@ const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, se
   const [index, setIndex] = useState<boolean>(false)
   const [address, setAddress] = useState<string>('')
   const [detailAddress, setDetailAddress] = useState<string>('')
-
   const userId = useSelector((state: RootState) => state.auth.userId)
 
   const handleAddAddress = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,6 +73,8 @@ const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, se
         })
       }
 
+      const updatedAddresses = await $axios.get(`AddressUserFE/GetAdressByUser/${userId}`)
+      setAddresses(updatedAddresses.data)
       setIndex(false)
       setAssign(false)
       setAssignName('')
@@ -74,7 +82,6 @@ const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, se
       setDetailAddress('')
     } catch (error) {
       console.log(error)
-
       Swal.fire({
         icon: 'error',
         title: 'Address Addition Failed',
@@ -88,7 +95,13 @@ const CardAddressList: React.FC<CardAddressProps> = ({ addresses, selectedId, se
     <>
       {addresses.map((c: any, index: any) => (
         <div className='card-address-list' key={index}>
-          <CardAddress key={c.Id} cardAdress={c} selectedId={selectedId} setSelectedId={setSelectedId} />
+          <CardAddress
+            key={c.Id}
+            cardAdress={c}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+            onSelectAddress={onSelectAddress}
+          />
         </div>
       ))}
       <div className='div-add-address'>
