@@ -17,6 +17,20 @@ import { setLoaded, setLoading } from '../../Store/loadingSlice'
 import { Skeleton } from 'primereact/skeleton'
 import { CardProductRelated } from '../../Components/CardProduct/Related/CardProductRelated'
 import { CardProduct } from '../../Components/CardProduct/Home/CardProduct'
+import CardRating from '../../Components/CardRating/CardRating'
+
+const ratingData = [
+  {
+    Name: 'Phoebe',
+    Value: '4.5',
+    Desc: 'Good'
+  },
+  {
+    Name: 'Tom',
+    Value: '4.8',
+    Desc: 'Good'
+  }
+]
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -340,6 +354,15 @@ const ProductDetail: React.FC = () => {
                 </Row>
               </Container>
             )}
+          </div>
+          
+          <div className='container-product-similar'>
+            <div className='container-products-content cart-rating'>
+              
+              {ratingData.map((r, index) => (
+                <CardRating key={index} rating={r} />
+              ))}
+            </div>
           </div>
           <div className='container-product-similar'>
             <Container className='container-products-content'>

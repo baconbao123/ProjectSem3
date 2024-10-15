@@ -16,6 +16,7 @@ interface CardRatingProps {
 
 const CardRating: React.FC<CardRatingProps> = ({ rating }) => {
   return (
+    
     <Container className='container-rating-product'>
       <Row lg={12} className='row-rating-card'>
         <Col lg={1} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
