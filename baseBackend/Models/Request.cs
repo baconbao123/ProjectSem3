@@ -199,8 +199,8 @@ public class ProductRequest
     [Required(ErrorMessage = "Version is required.")]
     public int Version { get; set; }
 
-    [Required(ErrorMessage = "Thumbnail image is required.")]
-    public IFormFile ImageThumbPath { get; set; }
+
+    public IFormFile? ImageThumbPath { get; set; }
 
     public List<IFormFile>? ProductImages { get; set; }
 
@@ -210,7 +210,7 @@ public class ProductRequest
     public List<int> CategoryIds { get; set; }
 
 
-    //public List<string>? DeletedImages { get; set; }
+    public List<string>? DeletedImages { get; set; }
 }
 
 

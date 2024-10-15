@@ -4,7 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { IoLocationSharp } from 'react-icons/io5'
 import CardCheckout from '../../Components/CardProduct/Checkout/CardCheckout'
 import { Button } from 'primereact/button'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Dialog } from 'primereact/dialog'
 import CardAddressList from '../../Components/CardAddress/List/CardAddressList'
 import { useSelector } from 'react-redux'
@@ -28,11 +28,6 @@ const Checkout: React.FC = () => {
     if (storedProducts) {
       setCheckedProducts(JSON.parse(storedProducts))
     }
-
-    const storedAddress = localStorage.getItem(`selectedAddress_${userId}`)
-    if (storedAddress) {
-      setSelectedAddress(JSON.parse(storedAddress))
-    }
   }, [userId])
 
   useEffect(() => {
@@ -47,7 +42,6 @@ const Checkout: React.FC = () => {
           const defaultAddress = res.data[0]
           setSelectedId(defaultAddress.Id)
           setSelectedAddress(defaultAddress)
-          localStorage.setItem(`selectedAddress_${userId}`, JSON.stringify(defaultAddress))
         }
       } catch (error) {
         console.error('Error fetching user addresses:', error)
@@ -58,6 +52,16 @@ const Checkout: React.FC = () => {
   }, [userId])
 
   const handlePayment = async () => {
+    if (selectedAddress == null) {
+      Swal.fire({
+        title: 'Please Enter A Shipping Address!',
+        icon: 'error',
+        showConfirmButton: false,
+        timer: 1500
+      })
+      return
+    }
+
     const orderData = {
       UserId: userId,
       AddressId: selectedAddress.Id,
@@ -86,13 +90,6 @@ const Checkout: React.FC = () => {
 
         localStorage.removeItem(`productChecked_${userId}`)
       }
-
-      await Swal.fire({
-        title: 'Order successful!',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500
-      })
 
       navigate('/checkout/compeleted')
     } catch (error) {
@@ -147,9 +144,7 @@ const Checkout: React.FC = () => {
                       selectedId={selectedId}
                       setSelectedId={setSelectedId}
                       onSelectAddress={(address: any) => {
-                        localStorage.removeItem(`selectedAddress_${userId}`)
                         setSelectedAddress(address)
-                        localStorage.setItem(`selectedAddress_${userId}`, JSON.stringify(address))
                       }}
                     />
                   </Dialog>
@@ -245,9 +240,7 @@ const Checkout: React.FC = () => {
                       <span>$ {totalPrice}</span>
                     </div>
                     <div className='btn-payment'>
-                      <Link to='/checkout/compeleted'>
-                        <Button label='Payment' className='btn-pay' onClick={handlePayment} />
-                      </Link>
+                      <Button label='Payment' className='btn-pay' onClick={handlePayment} />
                     </div>
                   </Col>
                 </Row>

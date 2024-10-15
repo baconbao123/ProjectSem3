@@ -314,9 +314,10 @@ const CompanyAdd: React.FC<CompanyAddProps> = ({ loadDataTable, form, id }) => {
             <Grid item xs={12} md={12} className="d-flex justify-content-end">
               <IconButton
                 color="secondary"
+                className="btn btn-general"
                 onClick={() => removeCompany(index)}
               >
-                <DeleteIcon />
+                <DeleteIcon  />
               </IconButton>
             </Grid>
           )}
@@ -351,7 +352,7 @@ const CompanyAdd: React.FC<CompanyAddProps> = ({ loadDataTable, form, id }) => {
           {form === "add" ? (
             <Button
               variant="contained"
-              color="primary"
+             className="btn btn-general"
               onClick={addNew}
             >
               Save All
@@ -359,7 +360,7 @@ const CompanyAdd: React.FC<CompanyAddProps> = ({ loadDataTable, form, id }) => {
           ) : (
             <Button
               variant="contained"
-              color="primary"
+              className="btn btn-general"
               onClick={save}
             >
               Update

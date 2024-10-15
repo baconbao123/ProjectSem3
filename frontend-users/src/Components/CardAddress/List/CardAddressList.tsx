@@ -36,8 +36,6 @@ const CardAddressList: React.FC<CardAddressProps> = ({
   onSelectAddress
 }) => {
   const [viewAddAddress, setViewAddAddress] = useState<boolean>(false)
-  console.log(addresses)
-
   const [assignName, setAssignName] = useState<string>('')
   const [assign, setAssign] = useState<boolean>(false)
   const [phone, setPhone] = useState<string>('')
@@ -45,6 +43,20 @@ const CardAddressList: React.FC<CardAddressProps> = ({
   const [address, setAddress] = useState<string>('')
   const [detailAddress, setDetailAddress] = useState<string>('')
   const userId = useSelector((state: RootState) => state.auth.userId)
+  const [error, setError] = useState('')
+
+  const handlePhoneChange = (e: any) => {
+    const value = e.target.value
+
+    if (value.length !== 10) {
+      setError('Enter phone with 10 characters')
+    } else {
+      setError('')
+    }
+
+    setPhone(value)
+  }
+
 
   const handleAddAddress = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -59,29 +71,22 @@ const CardAddressList: React.FC<CardAddressProps> = ({
       DetailAddress: detailAddress
     }
 
-    console.log(addressData)
-
     try {
       const res = await $axios.post('AddressUserFE', addressData)
 
       if (res.status === 200) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Address Added Successfully',
-          showConfirmButton: false,
-          timer: 1500
-        })
+        const updatedAddresses = await $axios.get(`AddressUserFE/GetAdressByUser/${userId}`)
+        setAddresses(updatedAddresses.data)
+        setIndex(false)
+        setAssign(false)
+        setPhone('')
+        setAssignName('')
+        setAddress('')
+        setDetailAddress('')
+        setViewAddAddress(false)
       }
-
-      const updatedAddresses = await $axios.get(`AddressUserFE/GetAdressByUser/${userId}`)
-      setAddresses(updatedAddresses.data)
-      setIndex(false)
-      setAssign(false)
-      setAssignName('')
-      setAddress('')
-      setDetailAddress('')
     } catch (error) {
-      console.log(error)
+      console.error(error)
       Swal.fire({
         icon: 'error',
         title: 'Address Addition Failed',
@@ -101,6 +106,7 @@ const CardAddressList: React.FC<CardAddressProps> = ({
             selectedId={selectedId}
             setSelectedId={setSelectedId}
             onSelectAddress={onSelectAddress}
+            setAddresses={setAddresses}
           />
         </div>
       ))}
@@ -120,17 +126,18 @@ const CardAddressList: React.FC<CardAddressProps> = ({
             <div className='row-address-1'>
               <span className='input-address-group'>
                 <label htmlFor='Username'>AssignName</label>
-                <InputText id='Username' value={assignName} onChange={(e) => setAssignName(e.target.value)} />
+                <InputText id='Username' value={assignName} onChange={(e) => setAssignName(e.target.value)} required />
               </span>
               <div className='input-address-group' style={{ marginLeft: '10px' }}>
                 <label htmlFor='Phone'>Phone</label>
-                <InputText id='Phone' value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <InputText id='Phone' value={phone} onChange={handlePhoneChange} required />
+                {error && <small style={{ color: 'red', fontSize: '12px' }}>{error}</small>}
               </div>
             </div>
             <div className='row-address-2'>
               <span className='input-address-group'>
                 <label htmlFor='Address'>Address</label>
-                <InputText id='Address' value={address} onChange={(e) => setAddress(e.target.value)} />
+                <InputText id='Address' value={address} onChange={(e) => setAddress(e.target.value)} required />
               </span>
             </div>
             <div className='row-address-2'>
@@ -157,10 +164,10 @@ const CardAddressList: React.FC<CardAddressProps> = ({
               <span className='span-confirm'>Allow someone else to receive it for you</span>
             </div>
             <div className='row-address-3 mt-3'>
-              <Button type='submit' label='Save' className='save' onClick={() => setViewAddAddress(false)} />
+              <Button type='submit' label='Save' className='save' />
             </div>
           </form>
-        </Dialog>
+        </Dialog>{' '}
       </div>
     </>
   )

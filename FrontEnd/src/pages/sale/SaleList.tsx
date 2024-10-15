@@ -8,7 +8,8 @@ import {
 } from "@src/Store/Slinces/appSlice.ts";
 import Modal from "@pages/common/Modal.tsx";
 import {
-    LinearProgress,
+  Breadcrumbs,
+  LinearProgress,
   MenuItem,
   Select,
   Table,
@@ -17,7 +18,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import Countdown from 'react-countdown';
+import Countdown from "react-countdown";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
@@ -39,9 +40,9 @@ import * as XLSX from "xlsx"; // Thư viện XLSX để xuất Excel
 import { saveAs } from "file-saver"; // Thư viện hỗ trợ lưu file
 import Papa from "papaparse"; // Import papaparse
 import SaleAdd from "./SaleAdd.tsx";
-import "@assets/styles/sale.scss"
+import "@assets/styles/sale.scss";
 import SaleDetail from "./SaleDetail.tsx";
-import {checkPermission} from "@src/Service/common.ts";
+import { checkPermission } from "@src/Service/common.ts";
 const SaleList: React.FC = () => {
   const dispatch = useDispatch();
 
@@ -56,7 +57,12 @@ const SaleList: React.FC = () => {
   const [componentTitle, setComponentTitle] = useState<any>("Add component");
   const [showComponent, setShowComponent] = useState("");
   const [currentId, setCurrentId] = useState(null);
-  const [filter, setFilter] = useState({ Name: "", Status: -1, Type: -1 , DiscountStatus: -1});
+  const [filter, setFilter] = useState({
+    Name: "",
+    Status: -1,
+    Type: -1,
+    DiscountStatus: -1,
+  });
   useEffect(() => {
     dispatch(setLoading(true));
     setField([
@@ -148,38 +154,42 @@ const SaleList: React.FC = () => {
         ) {
           return false;
         }
-        if (key === 'Type' && item[key] !== value) {
-            return false;
+        if (key === "Type" && item[key] !== value) {
+          return false;
         }
-        if (key === 'Exp') {
-            const endDate = dayjs(item.EndDate);
-            const now = dayjs(); // Convert current date to a dayjs object
-            if (now.isAfter(endDate)) {
-                // Expired
-                if (value !== 3) return false;
+        if (key === "Exp") {
+          const endDate = dayjs(item.EndDate);
+          const now = dayjs(); // Convert current date to a dayjs object
+          if (now.isAfter(endDate)) {
+            // Expired
+            if (value !== 3) return false;
+          } else {
+            const diffDays = endDate.diff(now, "day");
+            if (diffDays < 3) {
+              // Expiring Soon (less than 3 days)
+              if (value !== 2) return false;
             } else {
-                const diffDays = endDate.diff(now, 'day');
-                if (diffDays < 3) {
-                    // Expiring Soon (less than 3 days)
-                    if (value !== 2) return false;
-                } else {
-                    // Valid
-                    if (value !== 1) return false;
-                }
+              // Valid
+              if (value !== 1) return false;
             }
+          }
         }
       }
 
       return true;
     });
 
-    const sortTable = field.filter(item => item.sortValue !== 'none')[0];
+    const sortTable = field.filter((item) => item.sortValue !== "none")[0];
     let sortResult;
     if (sortTable) {
-        sortResult = _.orderBy(result, [sortTable.key], [sortTable.sortValue === 'ascending' ? 'asc' : 'desc']);
+      sortResult = _.orderBy(
+        result,
+        [sortTable.key],
+        [sortTable.sortValue === "ascending" ? "asc" : "desc"]
+      );
     }
     setFilterData(sortTable ? sortResult : result);
-}, [filter, data, field]);
+  }, [filter, data, field]);
 
   const loadDataTable = () => {
     const token = Cookies.get("token");
@@ -266,7 +276,21 @@ const SaleList: React.FC = () => {
   };
 
   const header: React.FC = () => {
-    return <div className="header-page">{/* <Breadcrumbs/>   */}</div>;
+    return (
+      <div className="header-page m-3">
+        <Breadcrumbs
+          separator="›"
+          aria-label="breadcrumb"
+          className="breadcrumb"
+        >
+          <Link color="inherit" to="/">
+            <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+            Home
+          </Link>
+          <Link to="/discount">Discount</Link>
+        </Breadcrumbs>
+      </div>
+    );
   };
 
   const search: React.FC = () => {
@@ -277,10 +301,10 @@ const SaleList: React.FC = () => {
       setFilter((prev) => ({ ...prev, Name: e.target.value }));
     };
     const setChangeType = (e: any) => {
-        setFilter(prev => ({ ...prev, Type: e.target.value }));
+      setFilter((prev) => ({ ...prev, Type: e.target.value }));
     };
     const setChangeDiscountStatus = (e: any) => {
-        setFilter(prev => ({ ...prev, DiscountStatus: e.target.value }));
+      setFilter((prev) => ({ ...prev, DiscountStatus: e.target.value }));
     };
     return (
       <div className="search-container">
@@ -307,20 +331,20 @@ const SaleList: React.FC = () => {
 
         {/* Dropdown chọn Type */}
         <Select
-                className="search-form width-200 custom-form"
-                value={filter.Type}
-                onChange={e => setChangeType(e)}
-                displayEmpty
-            >
-                <MenuItem value={-1}>
-                    <span className='placeholder-text'>Select type</span>
-                </MenuItem>
-                <MenuItem value={1}>Freeship</MenuItem>
-                <MenuItem value={2}>Discount By Order</MenuItem>
-                <MenuItem value={3}>Discount By Category</MenuItem>
-            </Select>
-         {/* Dropdown chọn Discount Status */}
-         {/* <Select
+          className="search-form width-200 custom-form"
+          value={filter.Type}
+          onChange={(e) => setChangeType(e)}
+          displayEmpty
+        >
+          <MenuItem value={-1}>
+            <span className="placeholder-text">Select type</span>
+          </MenuItem>
+          <MenuItem value={1}>Freeship</MenuItem>
+          <MenuItem value={2}>Discount By Order</MenuItem>
+          <MenuItem value={3}>Discount By Category</MenuItem>
+        </Select>
+        {/* Dropdown chọn Discount Status */}
+        {/* <Select
                 className="search-form width-200 custom-form"
                 value={filter.DiscountStatus}
                 onChange={e => setChangeDiscountStatus(e)}
@@ -387,9 +411,13 @@ const SaleList: React.FC = () => {
         {/*<div onClick={showModalAdd} className="btn btn-general">*/}
         {/*  Add new*/}
         {/*</div>*/}
-        {checkPermission('Sale', 'create') ? (
-            <div onClick={showModalAdd} className="btn btn-general">Add new</div>
-        ) : ''}
+        {checkPermission("Sale", "create") ? (
+          <div onClick={showModalAdd} className="btn btn-general">
+            Add new
+          </div>
+        ) : (
+          ""
+        )}
         {/* <div onClick={exportToExcel} className="btn btn-export btn-warning">Export to Excel</div>
             <div onClick={exportToCSV} className="btn btn-export btn-warning">Export to CSV</div> */}
       </div>
@@ -462,27 +490,26 @@ const SaleList: React.FC = () => {
       setField(updatedField);
       handleSortData(data.key, getSortValue(data.sortValue));
     };
-   
 
-     // Renderer cho Countdown component
-     const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
-        if (completed) {
-            return <span className="countdown-expired">Expired</span>;
-        } else if (days < 3) {
-            return (
-                <span className="countdown-warning">
-                    {days}d {hours}h {minutes}m {seconds}s left
-                </span>
-            );
-        } else {
-            return (
-                <span className="countdown-normal">
-                    {days}d {hours}h {minutes}m {seconds}s left
-                </span>
-            );
-        }
+    // Renderer cho Countdown component
+    const renderer = ({ days, hours, minutes, seconds, completed }: any) => {
+      if (completed) {
+        return <span className="countdown-expired">Expired</span>;
+      } else if (days < 3) {
+        return (
+          <span className="countdown-warning">
+            {days}d {hours}h {minutes}m {seconds}s left
+          </span>
+        );
+      } else {
+        return (
+          <span className="countdown-normal">
+            {days}d {hours}h {minutes}m {seconds}s left
+          </span>
+        );
+      }
     };
-    
+
     return (
       <div>
         <div className="table-container">
@@ -536,17 +563,16 @@ const SaleList: React.FC = () => {
                           );
                         }
                         if (field.key === "Exp") {
-                            const endDate = dayjs(item.EndDate).toDate();
-                            
-                            
-                            return (
-                                <TableCell className={field.class} key={crypto.randomUUID()}>
-                                    <Countdown
-                                        date={endDate}
-                                        renderer={renderer}
-                                    />
-                                </TableCell>
-                            );
+                          const endDate = dayjs(item.EndDate).toDate();
+
+                          return (
+                            <TableCell
+                              className={field.class}
+                              key={crypto.randomUUID()}
+                            >
+                              <Countdown date={endDate} renderer={renderer} />
+                            </TableCell>
+                          );
                         }
                         if (field.key === "Type") {
                           if (item[field.key] === 1) {
@@ -616,20 +642,41 @@ const SaleList: React.FC = () => {
                               key={crypto.randomUUID()}
                             >
                               <span
-                                  className={`m-2 btn-icon p-1 ${checkPermission('Sale', 'read') ? '' : 'btn-disable'}`}
-                                  onClick={() => checkPermission('Sale', 'read') && showModalDetail(item)}
+                                className={`m-2 btn-icon p-1 ${
+                                  checkPermission("Sale", "read")
+                                    ? ""
+                                    : "btn-disable"
+                                }`}
+                                onClick={() =>
+                                  checkPermission("Sale", "read") &&
+                                  showModalDetail(item)
+                                }
                               >
                                 <RemoveRedEyeOutlinedIcon />
                               </span>
                               <span
-                                  className={`m-2 btn-icon p-1 ${checkPermission('Sale', 'update') ? '' : 'btn-disable'}`}
-                                  onClick={() => checkPermission('Sale', 'update') && showModalEdit(item)}
+                                className={`m-2 btn-icon p-1 ${
+                                  checkPermission("Sale", "update")
+                                    ? ""
+                                    : "btn-disable"
+                                }`}
+                                onClick={() =>
+                                  checkPermission("Sale", "update") &&
+                                  showModalEdit(item)
+                                }
                               >
                                 <EditOutlinedIcon />
                               </span>
                               <span
-                                  className={`m-2 btn-icon p-1 ${checkPermission('Sale', 'delete') ? '' : 'btn-disable'}`}
-                                  onClick={() => checkPermission('Sale', 'delete') && deleteItem(item)}
+                                className={`m-2 btn-icon p-1 ${
+                                  checkPermission("Sale", "delete")
+                                    ? ""
+                                    : "btn-disable"
+                                }`}
+                                onClick={() =>
+                                  checkPermission("Sale", "delete") &&
+                                  deleteItem(item)
+                                }
                               >
                                 <DeleteOutlineOutlinedIcon />
                               </span>

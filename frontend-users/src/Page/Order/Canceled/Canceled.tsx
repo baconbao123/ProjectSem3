@@ -13,11 +13,12 @@ const Canceled: React.FC = () => {
   const [orders, setOrders] = useState<any | []>([])
   const dispatch = useDispatch()
   const isLoading = useSelector((state: RootState) => state.loading.isLoading)
+  const userId = useSelector((state: RootState) => state.auth.userId)
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get('https://bookstore123.free.mockoapp.net/orders')
+        const res = await axios.get(`OrderProductFE/GetOrderByUser/${userId}`)
         setOrders(res.data)
       } catch (error) {
         console.log(error)
@@ -42,9 +43,9 @@ const Canceled: React.FC = () => {
               </Row>
             ))}
           </>
-        ) : orders && orders.length > 0 && orders.filter((o: any) => o.status === 'CANCELED').length > 0 ? (
+        ) : Array.isArray(orders) && orders.length > 0 && orders.filter((o: any) => o.cancel !== null).length > 0 ? (
           orders
-            .filter((o: any) => o.status === 'CANCELED')
+            .filter((o: any) => o.cancel !== null)
             .map((o: any, index: any) => (
               <Row className={`row-allOrder ${index > 0 ? 'mt-4' : ''}`} key={index}>
                 <CardOrder key={o.idOrder} order={o} />

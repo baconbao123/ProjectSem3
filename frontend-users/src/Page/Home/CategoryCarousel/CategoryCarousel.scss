@@ -40,13 +40,14 @@
     width: 400px;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    opacity: 1; // Đặt opacity là 1 để hiển thị lớp overlay
     z-index: 1;
+    // Xóa transition cho opacity
   }
 
+  // Xóa các hiệu ứng hover cho overlay
   &:hover .overlay {
-    opacity: 1;
+    opacity: 1; // Không cần nữa
   }
 
   &:hover .banner-content {
@@ -70,7 +71,7 @@
     font-size: 36px;
   }
 
-  &:hover .category-name {
+  .category-name {
     color: white;
   }
 }
@@ -101,7 +102,7 @@
       right: 23px;
     }
 
-    &:focus {
+  &:focus {
       outline: none;
       box-shadow: none;
     }

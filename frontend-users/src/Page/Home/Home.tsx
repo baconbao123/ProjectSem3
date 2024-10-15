@@ -15,6 +15,7 @@ import './Home.scss'
 const Home = () => {
   const [products, setProducts] = useState<any | []>([])
   const [productsData, setProductsData] = useState<any | []>([])
+  const [productTopSelling, setProductTopSelling] = useState<any | []>([])
   const isLoading = useSelector((state: RootState) => state.loading.isLoading)
   const dispatch = useDispatch()
 
@@ -37,6 +38,19 @@ const Home = () => {
         const res = await $axios.get('ProductFE')
         const allCategories = res.data.data
         setProductsData(allCategories)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await $axios.get('ProductFE/TopSellingProducts')
+        setProductTopSelling(res.data.data)
       } catch (err) {
         console.log(err)
       }
@@ -85,10 +99,10 @@ const Home = () => {
                         Travel Books
                       </a>
                     </h2>
-                    <a className='btn btn-outline-white-3 banner-link'>
+                    <Link to="/all-products" className='btn btn-outline-white-3 banner-link'>
                       Find out more
                       <i className='icon-long-arrow-right' />
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </Col>
@@ -173,24 +187,17 @@ const Home = () => {
                 </div>
               </Col>
               <Col lg={6} md={7} sm={3} xs={6}></Col>
-              <Col lg={2} md={3} sm={3} xs={3}>
-                <div className='heading-right'>
-                  <Link to='/best-seller' className='title-link'>
-                    View More Products <i className='icon-long-arrow-right' />
-                  </Link>
-                </div>
-              </Col>
+              <Col lg={2} md={3} sm={3} xs={3}></Col>
             </Row>
 
             <Row style={{ paddingBottom: '15px' }}>
-              {productsData
-                .slice(0, 6)
-                .sort((a: any, b: any) => b.SellPrice - a.SellPrice)
-                .map((product: any) => (
-                  <Col lg={2} md={3} key={product.Id}>
-                    <CardProduct product={product} />
+              <Row style={{ paddingBottom: '15px' }}>
+                {productTopSelling.slice(0, 6).map((item: any) => (
+                  <Col lg={2} md={3} key={item.Product.Id}>
+                    <CardProduct product={item.Product} />
                   </Col>
                 ))}
+              </Row>
             </Row>
           </Container>
         </div>
@@ -212,7 +219,7 @@ const Home = () => {
             <Col lg={12}>
               <Row>
                 {productsData
-                  .slice(0, 4)
+                  .slice(0, 6)
                   .sort((a: any, b: any) => {
                     const dateA = new Date(a.CreatedAt.split('/').reverse().join('-'))
                     const dateB = new Date(b.CreatedAt.split('/').reverse().join('-'))

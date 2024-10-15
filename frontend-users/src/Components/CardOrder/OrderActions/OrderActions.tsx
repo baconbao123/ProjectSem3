@@ -61,14 +61,16 @@ const OrderActions: React.FC<CardOrderProps> = ({ order }) => {
   }
 
   const totalOrderPrice =
-    order.products && order.products.length > 0 ? calculateTotalOrderPrice(order.products).toFixed(2) : '0.00'
+    order && Array.isArray(order.products) && order.products.length > 0
+      ? calculateTotalOrderPrice(order.products).toFixed(2)
+      : '0.00'
 
   return (
     <Container>
       <Row>
         <Col lg={4} className='col-orderAction'>
           {/* COMPLETED */}
-          <Button label='Buy Again' className='btn-action' onClick={handleBuyAgain} /> &nbsp;
+          {/* <Button label='Buy Again' className='btn-action' onClick={handleBuyAgain} /> &nbsp; */}
           {/* More */}
           {location.pathname !== `/orders/details/${order.id}` && (
             <Link to={`/orders/details/${order.id}`} className='btn-action-more'>
@@ -79,7 +81,7 @@ const OrderActions: React.FC<CardOrderProps> = ({ order }) => {
         <Col lg={5}></Col>
         <Col lg={3} className='total-order'>
           Total Order Price: &nbsp;
-          <span style={{ fontWeight: '600' }}>$ {totalOrderPrice}</span>
+          <span style={{ fontWeight: '600' }}>$ {order.total_price}</span>
         </Col>
       </Row>
     </Container>

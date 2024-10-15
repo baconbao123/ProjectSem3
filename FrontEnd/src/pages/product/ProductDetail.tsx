@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
-import {
-  setLoading,
-  setShowModal,
-  setToast,
-} from "@src/Store/Slinces/appSlice.ts";
+import { setLoading, setShowModal } from "@src/Store/Slinces/appSlice.ts";
 import { useDispatch } from "react-redux";
-import $axios, { Productization } from "@src/axios.ts";
+import $axios from "@src/axios.ts";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import { Image } from 'primereact/image';
+import { Link } from "react-router-dom";
+
 interface ProductDetail {
   id: any;
 }
+
 const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
+  const [idProduct, setIdProduct] = useState(0);
   const [status, setStatus] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const [updatedBy, setUpdatedBy] = useState("");
@@ -25,7 +24,9 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
   const [sellPrice, setSellPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [imageThumbPath, setImageThumbPath] = useState("");
+  const dispatch = useDispatch();
   const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
+  const baseUrlFE = import.meta.env.VITE_BASE_URL_LOCALHOST_FE;
   const token = Cookies.get("token");
   const [isExpanded, setIsExpanded] = useState(false);
   const MAX_LENGTH = 500; // Độ dài tối đa để cắt bớt mô tả
@@ -38,9 +39,11 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
     description?.length > MAX_LENGTH
       ? description.substring(0, MAX_LENGTH) + "..."
       : description;
+
   useEffect(() => {
     loadData();
   }, []);
+
   const loadData = () => {
     dispatch(setLoading(true));
 
@@ -48,14 +51,16 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
       .get(`Product/${id}`)
       .then((res) => {
         console.log(res.data.data[0]);
-      
+
         if (res.data.data[0] && res.data.data[0].Name) {
           setName(res.data.data[0].Name);
+        }
+        if (res.data.data[0] && res.data.data[0].Id) {
+          setIdProduct(res.data.data[0].Id);
         }
         if (res.data.data[0] && res.data.data[0].Description) {
           setDescription(res.data.data[0].Description);
         }
-
         if (res.data.data[0] && res.data.data[0].BasePrice) {
           setBasePrice(res.data.data[0].BasePrice);
         }
@@ -65,21 +70,15 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
         if (res.data.data[0] && res.data.data[0].Quantity) {
           setQuantity(res.data.data[0].Quantity);
         }
-
         if (res.data.data[0] && res.data.data[0].Status) {
           setStatus(res.data.data[0].Status);
         }
         if (res.data.data[0] && res.data.data[0].UpdateAt) {
-          setUpdateAt(
-            dayjs(res.data.data[0].UpdateAt).format("YYYY-MM-DD HH:mm:ss")
-          );
+          setUpdateAt(dayjs(res.data.data[0].UpdateAt).format("YYYY-MM-DD HH:mm:ss"));
         }
         if (res.data.data[0] && res.data.data[0].CreatedAt) {
-          setCreatedAt(
-            dayjs(res.data.data[0].CreatedAt).format("YYYY-MM-DD HH:mm:ss")
-          );
+          setCreatedAt(dayjs(res.data.data[0].CreatedAt).format("YYYY-MM-DD HH:mm:ss"));
         }
-
         if (res.data.data[0] && res.data.data[0].CreatedBy) {
           setCreatedBy(res.data.data[0].CreatedBy);
         }
@@ -88,7 +87,6 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
         }
         if (res.data.data[0] && res.data.data[0].ImageThumbPath) {
           setImageThumbPath(res.data.data[0].ImageThumbPath);
-       
         }
       })
       .catch((err) => {
@@ -98,11 +96,15 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
         dispatch(setLoading(false));
       });
   };
-  const dispatch = useDispatch();
+
+  // Theo dõi thay đổi của idProduct
+  useEffect(() => {
+    console.log("idProduct:", idProduct);
+  }, [idProduct]);
 
   return (
     <div className="container-fluid">
-      <div className="row  ">
+      <div className="row">
         <div className="col-6">
           <div>
             <span className="label-form me-3">Name:</span>
@@ -111,7 +113,7 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
           <div className="mt-3">
             {imageThumbPath ? (
               <Image
-                src={baseUrl+imageThumbPath}
+                src={baseUrl + imageThumbPath}
                 alt="Thumb"
                 className="image-product"
                 width="70"
@@ -170,11 +172,17 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
           <div>
             <span className="label-form me-3">Status:</span>
             {status ? (
-              <span className="status-success ">Active</span>
+              <span className="status-success">Active</span>
             ) : (
               <span className="status-disable">Disable</span>
             )}
           </div>
+          <div className="fs-6 mt-4" >
+              <Link to={`${baseUrlFE}products/details/${idProduct}`} target="_blank"  rel="noopener noreferrer" style={{color: 'var(--default-color)'}}>
+            Link view product
+          </Link>
+          </div>
+        
         </div>
         <div className="col-6 mt-3">
           <div className="col-6 mt-3">
@@ -207,7 +215,7 @@ const ProductDetail: React.FC<ProductDetail> = ({ id }) => {
             </div>
           </div>
         </div>
-        <div className=" group-btn">
+        <div className="group-btn">
           <button
             onClick={() => dispatch(setShowModal(false))}
             type="button"

@@ -26,7 +26,7 @@ public class UserController : ControllerBase
                     from map in userRoles.DefaultIfEmpty()
                     join role in db.Role on map.RoleId equals role.Id into roleGroups
                     from role in roleGroups.DefaultIfEmpty()
-                    where user.DeletedAt == null && (role == null || role.DeletedAt == null) && (role == null || role.Status == 1) && (map == null || map.DeletedAt == null)
+                    where user.DeletedAt == null && (role == null || role.DeletedAt == null) && (role == null || role.Status == 1) && (map == null || map.DeletedAt == null) && user.Email != "SA"
                     group role by new
                     {
                         user.Id,

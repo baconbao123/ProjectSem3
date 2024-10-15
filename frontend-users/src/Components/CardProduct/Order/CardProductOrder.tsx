@@ -21,16 +21,10 @@ const CardProductOrder: React.FC<CardProductOrderProps> = ({ product }) => {
       </Col>
       <Col lg={8} className='title'>
         <span>{sliceText(product.product_name, 110)}</span>
-        {product.sell_price ? (
-          <div>
-            <span className='sellPrice'>$ {product.sell_price}</span> &nbsp;
-            <span className='basePrice'>$ {product.base_price}</span>
-          </div>
-        ) : (
-          <span className='basePrice1'>$ {product.base_price}</span>
-        )}
+        <span className='sellPrice'>$ {product.sell_price}</span> &nbsp;
         <span>Quantity: {product.quantity}</span>
       </Col>
+
       <Col lg={3} className='total'>
         Total Price: &nbsp;
         {product.sell_price ? (

@@ -6,6 +6,7 @@ import { calculateTotalPrice, sliceText } from '../../../utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearProductInCart } from '../../../Store/cartSlice'
 import { RootState } from '../../../Store/store'
+import { Link } from 'react-router-dom'
 
 export interface CardProductPayProps {
   product: Product
@@ -93,14 +94,16 @@ const CardProductPay: React.FC<CardProductPayProps> = ({ product, onCheck, isChe
     <Row>
       <Col lg={3}>
         <div className='div-left'>
-          {/* <input type='checkbox' className='check-items' checked={localChecked} /> */}
           <input type='checkbox' className='check-items' checked={localChecked} onChange={handleCheckboxChange} />
-
-          <img src={`${import.meta.env.VITE_API_BACKEND_PATH}/${product.ImageThumbPath}`} className='img-card' />
+          <Link to={`/products/details/${product.Id}`}>
+            <img src={`${import.meta.env.VITE_API_BACKEND_PATH}/${product.ImageThumbPath}`} className='img-card' />
+          </Link>
         </div>
       </Col>
       <Col lg={5} className='content-books'>
-        <span className='title'>{sliceText(product.Name, 90)}</span>
+        <Link to={`/products/details/${product.Id}`} className='url'>
+          <span className='title'>{sliceText(product.Name, 90)}</span>
+        </Link>
         {product.SellPrice && (
           <div className='card-price'>
             <span className='sell-price'>$ {product.SellPrice}</span>

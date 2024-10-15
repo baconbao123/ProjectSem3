@@ -39,7 +39,8 @@ public class OrderServiceImpl : OrderService
             ProductId = productDTO.ProductId,
             Quantity = productDTO.Quantity,
             BasePrice = (productDTO.Quantity * productDTO.BasePrice).ToString(),
-            ProductPrice = productDTO.SellPrice.ToString(),
+            ProductPrice = (productDTO.Quantity * productDTO.SellPrice).ToString(),
+            Profit = (productDTO.Quantity * productDTO.SellPrice) - (productDTO.Quantity * productDTO.BasePrice),
             CreatedAt = DateTime.Now,
             UpdateAt = DateTime.Now
         }).ToList();

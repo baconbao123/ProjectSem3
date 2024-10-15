@@ -327,7 +327,7 @@ namespace AuthenticationJWT.Controllers
                 .Where(op => op.DeletedAt == null)
                 .Sum(op => op.Quantity);
 
-            // Lấy top 4 sản phẩm bán chạy nhất
+            // Lấy top 6 sản phẩm bán chạy nhất
             var topSellingProducts = db.OrderProduct
                 .Where(op => op.DeletedAt == null)
                 .GroupBy(op => op.ProductId)
@@ -335,11 +335,23 @@ namespace AuthenticationJWT.Controllers
                 {
                     ProductId = g.Key,
                     TotalQuantitySold = g.Sum(op => op.Quantity),
-                    // Bạn có thể thêm thông tin sản phẩm nếu cần
-                    Product = db.Product.FirstOrDefault(p => p.Id == g.Key)
+                    ProductInfo = db.Product
+                        .Where(p => p.Id == g.Key)
+                        .Select(p => new
+                        {
+                            p.Id,
+                            p.Name,
+                            p.SellPrice,
+                            p.ImageThumbPath,
+                            CompanyName = db.CompanyPartner
+                                .Where(c => c.Id == p.CompanyPartnerId)
+                                .Select(c => c.Name)
+                                .FirstOrDefault()
+                        })
+                        .FirstOrDefault()
                 })
                 .OrderByDescending(x => x.TotalQuantitySold)
-                .Take(4)
+                .Take(6)
                 .ToList();
 
             // Nếu không có sản phẩm nào bán được, trả về dữ liệu rỗng
@@ -354,13 +366,23 @@ namespace AuthenticationJWT.Controllers
                 ProductId = p.ProductId,
                 TotalQuantitySold = p.TotalQuantitySold,
                 PercentageOfTotal = totalQuantitySold > 0 ? (p.TotalQuantitySold / totalQuantitySold) * 100 : 0,
-                ProductName = p.Product?.Name // Lấy tên sản phẩm nếu cần
+                Product = new
+                {
+                    p.ProductInfo.Id,
+                    p.ProductInfo.Name,
+                    p.ProductInfo.SellPrice,
+                    p.ProductInfo.ImageThumbPath,
+
+                    CompanyName = p.ProductInfo.CompanyName
+                }
             }).ToList();
 
             return Ok(new { data = topSellingProductsWithPercentage });
         }
 
-
-
     }
+
+
+
+
 }

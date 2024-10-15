@@ -101,9 +101,100 @@ public class CommonController : ControllerBase
 
             return Ok(new { data = listData, total = listData.Count() });
         }
+        else if (resource == "product")
+        {
+            // Fetch product list with additional conditions for active categories
+            var listData = (from item in db.Product
+                            join partner in db.CompanyPartner on item.CompanyPartnerId equals partner.Id
+                            where item.DeletedAt == null && item.Status == 1
+                                  && !db.ProductCategory.Any(pc => pc.ProductId == item.Id
+                                                                    && db.Category.Any(c => c.Id == pc.CategoryId && c.Status != 1))
+                            orderby item.CreatedAt descending
+                            select new
+                            {
+                                item.Id,
+                                item.Code,
+                                item.Name,
+                                item.Description,
+                                item.ImageThumbPath,
+                                // Fetch company partner name
+                                CompanyPartnerName = partner.Name,
+                                item.Version,
+                                item.Status,
+                                item.BasePrice,
+                                item.SellPrice,
+                                item.Quantity,
+                                item.CreatedAt,
+                                item.UpdateAt,
+
+                            }).ToList();
+
+            return Ok(new { data = listData, total = listData.Count });
+
+        }
+        else if (resource == "dashboard")
+        {
+            var listData = (from item in db.CompanyPartner
+                            where item.DeletedAt == null
+                            orderby item.CreatedAt descending
+                            select item).ToList();
+
+            return Ok(new { data = listData, total = listData.Count() });
+        }
         return BadRequest(new { message = "Data not found" });
 
+
+
     }
+    [HttpGet("{resource}/category")]
+    public IActionResult GetCategory(string resource, int categoryId)
+    {
+        if (resource != "product")
+        {
+            return BadRequest(new { message = "Invalid resource type" });
+        }
+
+        var category = db.Category.FirstOrDefault(c => c.Id == categoryId && c.Status == 1);
+        if (category == null)
+        {
+            return NotFound(new { message = "Category not found or not active." });
+        }
+
+        // Determine if the category is a parent category
+        bool isParentCategory = db.Category.Any(c => c.ParentId == categoryId);
+
+        // Get list of category IDs to search
+        var categoryIdsToSearch = isParentCategory
+            ? db.Category.Where(c => c.ParentId == categoryId && c.Status == 1).Select(c => c.Id).ToList()
+            : new List<int> { categoryId };
+
+        // Retrieve products belonging to the specified categories
+        var products = (from pc in db.ProductCategory
+                        join p in db.Product on pc.ProductId equals p.Id
+                        where categoryIdsToSearch.Contains(pc.CategoryId)
+                              && pc.DeletedAt == null
+                              && p.DeletedAt == null
+                        orderby p.CreatedAt descending
+                        select new
+                        {
+                            p.Id,
+                            p.Name,
+                            p.ImageThumbPath,
+                            p.Code,
+                            p.Description,
+                            p.SellPrice,
+                            p.Quantity,
+                            p.CreatedAt,
+                        }).ToList();
+
+        if (!products.Any())
+        {
+            return NotFound(new { message = "No products found in this category." });
+        }
+
+        return Ok(new { data = products, total = products.Count });
+    }
+
     private void GetCategoryWithLevel(List<Category> categories, Category currentCategory, int level, List<object> listData)
     {
         var parentCategory = categories.FirstOrDefault(c => c.Id == currentCategory.ParentId);

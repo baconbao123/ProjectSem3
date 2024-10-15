@@ -19,13 +19,15 @@
 
   .content-category-product {
     background-color: white;
-    margin-top: 20px;
-    padding: 20px 0;
+    margin: 20px;
+    padding: 0 0 20px 0;
     border-radius: 10px;
 
     .category-name-container {
-      text-align: center;
-      color: $prime-color;
+      background-color: $prime-color;
+      padding:20px 20px 20px 30px;
+      border-radius: 5px 5px 0 0 ;
+      color: #fff;
 
       .category-name {
         font-size: 20px;
@@ -61,4 +63,18 @@
       }
     }
   }
+}
+
+.no-products-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: #999; /* Light gray color */
+}
+.large-input {
+  font-size: 1.5rem !important; /* Điều chỉnh kích thước chữ */
+  padding: 0.5rem; /* Điều chỉnh khoảng cách bên trong ô */
+}
+.search-container{
+  margin-top: 30px;
 }

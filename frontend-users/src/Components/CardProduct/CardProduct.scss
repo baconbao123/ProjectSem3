@@ -41,21 +41,7 @@
       justify-content: space-between;
       gap: 5px;
 
-      .btncart {
-        color: $btn-color;
-        border-color: $btn-color;
-        background-color: white;
-        border-radius: 5px;
-        font-size: 10px;
-        width: 30%;
-        padding: 0;
-        margin: 0;
-
-        &:hover {
-          background-color: $btn-bgColor-hover;
-          color: $btn-color-hover;
-        }
-      }
+      
       .btn-buynow {
         background-color: $btn-color;
         border: $btn-color;

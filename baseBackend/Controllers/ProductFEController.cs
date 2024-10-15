@@ -137,6 +137,65 @@ public class ProductFEController : Controller
         return Ok(new { data = product });
     }
 
+    [HttpGet("TopSellingProducts")]
+    public IActionResult GetTopSellingProducts()
+    {
+        var totalQuantitySold = context.OrderProduct
+            .Where(op => op.DeletedAt == null)
+            .Sum(op => op.Quantity);
+
+        var topSellingProducts = context.OrderProduct
+            .Where(op => op.DeletedAt == null)
+            .GroupBy(op => op.ProductId)
+            .Select(g => new
+            {
+                ProductId = g.Key,
+                TotalQuantitySold = g.Sum(op => op.Quantity),
+                ProductInfo = context.Product
+                    .Where(p => p.Id == g.Key)
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.Name,
+                        p.SellPrice,
+                        p.BasePrice,
+                        p.ImageThumbPath,
+                        CompanyPartnerName = context.CompanyPartner
+                            .Where(c => c.Id == p.CompanyPartnerId)
+                            .Select(c => c.Name)
+                            .FirstOrDefault()
+                    })
+                    .FirstOrDefault()
+            })
+            .OrderByDescending(x => x.TotalQuantitySold)
+            .Take(6)
+            .ToList();
+
+        if (!topSellingProducts.Any())
+        {
+            return Ok(new { data = new object[] { }, message = "No products sold." });
+        }
+
+        var topSellingProductsWithPercentage = topSellingProducts.Select(p => new
+        {
+            ProductId = p.ProductId,
+            TotalQuantitySold = p.TotalQuantitySold,
+            PercentageOfTotal = totalQuantitySold > 0 ? (p.TotalQuantitySold / totalQuantitySold) * 100 : 0,
+            Product = new
+            {
+                p.ProductInfo.Id,
+                p.ProductInfo.Name,
+                p.ProductInfo.SellPrice,
+                p.ProductInfo.BasePrice,
+                p.ProductInfo.ImageThumbPath,
+
+                CompanyName = p.ProductInfo.CompanyPartnerName
+            }
+        }).ToList();
+
+        return Ok(new { data = topSellingProductsWithPercentage });
+    }
+
     [HttpGet("category/{categoryId}")]
     public IActionResult GetProductByCategory(int categoryId)
     {

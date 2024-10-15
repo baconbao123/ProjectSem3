@@ -4,9 +4,11 @@ import './Navigate.scss'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../Store/store'
+import { Badge } from 'primereact/badge'
 
 export const Navigate = () => {
   const userId = useSelector((state: RootState) => state.auth.userId)
+  const cartItem = useSelector((state: RootState) => state.cart.itemCount)
 
   return (
     <>
@@ -36,6 +38,23 @@ export const Navigate = () => {
                   <span className='span-text-navi'>Orders</span>
                 </div>
               </Link>
+              <Link to='/checkout/cart' className='url'>
+                <div className='cart' style={{ position: 'relative' }}>
+                  <i className='pi pi-shopping-cart icon' style={{ fontSize: '1.7rem' }}></i>
+                  <span className='span-text-navi'>Cart</span>
+                  <Badge
+                    value={cartItem}
+                    severity='success'
+                    style={{
+                      position: 'absolute',
+                      top: '-6px',
+                      right: '-3px',
+                      fontSize: '12px'
+                    }}
+                  ></Badge>
+                </div>
+              </Link>
+
               {userId ? (
                 <Link to='/account' className='url'>
                   <div className='account'>
@@ -51,13 +70,6 @@ export const Navigate = () => {
                   </div>
                 </Link>
               )}
-
-              <Link to='/checkout/cart' className='url'>
-                <div className='cart'>
-                  <i className='pi pi-shopping-cart icon' style={{ fontSize: '1.7rem' }}></i>
-                  <span className='span-text-navi'>Cart</span>
-                </div>
-              </Link>
             </div>
           </Col>
         </Row>

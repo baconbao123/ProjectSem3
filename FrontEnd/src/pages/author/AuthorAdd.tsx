@@ -259,6 +259,7 @@ const AuthorAdd: React.FC<AuthorAddProps> = ({ loadDataTable, form, id }) => {
                 checked={status}
                 onChange={(e) => setStatus(e.target.checked)}
                 color="primary"
+                
               />
             }
             label="Status"
@@ -282,7 +283,7 @@ const AuthorAdd: React.FC<AuthorAddProps> = ({ loadDataTable, form, id }) => {
           {form === "add" ? (
             <Button
               variant="contained"
-              color="primary"
+            className="btn btn-general"
               onClick={addNew}
               startIcon={<AddIcon />}
             >
@@ -291,7 +292,7 @@ const AuthorAdd: React.FC<AuthorAddProps> = ({ loadDataTable, form, id }) => {
           ) : (
             <Button
               variant="contained"
-              color="primary"
+             className="btn btn-general"
               onClick={save}
               startIcon={<AddIcon />}
             >

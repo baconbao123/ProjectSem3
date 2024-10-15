@@ -68,11 +68,9 @@ const Cart: React.FC = () => {
       setTotal(total - totalPrice)
     }
 
-    // Cập nhật selectedItems
     setSelectedItems(newSelectedItems)
     setCountItems(newSelectedItems.length)
 
-    // Kiểm tra nếu tất cả các mục đã được chọn
     setSelectAllChecked(newSelectedItems.length === cartItems.length)
   }
 
@@ -84,7 +82,6 @@ const Cart: React.FC = () => {
     }))
   }
 
-  // Check All Items
   const handleCheckedAll = (checked: boolean) => {
     setSelectAllChecked(checked)
 
@@ -207,40 +204,7 @@ const Cart: React.FC = () => {
               <Col lg={4}>
                 <div className='container-right'>
                   {/* Voucher */}
-                  <Row className='row-voucher'>
-                    <div className='select-voucher'>
-                      <span className='span-select'>Select Voucher</span>
-                      <Button label='Select' className='btn-select' onClick={() => setDialogVoucher(!dialogVoucher)} />
-                      <Dialog
-                        header='Select Voucher'
-                        visible={dialogVoucher}
-                        onHide={() => {
-                          if (!dialogVoucher) return
-                          setDialogVoucher(false)
-                        }}
-                        style={{ width: '30vw' }}
-                        breakpoints={{ '960px': '75vw', '641px': '100vw' }}
-                      >
-                        {vouchers.map((v: any, index: any) => (
-                          <div className='mt-4' key={index}>
-                            <CardVoucher key={v.Id} initVoucher={v} />
-                          </div>
-                        ))}
-                      </Dialog>
-                    </div>
-
-                    <div className='solid'></div>
-
-                    <div className='show-vouchers'>
-                      {/* {vouchers
-                        .filter((v) => v.status === 'USED')
-                        .map((v, index) => (
-                          <div className='mt-4' key={index}>
-                            <CardVoucher key={v.id}  />
-                          </div>
-                        ))} */}
-                    </div>
-                  </Row>
+                 
                   {/* End Select Voucher */}
 
                   <Row className='row-payment'>

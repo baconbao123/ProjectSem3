@@ -48,13 +48,14 @@ public class CategoriesFEController : Controller
             var products = (from pc in context.ProductCategory
                             join p in context.Product on pc.ProductId equals p.Id
                             join partner in context.CompanyPartner on p.CompanyPartnerId equals partner.Id
-                            where categoryIds.Contains(pc.CategoryId) && p.DeletedAt == null
+                            where categoryIds.Contains(pc.CategoryId) && p.DeletedAt == null && p.Status == 1
                             orderby p.CreatedAt descending
                             select new
                             {
                                 p.Id,
                                 p.Name,
                                 p.SellPrice,
+                                p.BasePrice,
                                 p.ImageThumbPath,
                                 CompanyPartnerName = partner.Name,
                                 // Fetch images of the product and materialize them with ToList()

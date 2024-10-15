@@ -16,11 +16,24 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
 import { setLoaded, setLoading } from '../../Store/loadingSlice'
 import { Skeleton } from 'primereact/skeleton'
 import { CardProductRelated } from '../../Components/CardProduct/Related/CardProductRelated'
+import { CardProduct } from '../../Components/CardProduct/Home/CardProduct'
+import CardRating from '../../Components/CardRating/CardRating'
+
+const ratingData = [
+  {
+    Name: 'Phoebe',
+    Value: '4.5',
+    Desc: 'Good'
+  },
+  {
+    Name: 'Tom',
+    Value: '4.8',
+    Desc: 'Good'
+  }
+]
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const home = { label: 'Home', url: '/home' }
-  const items = [{ label: 'Detail', url: `/products/details/${id}`, page: false }]
   const [amount, setAmount] = useState<number>(1)
   const [relatedProducts, setRelatedProducts] = useState<any[]>([])
   const [product, setProduct] = useState<any | null>(null)
@@ -30,6 +43,14 @@ const ProductDetail: React.FC = () => {
   const isLoading = useSelector((state: RootState) => state.loading.isLoading)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [breadcrumbItems, setBreadcrumbItems] = useState<BreadcrumbItem[]>([])
+  const home = { label: 'Home', url: '/home', page: false }
+
+  interface BreadcrumbItem {
+    label: string
+    url: string
+    page?: boolean
+  }
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -37,6 +58,17 @@ const ProductDetail: React.FC = () => {
         const res = await $axios.get(`ProductFE/${id}`)
         const productData = res.data.data[0]
         setProduct(productData)
+        const category = productData.Categories[0]
+
+        if (category) {
+          const items: BreadcrumbItem[] = [
+            { label: category.Name, url: `/category/${category.Id}`, page: false },
+
+            { label: productData.Name, url: `/products/details/${productData.Id}`, page: true }
+          ]
+
+          setBreadcrumbItems(items)
+        }
         console.log(res.data)
 
         if (productData.ProductImages) {
@@ -110,9 +142,37 @@ const ProductDetail: React.FC = () => {
       return
     }
 
+    // Dispatch action to set the user ID
     dispatch(setUserId(userId))
-    dispatch(addProductToCart(product))
 
+    // Define the key for localStorage
+    const cartKey = `cart_${userId}`
+
+    // Get the current cart from localStorage
+    const existingCartString = localStorage.getItem(cartKey)
+
+    // Parse the existing cart, default to an empty object if null
+    const existingCart = existingCartString ? JSON.parse(existingCartString) : {}
+
+    // Ensure that the amount is treated as a number
+    const currentAmount = amount
+
+    // Check if the product already exists in the cart
+    if (existingCart[product.id]) {
+      // Add the new amount to the old amount
+      existingCart[product.id].amount += currentAmount
+    } else {
+      // If it doesn't exist, add the product with the current amount
+      existingCart[product.id] = { ...product, amount: currentAmount }
+    }
+
+    // Save the updated cart back to localStorage
+    localStorage.setItem(cartKey, JSON.stringify(existingCart))
+
+    // Dispatch the action to add the product to the cart in Redux
+    dispatch(addProductToCart({ ...product, amount: existingCart[product.id].amount }))
+
+    // Show a success message that the product has been added to the cart
     Swal.fire({
       icon: 'success',
       title: 'Product has been added to the cart',
@@ -127,7 +187,7 @@ const ProductDetail: React.FC = () => {
       return
     }
 
-    navigate('/checkout')
+    navigate('/checkout/cart')
   }
 
   const handlePrevImage = () => {
@@ -161,7 +221,7 @@ const ProductDetail: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb home={home} items={items} />
+      <Breadcrumb home={home} items={breadcrumbItems} />
       {isLoading ? (
         <>
           <div className='container-product-skeleton'>
@@ -256,7 +316,7 @@ const ProductDetail: React.FC = () => {
                               type='text'
                               className='amount-input'
                               value={amount}
-                              onChange={(e: any) => setAmount(e.value.target)}
+                              onChange={(e: any) => setAmount(Number(e.target.value))}
                             />
                             <input type='button' value='+' className='increment' onClick={handleIncreaseAmount} />
                           </div>
@@ -269,9 +329,6 @@ const ProductDetail: React.FC = () => {
                         <div className='container-btn-buy'>
                           <Button icon={<BsCartPlus />} outlined className='btn-add-to-cart' onClick={handleAddToCart}>
                             &nbsp; Add To Cart
-                          </Button>
-                          <Button icon={<SlPaypal />} className='btn-add-to-buy-now' onClick={handleBuyNow}>
-                            &nbsp; Buy Now
                           </Button>
                         </div>
                       </Row>
@@ -298,6 +355,15 @@ const ProductDetail: React.FC = () => {
               </Container>
             )}
           </div>
+          
+          <div className='container-product-similar'>
+            <div className='container-products-content cart-rating'>
+              
+              {ratingData.map((r, index) => (
+                <CardRating key={index} rating={r} />
+              ))}
+            </div>
+          </div>
           <div className='container-product-similar'>
             <Container className='container-products-content'>
               <Row>
@@ -309,7 +375,7 @@ const ProductDetail: React.FC = () => {
                     .filter((relatedProduct) => relatedProduct.Id !== product?.Id)
                     .map((relatedProduct) => (
                       <Col key={relatedProduct.Id} lg={2}>
-                        <CardProductRelated product={relatedProduct} />
+                        <CardProduct product={relatedProduct} />
                       </Col>
                     ))
                 ) : (
