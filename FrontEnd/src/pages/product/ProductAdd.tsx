@@ -79,41 +79,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const [currentForm, setCurrentForm] = useState<"add" | "edit" | "copy">(form);
   const dispatch = useDispatch();
 
-  // States for Add Author Dialog
-  const [openAddAuthor, setOpenAddAuthor] = useState(false);
-  const [newAuthorName, setNewAuthorName] = useState("");
-
-  // States for Add Company Dialog
-  const [openAddCompany, setOpenAddCompany] = useState(false);
-  const [newCompanyName, setNewCompanyName] = useState("");
-  const [newCompanyEmail, setNewCompanyEmail] = useState("");
-  const [newCompanyPhone, setNewCompanyPhone] = useState("");
-  const [newCompanyAddress, setNewCompanyAddress] = useState("");
-  const [newCompanyType, setNewCompanyType] = useState("");
-  const [newCompanyStatus, setNewCompanyStatus] = useState<boolean>(true);
-  const [addCompanyError, setAddCompanyError] = useState<string>("");
-  // States for Add Category Dialog
-  const [openAddCategory, setOpenAddCategory] = useState(false);
-  const [addCategoryError, setAddCategoryError] = useState<string>(""); // Added error state
-  const [newCategory, setNewCategory] = useState({
-    name: "",
-    description: "",
-    parentId: "",
-    status: true,
-    imgFile: null as File | null,
-    imgPreview: "",
-  });
-  const [newCompanys, setNewCompanys] = useState([
-    {
-      name: "",
-      email: "",
-      address: "",
-      phone: "",
-      type: "",
-      status: false,
-    },
-  ]);
-
   useEffect(() => {
     if ((currentForm === "edit" || currentForm === "copy") && id) {
       loadData();
@@ -220,82 +185,73 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     setProductImages((prevImages) => prevImages.filter((_, i) => i !== index));
   };
 
+  // Hàm xử lý khi người dùng xóa một hình ảnh hiện có
   const handleRemoveExistingImage = (index: number) => {
-    const imageToRemove = existingImages[index];
-    setDeletedImages((prev) => [...prev, imageToRemove]);
-    setExistingImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    const newImages = existingImages.filter(
+      (_, imgIndex) => imgIndex !== index
+    );
+
+    // Thêm hình ảnh đã xóa vào danh sách deletedImages
+    setDeletedImages([...deletedImages, existingImages[index]]);
+
+    // Cập nhật trạng thái hình ảnh hiện có
+    setExistingImages(newImages);
   };
 
   // Validate
   const validateForm = (): boolean => {
     const newErrors: Record<string, string[]> = {};
-  
+
     // Kiểm tra Name
     if (!name.trim()) {
       newErrors.Name = ["Name product is required."];
     }
-  
+
     // Kiểm tra Status (thường là checkbox nên có giá trị mặc định)
-  
+
     // Kiểm tra Company Partner
     if (companyPartnerId === 0) {
       newErrors.CompanyPartnerId = ["Please select a Company Partner."];
     }
-  
-    // Kiểm tra Base Price
-    if (basePrice <= 0) {
-      newErrors.BasePrice = ["Base Price must be greater than 0."];
-    }
-  
-    // Kiểm tra Sell Price
-    if (sellPrice <= 0) {
-      newErrors.SellPrice = ["Sell Price must be greater than 0."];
-    }
-  
-    // Kiểm tra Quantity
-    if (quantity < 0) {
-      newErrors.Quantity = ["Quantity cannot be negative."];
-    }
-  
-    // Kiểm tra Authors
-    if (authorIds.length === 0) {
-      newErrors.AuthorIds = ["At least one author must be selected."];
-    }
-  
+
+    // // Kiểm tra Authors
+    // if (authorIds.length === 0) {
+    //   newErrors.AuthorIds = ["At least one author must be selected."];
+    // }
+
     // Kiểm tra Categories
     if (categoryIds.length === 0) {
       newErrors.CategoryIds = ["At least one category must be selected."];
     }
-  
+
     // Kiểm tra Description
     if (!description.trim()) {
       newErrors.Description = ["Description is required."];
     }
-  
+
     // Kiểm tra Thumbnail
-    if (!selectedThumb) {
+    if (!selectedThumb && currentForm === "add") {
+      // Ensure thumbnail is required only for 'add'
       newErrors.ImageThumbPath = ["Thumbnail image is required."];
     }
-  
+
     // Kiểm tra Product Images
-    if (productImages.length === 0) {
+    if (productImages.length === 0 && existingImages.length === 0) {
       newErrors.ProductImages = ["At least one product image is required."];
     }
-  
+
     setError(newErrors);
-  
+
     // Trả về true nếu không có lỗi
     return Object.keys(newErrors).length === 0;
   };
   const addNewProduct = async () => {
-   
-   setError({});
+    setError({});
 
-   // Validate form
-   if (!validateForm()) {
-    
-     return;
-   }
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
     const formData = new FormData();
     formData.append("Name", name);
     formData.append("Description", description);
@@ -312,11 +268,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     if (selectedThumb) {
       formData.append("ImageThumbPath", selectedThumb);
     }
-
-    // Nếu API yêu cầu SaleIds, hãy thêm trường này
-    // Ví dụ:
-    // const saleIds = [/* các ID sale */];
-    // saleIds.forEach((id) => formData.append("SaleIds", id.toString()));
 
     dispatch(setLoading(true));
     try {
@@ -346,12 +297,13 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
   const updateProduct = async () => {
     setError({});
 
-  // Validate form
-  if (!validateForm()) {
-   
-    return;
-  }
+    // Validate form
+    if (!validateForm()) {
+      return; // Dừng nếu không xác thực được form
+    }
+
     const formData = new FormData();
+    // Thêm các trường thông tin sản phẩm vào FormData
     formData.append("Name", name);
     formData.append("Description", description);
     formData.append("Status", status ? "1" : "0");
@@ -361,38 +313,44 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
     formData.append("Quantity", quantity.toString());
     formData.append("CompanyPartnerId", companyPartnerId.toString());
 
+    // Thêm các AuthorIds vào FormData
     authorIds.forEach((id) => formData.append("AuthorIds", id.toString()));
+    // Thêm các CategoryIds vào FormData
     categoryIds.forEach((id) => formData.append("CategoryIds", id.toString()));
+    // Thêm các hình ảnh sản phẩm vào FormData
     productImages.forEach((file) => formData.append("ProductImages", file));
 
+    // Thêm hình ảnh thumbnail nếu có
     if (selectedThumb) {
       formData.append("ImageThumbPath", selectedThumb);
     }
-
+  
     // Gửi danh sách các hình ảnh đã bị xóa
     deletedImages.forEach((imgPath) =>
       formData.append("DeletedImages", imgPath)
     );
-
-    // Nếu API yêu cầu SaleIds, hãy thêm trường này
-    // Ví dụ:
-    // const saleIds = [/* các ID sale */];
-    // saleIds.forEach((id) => formData.append("SaleIds", id.toString()));
-
+    console.log("Deleted Images:", deletedImages);
+    // Bắt đầu trạng thái loading
     dispatch(setLoading(true));
     try {
+      // Gửi yêu cầu PUT đến API
       await $axios.put(`Product/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      // Tải lại dữ liệu cho bảng
       loadDataTable();
+      // Hiển thị thông báo thành công
       dispatch(
         setToast({ status: "success", message: "Edit product successful" })
       );
+      // Đóng modal
       dispatch(setShowModal(false));
-    } catch (err: any) {
+    } catch (err) {
+      // Xử lý lỗi nếu có
       if (err.response?.data?.errors) {
         setError(err.response.data.errors);
       }
+      // Hiển thị thông báo lỗi
       dispatch(
         setToast({
           status: "error",
@@ -400,275 +358,16 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         })
       );
     } finally {
+      // Kết thúc trạng thái loading
       dispatch(setLoading(false));
     }
   };
 
-  const ShowError: React.FC<{ key: string }> = ({ key }) => {
-    const messages = error[key] || [];
-    return <div className="text-danger mt-1">{messages[0] || ""}</div>;
-  };
-
-  // Hàm mở và đóng Dialog Author
-  const handleOpenAddAuthor = () => {
-    setNewAuthorName("");
-    setOpenAddAuthor(true);
-  };
-
-  const handleCloseAddAuthor = () => {
-    setOpenAddAuthor(false);
-  };
-
-  const handleAddAuthor = async () => {
-    if (!newAuthorName.trim()) {
-      setError((prev) => ({
-        ...prev,
-        newAuthorName: ["Author name is required"],
-      }));
-      return;
-    }
-    try {
-      dispatch(setLoading(true));
-      const res = await $axios.post("Author", {
-        Name: newAuthorName,
-        Status: 1,
-      });
-      const newAuthor: Author = res.data.data;
-      setAuthors((prev) => [...prev, newAuthor]);
-      setAuthorIds((prev) => [...prev, newAuthor.Id]);
-      setOpenAddAuthor(false);
-      dispatch(
-        setToast({ status: "success", message: "Author added successfully" })
-      );
-    } catch (err: any) {
-      console.error("Failed to add author", err);
-      dispatch(
-        setToast({
-          status: "error",
-          message: err.response?.data?.message || "Failed to add author",
-        })
-      );
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
-  // Hàm mở và đóng Dialog Company
-  const handleOpenAddCompany = () => {
-    setNewCompanyName("");
-    setNewCompanyEmail("");
-    setNewCompanyPhone("");
-    setNewCompanyAddress("");
-    setNewCompanyStatus(true);
-
-    setOpenAddCompany(true);
-  };
-
-  const handleCloseAddCompany = () => {
-    setOpenAddCompany(false);
-  };
-
-  const handleNewCompanyChange = (index: number, field: string, value: any) => {
-    const updatedCompanys = [...newCompanys];
-    updatedCompanys[index] = { ...updatedCompanys[index], [field]: value };
-    setNewCompanys(updatedCompanys);
-  };
-  const addNewCompanyField = () => {
-    setNewCompanys([
-      ...newCompanys,
-      { name: "", email: "", phone: "", address: "", type: "", status: true },
-    ]);
-  };
-  const removeNewCompany = (index: number) => {
-    const updatedCompanys = [...newCompanys];
-    updatedCompanys.splice(index, 1);
-    setNewCompanys(updatedCompanys);
-  };
-  const handleAddCompanies = async () => {
-    // Check if newCompanys array is empty
-    if (newCompanys.length === 0) {
-      setAddCompanyError("At least one company must be provided.");
-      return;
-    }
-
-    const errors: string[] = [];
-    // Prepare data form
-    const dataForm = newCompanys
-      .map((company, index) => {
-        // Validate company data
-        if (!company.name.trim()) {
-          errors.push(`Company name is required for category ${index + 1}`);
-        }
-        if (!company.email || !/\S+@\S+\.\S+/.test(company.email)) {
-          errors.push(`Valid email is required for category ${index + 1}`);
-        }
-        if (!company.phone || company.phone.length !== 10) {
-          errors.push(
-            `Phone number must be exactly 10 digits for category ${index + 1}`
-          );
-        }
-        if (!company.address.trim()) {
-          errors.push(`Address is required for category ${index + 1}`);
-        }
-        if (!company.type) {
-          errors.push(
-            `Partner company type is required for category ${index + 1}`
-          );
-        }
-
-        // Return company data if valid, otherwise return null
-        return errors.length === 0
-          ? {
-              Name: company.name,
-              Email: company.email,
-              Phone: company.phone,
-              Address: company.address,
-              Type: company.type,
-              Status: company.status ? 1 : 0,
-            }
-          : null; // Return null if there are errors
-      })
-      .filter(Boolean); // Filter out any null values
-
-    // If there are any errors, set the error message and exit
-    if (errors.length > 0) {
-      setAddCompanyError(errors.join(", "));
-      return;
-    }
-
-    if (dataForm.length === 0) {
-      return;
-    }
-
-    try {
-      dispatch(setLoading(true));
-      const res = await $axios.post("CompanyPartner", dataForm);
-      const addedCompanies: Company[] = res.data.data;
-      setOpenAddCompany(false);
-      setCompanies((prev) => [...prev, ...addedCompanies]);
-      setNewCompanys([
-        { name: "", email: "", phone: "", address: "", type: "", status: true },
-      ]);
-      dispatch(
-        setToast({ status: "success", message: "Companies added successfully" })
-      );
-    } catch (err: any) {
-      console.error("Failed to add companies", err);
-      setAddCompanyError(
-        err.response?.data?.message || "Failed to add companies"
-      );
-      dispatch(
-        setToast({
-          status: "error",
-          message: err.response?.data?.message || "Failed to add companies",
-        })
-      );
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
-  // ====================End company===================
-
-  // Hàm mở và đóng Dialog Category
-
-  // Function to open Add Category Dialog
-  const handleOpenAddCategory = () => {
-    setNewCategory({
-      name: "",
-      description: "",
-      parentId: "",
-      status: true,
-      imgFile: null,
-      imgPreview: "",
-    });
-    setAddCategoryError("");
-    setOpenAddCategory(true);
-  };
-
-  // Function to close Add Category Dialog
-  const handleCloseAddCategory = () => {
-    setOpenAddCategory(false);
-  };
-
-  // Handler for new category field changes
-  const handleNewCategoryChange = (field: string, value: any) => {
-    setNewCategory((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  // Handler to remove Category Image
-  const handleRemoveCategoryImage = () => {
-    setNewCategory((prev) => ({
-      ...prev,
-      imgFile: null,
-      imgPreview: "",
-    }));
-  };
-
-  // Function to add a new category
-  const handleAddCategory = async () => {
-    // Validate that the category name and image are present
-    if (!newCategory.name.trim()) {
-      setAddCategoryError("Category name is required.");
-      return;
-    }
-
-    dispatch(setLoading(true));
-    try {
-      const formData = new FormData();
-      formData.append("Name", newCategory.name);
-      formData.append("Description", newCategory.description);
-      formData.append(
-        "ParentId",
-        newCategory.parentId ? newCategory.parentId : ""
-      );
-      formData.append("Status", newCategory.status ? "1" : "0");
-      if (newCategory.imgFile) {
-        formData.append("imgThumbCategory", newCategory.imgFile);
-      }
-
-      const res = await $axios.post("Category", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      // Assume API returns the added category
-      const addedCategory: Category = res.data.data;
-
-      setCategories((prev) => [...prev, addedCategory]);
-      setCategoryIds((prev) => [...prev, addedCategory.Id]);
-      setOpenAddCategory(false);
-      setNewCategory({
-        name: "",
-        description: "",
-        parentId: "",
-        status: true,
-        imgFile: null,
-        imgPreview: "",
-      });
-      setAddCategoryError("");
-      dispatch(
-        setToast({
-          status: "success",
-          message: "Category added successfully",
-        })
-      );
-    } catch (err: any) {
-      console.error("Failed to add category", err);
-      setAddCategoryError(
-        err.response?.data?.message || "Failed to add category"
-      );
-      dispatch(
-        setToast({
-          status: "error",
-          message: err.response?.data?.message || "Failed to add category",
-        })
-      );
-    } finally {
-      dispatch(setLoading(false));
-    }
+  const ShowError: React.FC<{ field: string }> = ({ field }) => {
+    const messages = error[field] || [];
+    return messages.length > 0 ? (
+      <div className="text-danger mt-1">{messages[0]}</div>
+    ) : null;
   };
 
   return (
@@ -702,7 +401,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
                 id="statusSwitch"
               />
             </div>
-            <ShowError key="Status" />
           </div>
         </div>
         <div className="col-6"></div>
@@ -744,8 +442,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="form-control"
             label="Base Price"
             variant="outlined"
-            error={!!error.BasePrice}
-            helperText={error.BasePrice ? error.BasePrice[0] : ""}
             required
           />
         </div>
@@ -758,8 +454,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="form-control"
             label="Sell Price"
             variant="outlined"
-            error={!!error.SellPrice}
-            helperText={error.SellPrice ? error.SellPrice[0] : ""}
             required
           />
         </div>
@@ -772,8 +466,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             className="form-control"
             label="Quantity"
             variant="outlined"
-            error={!!error.Quantity}
-            helperText={error.Quantity ? error.Quantity[0] : ""}
             required
           />
         </div>
@@ -791,7 +483,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
                 setDescription(e.htmlValue || "")
               }
             />
-            <ShowError key="Description" />
+            <ShowError field="Description" />
           </div>
         </div>
 
@@ -845,8 +537,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
               <AddIcon />
             </IconButton> */}
           </div>
-          {/* Hiển thị lỗi nếu có */}
-          <ShowError key="AuthorIds" />
         </div>
 
         {/* Các trường Category */}
@@ -900,7 +590,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
               <AddIcon />
             </IconButton> */}
           </div>
-          <ShowError key="CategoryIds" />
         </div>
 
         {/* Trường File Upload Thumbnail */}
@@ -919,7 +608,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             customUpload
             uploadHandler={() => {}} // Nếu không sử dụng uploadHandler tự túc
           />
-          <ShowError key="ImageThumbPath" />
+          <ShowError field="ImageThumbPath" />
           {selectedThumb && (
             <div className="mt-2 position-relative d-inline-block">
               <img
@@ -965,7 +654,7 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
             customUpload
             uploadHandler={() => {}} // Nếu không sử dụng uploadHandler tự túc
           />
-          <ShowError key="ProductImages" />
+          <ShowError field="ProductImages" />
         </div>
 
         {/* Phần Preview và Xóa Ảnh Mới */}
@@ -1047,7 +736,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
         <button
           className="btn btn-general"
           onClick={form === "edit" ? updateProduct : addNewProduct}
-           
         >
           {form === "edit" ? "Update Product" : "Add Product"}
         </button>
@@ -1055,310 +743,6 @@ const ProductAdd: React.FC<ProductAddProps> = ({ loadDataTable, form, id }) => {
 
       <Toast />
       {/* Dialog Thêm Author Mới */}
-      <Dialog open={openAddAuthor} onClose={handleCloseAddAuthor}>
-        <DialogTitle>Add New Author</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Author Name"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={newAuthorName}
-            onChange={(e) => setNewAuthorName(e.target.value)}
-            error={Boolean(error.newAuthorName)}
-            helperText={error.newAuthorName ? error.newAuthorName[0] : ""}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddAuthor} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddAuthor} color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog Thêm Companys Mới */}
-
-      <Dialog
-        open={openAddCompany}
-        onClose={handleCloseAddCompany}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Add New Compannys</DialogTitle>
-        <DialogContent>
-          {newCompanys.map((company, index) => (
-            <div
-              key={index}
-              className="category-form mb-4 p-3"
-              style={{ border: "1px solid #ccc", borderRadius: "8px" }}
-            >
-              <h5>Company {index + 1}</h5>
-              <TextField
-                margin="dense"
-                label="Category Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={company.name}
-                onChange={(e) =>
-                  handleNewCompanyChange(index, "name", e.target.value)
-                }
-                error={!company.name.trim()} // Error condition for name
-                helperText={
-                  !company.name.trim() ? "Company name is required." : ""
-                }
-                required
-              />
-              <TextField
-                margin="dense"
-                label="Email"
-                type="email"
-                fullWidth
-                variant="outlined"
-                value={company.email}
-                onChange={(e) =>
-                  handleNewCompanyChange(index, "email", e.target.value)
-                }
-                error={!company.email || !/\S+@\S+\.\S+/.test(company.email)} // Error condition for email
-                helperText={
-                  !company.email || !/\S+@\S+\.\S+/.test(company.email)
-                    ? "Valid email is required."
-                    : ""
-                }
-              />
-              <TextField
-                margin="dense"
-                label="Phone"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={company.phone}
-                onChange={(e) =>
-                  handleNewCompanyChange(index, "phone", e.target.value)
-                }
-                error={!company.phone || company.phone.length !== 10} // Error condition for phone
-                helperText={
-                  !company.phone || company.phone.length !== 10
-                    ? "Phone number must be exactly 10 digits."
-                    : ""
-                }
-              />
-              <TextField
-                margin="dense"
-                label="Address"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={company.address}
-                onChange={(e) =>
-                  handleNewCompanyChange(index, "address", e.target.value)
-                }
-                error={!company.address.trim()} // Error condition for address
-                helperText={
-                  !company.address.trim() ? "Address is required." : ""
-                }
-              />
-              <FormControl fullWidth margin="dense">
-                <label className="label-form">Patner company</label>
-                <select
-                  value={company.type}
-                  onChange={(e) =>
-                    handleNewCompanyChange(index, "type", e.target.value)
-                  }
-                  className="form-control"
-                >
-                  <option> Select company type</option>
-                  <option value="Manufacturer">Manufacturer</option>
-                  <option value="Publisher">Publisher</option>
-                </select>
-                {/* Display error for Partner Company Type */}
-                {!company.type && (
-                  <div style={{ color: "red", marginTop: "5px" }}>
-                    Partner company type is required for category {index + 1}.
-                  </div>
-                )}
-              </FormControl>
-
-              <FormControl component="fieldset" margin="dense">
-                <label className="label-form">Status</label>
-                <Switch
-                  checked={company.status}
-                  onChange={(e) =>
-                    handleNewCompanyChange(index, "status", e.target.checked)
-                  }
-                  color="primary"
-                />
-              </FormControl>
-              {newCompanys.length > 1 && (
-                <IconButton
-                  color="secondary"
-                  onClick={() => removeNewCompany(index)}
-                  style={{ marginTop: 8 }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </div>
-          ))}
-
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={addNewCompanyField}
-            startIcon={<AddIcon />}
-          >
-            Add More Company
-          </Button>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddCompany} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddCompanies} color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Dialog to Add New Category */}
-
-      <Dialog
-        open={openAddCategory}
-        onClose={handleCloseAddCategory}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Add New Category</DialogTitle>
-        <DialogContent>
-          <div
-            className="category-form mb-4 p-3"
-            style={{ border: "1px solid #ccc", borderRadius: "8px" }}
-          >
-            <TextField
-              margin="dense"
-              label="Category Name"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={newCategory.name}
-              onChange={(e) => handleNewCategoryChange("name", e.target.value)}
-              required
-            />
-            <TextField
-              margin="dense"
-              label="Description"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={newCategory.description}
-              onChange={(e) =>
-                handleNewCategoryChange("description", e.target.value)
-              }
-            />
-            <FormControl fullWidth margin="dense">
-              <label className="label-form">Parent Category</label>
-              <select
-                value={newCategory.parentId}
-                onChange={(e) =>
-                  handleNewCategoryChange("parentId", e.target.value)
-                }
-                className="form-control"
-              >
-                <option value="">Select Parent Category</option>
-                {categories
-                  .filter((cat) => cat.Status !== 0 && cat.Id !== id) // Remove current category to prevent selecting itself
-                  .map((cat) => (
-                    <option key={cat.Id} value={cat.Id}>
-                      {"- ".repeat(cat.Level) + " " + cat.Name}
-                    </option>
-                  ))}
-              </select>
-            </FormControl>
-
-            <FormControl component="fieldset" margin="dense">
-              <label className="label-form">Status</label>
-              <Switch
-                checked={newCategory.status}
-                onChange={(e) =>
-                  handleNewCategoryChange("status", e.target.checked)
-                }
-                color="primary"
-              />
-            </FormControl>
-
-            {/* Category Image Upload */}
-            <div className="mt-3">
-              <label className="label-form">Category Image</label>
-              <FileUpload
-                name="imgThumbCategory"
-                url="" // Not needed because we handle upload manually
-                accept="image/*"
-                maxFileSize={2000000} // 2MB
-                onSelect={(e) => {
-                  if (e.files && e.files.length > 0) {
-                    const file = e.files[0];
-                    setNewCategory({
-                      ...newCategory,
-                      imgFile: file,
-                      imgPreview: URL.createObjectURL(file),
-                    });
-                  }
-                }}
-                onRemove={() => {
-                  setNewCategory({
-                    ...newCategory,
-                    imgFile: null,
-                    imgPreview: "",
-                  });
-                }}
-                customUpload
-                uploadHandler={() => {}}
-              />
-              {newCategory.imgPreview && (
-                <div className="mt-2 position-relative d-inline-block">
-                  <img
-                    src={newCategory.imgPreview}
-                    alt={`Category Image Preview`}
-                    className="img-thumbnail"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <IconButton
-                    size="small"
-                    onClick={handleRemoveCategoryImage}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      backgroundColor: "rgba(255, 255, 255, 0.7)",
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" color="error" />
-                  </IconButton>
-                </div>
-              )}
-              {addCategoryError && (
-                <div className="text-danger mt-2">{addCategoryError}</div>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddCategory} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddCategory} color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };

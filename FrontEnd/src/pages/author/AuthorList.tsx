@@ -3,7 +3,7 @@ import MainLayOut from "@pages/common/MainLayOut.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {setLoading, setShowModal, setToast} from "@src/Store/Slinces/appSlice.ts";
 import Modal from "@pages/common/Modal.tsx";
-import {MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Breadcrumbs, MenuItem, Select, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import KeyboardDoubleArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftOutlined";
 import KeyboardArrowLeftOutlinedIcon from "@mui/icons-material/KeyboardArrowLeftOutlined";
 import KeyboardArrowRightOutlinedIcon from "@mui/icons-material/KeyboardArrowRightOutlined";
@@ -187,9 +187,19 @@ const AuthorList : React.FC = () => {
 
     const header: React.FC = () => {
         return (
-            <div className='header-page'>
-                {/* <Breadcrumbs/>   */}
-            </div>
+            <div className="header-page m-3">
+            <Breadcrumbs
+              separator="›"
+              aria-label="breadcrumb"
+              className="breadcrumb"
+            >
+              <Link color="inherit" to="/">
+                <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+                Home
+              </Link>
+              <Link to="/author">Authors</Link>
+            </Breadcrumbs>
+          </div>
         )
     }
 
@@ -255,8 +265,8 @@ const button: React.FC = () => {
                 <div onClick={showModalAdd} className="btn btn-general">Add new</div>
             ) : ''}
 
-            <div onClick={exportToExcel} className="btn btn-export btn-warning">Export to Excel</div>
-            <div onClick={exportToCSV} className="btn btn-export btn-warning">Export to CSV</div>
+            {/* <div onClick={exportToExcel} className="btn btn-export btn-warning">Export to Excel</div>
+            <div onClick={exportToCSV} className="btn btn-export btn-warning">Export to CSV</div> */}
         </div>
     );
 }

@@ -17,19 +17,16 @@
     font-weight: 600;
 
     .sellPrice {
-      font-size: 15px;
+      margin-top: 5px;
+      height: 5px;
+      align-items: center;
+      font-size: 16px;
     }
 
     .basePrice {
       font-weight: 500;
-
       font-size: 12px;
       text-decoration: line-through;
-    }
-
-    .basePrice1 {
-      text-decoration: none;
-      font-size: 15px;
     }
   }
 

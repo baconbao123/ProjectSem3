@@ -10,11 +10,12 @@ import {
 } from "@mui/material";
 import { topProducts } from "@src/data/top-products";
 import TopProduct from "./TopProduct";
+import "./TopProduct.scss"
 
 const TopProducts = () => {
   return (
-    <Paper sx={{ pt: 3 }}>
-      <Typography variant="h5" style={{color: 'var(--default-color)'}} px={3} mb={1.25}>
+    <Paper  >
+      <Typography variant="h5" px={3} mb={1.25} >
         Top Products
       </Typography>
 

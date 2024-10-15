@@ -46,7 +46,7 @@ interface Product {
   Status: number;
   ImageThumbPath?: string;
   ProductImages?: Array<{ ImagePath: string }>;
-  // Add other fields as necessary
+ 
 }
 
 const ProductList: React.FC = () => {
@@ -75,6 +75,7 @@ const ProductList: React.FC = () => {
   const [filter, setFilter] = useState<{ Name: string;Code: string, Status: number }>({
     Name: "",
     Status: -1,
+    Code: ""
   });
   const baseUrl = import.meta.env.VITE_BASE_URL_LOCALHOST;
 
@@ -190,6 +191,7 @@ const ProductList: React.FC = () => {
       .get("/Product")
       .then((res) => {
         setData(res.data.data);
+        
         setFilterData(res.data.data);
       })
       .catch((err) => {
@@ -288,7 +290,7 @@ const ProductList: React.FC = () => {
   // Render Functions
   const header: React.FC = () => {
     return (
-      <div className="header-page">
+      <div className="header-page m-3">
         <Breadcrumbs separator="›" aria-label="breadcrumb" className="breadcrumb">
           <Link color="inherit" to="/">
             <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
@@ -454,105 +456,139 @@ const ProductList: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody className="body-table">
-              {displayedData.map((item, index) => {
-                const imageThumbPath = item.ImageThumbPath || null;
+  {displayedData.map((item, index) => {
+    const imageThumbPath = item.ImageThumbPath || null;
+    return (
+      <TableRow key={item.Id}>
+        {field.map((fieldItem) => {
+          // Handle the "No" column
+          if (fieldItem.key === "No") {
+            return (
+              <TableCell className={fieldItem.class} key="no">
+                {index + 1 + (currentPage - 1) * (perPage === "All" ? total : perPage)}
+              </TableCell>
+            );
+          }
 
-                return (
-                  <TableRow key={item.Id}>
-                    {field.map((fieldItem) => {
-                      if (fieldItem.key === "No") {
-                        return (
-                          <TableCell className={fieldItem.class} key="no">
-                            {index + 1 + (currentPage - 1) * (perPage === "All" ? total : perPage)}
-                          </TableCell>
-                        );
-                      }
+          // Handle the "ImageThumbPath" column
+          if (fieldItem.key === "ImageThumbPath") {
+            return (
+              <TableCell className={fieldItem.class} key="image">
+                {imageThumbPath ? (
+                  <Image
+                    src={`${baseUrl}${imageThumbPath}`}
+                    alt={item.Name}
+                    className="image-product"
+                    height="70"
+                    preview
+                  />
+                ) : (
+                  <div>No Image</div>
+                )}
+              </TableCell>
+            );
+          }
 
-                      if (fieldItem.key === "ImageThumbPath") {
-                        return (
-                          <TableCell className={fieldItem.class} key="image">
-                            {imageThumbPath ? (
-                              <Image
-                                src={baseUrl + imageThumbPath}
-                                alt={item.Name}
-                                className="image-product"
-                                height="70"
-                                preview
-                              />
-                            ) : (
-                              <div>No Image</div>
-                            )}
-                          </TableCell>
-                        );
-                      }
+          // Handle the "Status" column
+          if (fieldItem.key === "Status") {
+            return (
+              <TableCell className={fieldItem.class} key="status">
+                <div className="justify-content-center d-flex">
+                  <div className={item.Status ? "status-success" : "status-disable"}>
+                    {item.Status ? "Active" : "Disable"}
+                  </div>
+                </div>
+              </TableCell>
+            );
+          }
 
-                      if (fieldItem.key === "Status") {
-                        return (
-                          <TableCell className={fieldItem.class} key="status">
-                            {item.Status ? (
-                              <div className="justify-content-center d-flex">
-                                <div className="status-success">Active</div>
-                              </div>
-                            ) : (
-                              <div className="justify-content-center d-flex">
-                                <div className="status-disable">Disable</div>
-                              </div>
-                            )}
-                          </TableCell>
-                        );
-                      }
+          // Handle the "Action" column
+          if (fieldItem.key === "Action") {
+            return (
+              <TableCell className={fieldItem.class} key="action">
+                <span
+                  className={`m-2 btn-icon p-1 ${checkPermission('Product', 'read') ? '' : 'btn-disable'}`}
+                  onClick={() => checkPermission('Product', 'read') && showModalDetail(item)}
+                >
+                  <RemoveRedEyeOutlinedIcon />
+                </span>
+                <span
+                  className={`m-2 btn-icon p-1 ${checkPermission('Product', 'update') ? '' : 'btn-disable'}`}
+                  onClick={() => checkPermission('Product', 'update') && showModalEdit(item)}
+                >
+                  <EditOutlinedIcon />
+                </span>
+                <span
+                  className={`m-2 btn-icon p-1 ${checkPermission('Product', 'delete') ? '' : 'btn-disable'}`}
+                  onClick={() => checkPermission('Product', 'delete') && deleteItem(item)}
+                >
+                  <DeleteOutlineOutlinedIcon />
+                </span>
+                {/* Copy Button */}
+                <span
+                  className={`m-2 btn-icon p-1 ${checkPermission('Product', 'update') ? '' : 'btn-disable'}`}
+                  onClick={() => checkPermission('Product', 'update') && showModalCopy(item)}
+                >
+                  <FileCopyOutlinedIcon />
+                </span>
+              </TableCell>
+            );
+          }
 
-                      if (fieldItem.key === "Action") {
-                        return (
-                          <TableCell className={fieldItem.class} key="action">
-                            <span
-                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'read') ? '' : 'btn-disable'}`}
-                                onClick={() => checkPermission('Product', 'read') && showModalDetail(item)}
-                            >
-                              <RemoveRedEyeOutlinedIcon />
-                            </span>
-                            <span
-                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'update') ? '' : 'btn-disable'}`}
-                                onClick={() => checkPermission('Product', 'update') && showModalEdit(item)}
-                            >
-                              <EditOutlinedIcon />
-                            </span>
-                            <span
-                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'delete') ? '' : 'btn-disable'}`}
-                                onClick={() => checkPermission('Product', 'delete') && deleteItem(item)}
-                            >
-                              <DeleteOutlineOutlinedIcon />
-                            </span>
-                            {/* Nút Copy */}
-                            <span
-                                className={`m-2 btn-icon p-1 ${checkPermission('Product', 'update') ? '' : 'btn-disable'}`}
-                                onClick={() => checkPermission('Product', 'update') && showModalCopy(item)}
-                            >
-                              <FileCopyOutlinedIcon />
-                            </span>
-                          </TableCell>
-                        );
-                      }
+          // Handle other fields
+          const fieldValue = item[fieldItem.key as keyof Product];
 
-                      // Default case for other fields
-                      return (
-                        <TableCell className={fieldItem.class} key={fieldItem.key}>
-                          {item[fieldItem.key as keyof Product] ? item[fieldItem.key as keyof Product] : '-'}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+          // If the field is an array (e.g., ProductImages), render appropriately
+          if (Array.isArray(fieldValue)) {
+            return (
+              <TableCell className={fieldItem.class} key={fieldItem.key}>
+                {fieldValue.length > 0 ? (
+                  fieldValue.map((img, idx) => (
+                    <Image
+                      key={idx}
+                      src={`${baseUrl}${img.ImagePath}`}
+                      alt={`Product ${item.Name} Image ${idx + 1}`}
+                      className="image-product-thumb"
+                      height="50"
+                      preview
+                    />
+                  ))
+                ) : (
+                  '-'
+                )}
+              </TableCell>
+            );
+          }
 
-              {total === 0 && (
-                <TableRow>
-                  <TableCell className="text-center" colSpan={field.length}>
-                    DATA NOT FOUND...
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+          // If the field is an object but not an array, stringify it or handle as needed
+          if (typeof fieldValue === 'object' && fieldValue !== null) {
+            return (
+              <TableCell className={fieldItem.class} key={fieldItem.key}>
+                {JSON.stringify(fieldValue)}
+              </TableCell>
+            );
+          }
+
+          // For primitive types (string, number, etc.)
+          return (
+            <TableCell className={fieldItem.class} key={fieldItem.key}>
+              {fieldValue !== undefined && fieldValue !== null ? fieldValue : '-'}
+            </TableCell>
+          );
+        })}
+      </TableRow>
+    );
+  })}
+
+  {total === 0 && (
+    <TableRow>
+      <TableCell className="text-center" colSpan={field.length}>
+        DATA NOT FOUND...
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
           </Table>
 
           {/* Pagination Controls */}

@@ -2,7 +2,7 @@ import { Card } from 'primereact/card'
 import { Button } from 'primereact/button'
 import { RiPaypalLine } from 'react-icons/ri'
 import { BsCartPlus } from 'react-icons/bs'
-import './CardProductRelated.scss'
+import "./CardProductRelated.scss"
 import { Link, useNavigate } from 'react-router-dom'
 import { sliceText } from '../../../utils'
 import { useDispatch, useSelector } from 'react-redux'

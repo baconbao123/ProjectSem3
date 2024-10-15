@@ -30,13 +30,17 @@
     padding: 0 !important;
   }
 }
-
 .card-product {
   .p-card {
-    width: 95%;
     height: 293px;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; // Thêm hiệu ứng chuyển động
+
+    &:hover {
+      transform: translateY(-5px); // Di chuyển lên trên 5px
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); // Thêm box shadow
+    }
   }
 
   .p-card-body {
@@ -48,7 +52,6 @@
       align-items: center;
       height: 34px;
       font-weight: 500;
-
       cursor: pointer;
       font-size: 13px;
 
@@ -75,8 +78,8 @@
         background-color: white;
         border-radius: 5px;
         font-size: 10px;
-        width: 30%;
-        padding: 0;
+        width: 40%;
+        padding: 6px;
         margin: 0;
 
         &:hover {
@@ -140,3 +143,4 @@
     }
   }
 }
+

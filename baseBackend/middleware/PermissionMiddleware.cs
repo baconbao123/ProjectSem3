@@ -59,6 +59,11 @@ public class PermissionMiddleware
                 resource = "Author";
                 action = getAction(context.Request.Method);
             }
+            if (path.StartsWithSegments("/api/Order") || path.StartsWithSegments("/api/Order"))
+            {
+                resource = "Order";
+                action = getAction(context.Request.Method);
+            }
             if (path.StartsWithSegments("/api/CompanyPartner") || path.StartsWithSegments("/api/CompanyPartner"))
             {
                 resource = "CompanyPartner";

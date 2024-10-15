@@ -130,8 +130,8 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             .catch(err => {
                 console.log(err)
                 console.log("check err", err.response.data.Errors)
-                if (err.response.data.Errors) {
-                    setError(err.response.data.Errors)
+                if (err.response.data.errors) {
+                    setError(err.response.data.errors)
                 }
                 dispatch(setToast({status: 'error', message: 'Error', data: 'Some thing went wrong'}))
                 dispatch(setLoading(false))
@@ -169,8 +169,8 @@ const ResourceAdd : React.FC<ResourceAdd> = ({loadDataTable, form, id}) => {
             .catch(err => {
                 console.log(err)
                 console.log("check err", err.response.data.Errors)
-                if (err.response.data.Errors) {
-                    setError(err.response.data.Errors)
+                if (err.response.data.errors) {
+                    setError(err.response.data.errors)
                 }
                 if (err.response.data.type === 'reload') (
                     dispatch(setToast({status: 'error', message: 'Error', data: err.response.data.message}))

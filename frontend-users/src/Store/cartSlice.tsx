@@ -4,26 +4,29 @@ import Product from '../Interfaces/Product'
 interface CartState {
   items: Product[]
   userId: string | null
+  itemCount: number
 }
 
 const initialState: CartState = {
   items: [],
-  userId: null
+  userId: null,
+  itemCount: 0
 }
 
 // Get Product from local storage
-const loadCartFormLocalStorage = (userId: string | null): Product[] => {
-  if (!userId) return []
+const loadCartFormLocalStorage = (userId: string | null): { items: Product[]; itemCount: number } => {
+  if (!userId) return { items: [], itemCount: 0 }
   try {
     const savedCart = localStorage.getItem(`cart_${userId}`)
     if (savedCart) {
-      return JSON.parse(savedCart)
+      const items = JSON.parse(savedCart)
+      return { items, itemCount: items.length }
     }
   } catch (e) {
     console.log(e)
   }
 
-  return []
+  return { items: [], itemCount: 0 }
 }
 
 // Save Product to Local storage
@@ -38,21 +41,32 @@ const saveCartToLocalStorage = (userId: string | null, cart: Product[]) => {
 
 const cartSlice = createSlice({
   name: 'cart',
+
   initialState,
+
   reducers: {
     setUserId: (state, action: PayloadAction<string>) => {
       state.userId = action.payload
-      state.items = loadCartFormLocalStorage(state.userId)
+
+      const { items, itemCount } = loadCartFormLocalStorage(state.userId)
+
+      state.items = items
+
+      state.itemCount = itemCount
     },
 
     // add Product to Cart
+
     addProductToCart: (state, action: PayloadAction<Product>) => {
       if (state.userId) {
         const existingProductIndex = state.items.findIndex((item) => item.Id === action.payload.Id)
-
         if (existingProductIndex === -1) {
           state.items.push(action.payload)
           saveCartToLocalStorage(state.userId, state.items)
+
+          const { itemCount } = loadCartFormLocalStorage(state.userId)
+
+          state.itemCount = itemCount
         }
       }
     },
@@ -62,6 +76,9 @@ const cartSlice = createSlice({
       if (state.userId) {
         state.items = [...state.items, ...action.payload]
         saveCartToLocalStorage(state.userId, state.items)
+        const { itemCount } = loadCartFormLocalStorage(state.userId)
+
+        state.itemCount = itemCount
       }
     },
 
@@ -69,6 +86,8 @@ const cartSlice = createSlice({
     saveProductInCart: (state, action: PayloadAction<Product[]>) => {
       if (state.userId) {
         state.items = action.payload
+        state.itemCount = action.payload.length 
+
         saveCartToLocalStorage(state.userId, state.items)
       }
     },
@@ -78,12 +97,19 @@ const cartSlice = createSlice({
         const updateProduct = state.items.filter((p) => p.Id !== action.payload)
         state.items = updateProduct
         saveCartToLocalStorage(state.userId, state.items)
+        const { itemCount } = loadCartFormLocalStorage(state.userId)
+
+        state.itemCount = itemCount
       }
     },
 
     // Clear Cart
+
     clearCart: (state) => {
       state.items = []
+
+      state.itemCount = 0 // Đặt lại count về 0
+
       if (state.userId) {
         saveCartToLocalStorage(state.userId, state.items)
       }

@@ -27,7 +27,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import HomeIcon from "@mui/icons-material/Home";
 import Cookies from "js-cookie";
 import $axios, { authorization } from "@src/axios.ts";
-
+import DefaultImage from "@src/images/default.png";
 import Swal from "sweetalert2";
 import _ from "lodash";
 import CategoryDetail from "./CategoryDetail";
@@ -247,8 +247,8 @@ const CategoryList: React.FC = () => {
 
   const header: React.FC = () => {
     return (
-      <div className="header-page">
-        <div className="header-page">
+     
+        <div className="header-page m-3">
           <Breadcrumbs
             separator="›"
             aria-label="breadcrumb"
@@ -261,7 +261,7 @@ const CategoryList: React.FC = () => {
             <Link to="/category">Category</Link>
           </Breadcrumbs>
         </div>
-      </div>
+     
     );
   };
 
@@ -465,7 +465,13 @@ const CategoryList: React.FC = () => {
                                   preview
                                 />
                               ) : (
-                                <div>-</div>
+                                <Image
+                                  src={DefaultImage}
+                                  alt="default"
+                                  className="image-product"
+                                  height="70"
+                                  preview
+                                />
                               )}
                             </TableCell>
                           );

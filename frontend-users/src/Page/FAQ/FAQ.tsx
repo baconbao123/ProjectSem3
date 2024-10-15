@@ -27,7 +27,9 @@ const FAQ: React.FC = () => {
         {faqs.map((faq: any, index: any) => (
           <div key={index} className='faq-item' onClick={() => toggleAnswer(index)}>
             <h2>{faq.Title}</h2>
-            {openIndex === index && <p className='faq-answer'>{faq.Decription}</p>}
+            {openIndex === index && (
+              <p className='faq-answer' dangerouslySetInnerHTML={{ __html: faq.Decription }} />
+            )}{' '}
           </div>
         ))}
       </div>

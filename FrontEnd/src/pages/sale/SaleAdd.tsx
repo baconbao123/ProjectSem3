@@ -325,7 +325,7 @@ const SaleAdd: React.FC<SaleAdd> = ({ loadDataTable, form, id }) => {
         <Grid item xs={12} container  justifyContent="flex-end">
           <Button
             variant="contained"
-            color="primary"
+           className="btn btn-general"
             onClick={form === "edit" ? save : addNew}
           >
             {form === "edit" ? "Edit" : "Add"}

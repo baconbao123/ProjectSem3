@@ -29,7 +29,7 @@ namespace AuthenticationJWT.Controllers
             // Fetch product list with additional conditions for active categories
             var listData = (from item in db.Product
                             join partner in db.CompanyPartner on item.CompanyPartnerId equals partner.Id
-                            where item.DeletedAt == null && item.Status == 1
+                            where item.DeletedAt == null
                                   && !db.ProductCategory.Any(pc => pc.ProductId == item.Id
                                                                     && db.Category.Any(c => c.Id == pc.CategoryId && c.Status != 1))
                             orderby item.CreatedAt descending
@@ -566,7 +566,6 @@ namespace AuthenticationJWT.Controllers
 
             return result;
         }
-
         [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromForm] ProductRequest request)
@@ -597,11 +596,13 @@ namespace AuthenticationJWT.Controllers
             {
                 return BadRequest(new { message = "Company partner not found." });
             }
+
             var validCategoryIds = request.CategoryIds?.Where(id => id > 0).ToList();
             if (validCategoryIds == null || !validCategoryIds.Any())
             {
                 return BadRequest(new { message = "At least one category is required." });
             }
+
             // Tìm danh mục cha có level = 0
             var parentCategory = db.Category.FirstOrDefault(c =>
                 validCategoryIds.Contains(c.Id) && c.Level == 0)
@@ -612,19 +613,29 @@ namespace AuthenticationJWT.Controllers
             {
                 return BadRequest(new { message = "No parent category with level 0 found for the provided subcategories." });
             }
+
             var categoryCode = parentCategory.CategoryCode;
             var manufacturer = company.Name;
+            var manufacturerId = company.Id;
+
+            // Tính số lượng sản phẩm hiện tại
             int productCount = db.Product.Count(p => p.CompanyPartnerId == request.CompanyPartnerId) + 1;
+
             // Cập nhật thông tin sản phẩm
             product.Name = request.Name;
 
-            product.Code = GenerateProductCode(categoryCode, manufacturer, productCount);
+            // Cập nhật mã sản phẩm nếu nhà sản xuất đã thay đổi
+            if (product.CompanyPartnerId != manufacturerId)
+            {
+                product.Code = GenerateProductCode(categoryCode, manufacturer, productCount);
+            }
+
             product.Description = request.Description;
             product.BasePrice = request.BasePrice;
             product.SellPrice = request.SellPrice;
             product.Quantity = request.Quantity;
             product.Status = request.Status ?? 0;
-            product.Version += 1;
+            product.Version = request.Version + 1;
             product.UpdateAt = DateTime.Now;
             product.UpdatedBy = userId;
 
@@ -635,13 +646,11 @@ namespace AuthenticationJWT.Controllers
                     // Quản lý Authors
                     if (request.AuthorIds != null)
                     {
-                        // Lấy các Author hiện tại liên kết với sản phẩm
                         var existingAuthorIds = await db.AuthorProduct
                                                         .Where(ap => ap.ProductId == id)
                                                         .Select(ap => ap.AuthorId)
                                                         .ToListAsync();
 
-                        // Các Author cần thêm
                         var newAuthorIds = request.AuthorIds.Except(existingAuthorIds).ToList();
                         foreach (var authorId in newAuthorIds)
                         {
@@ -661,7 +670,6 @@ namespace AuthenticationJWT.Controllers
                             });
                         }
 
-                        // Các Author cần xóa
                         var removeAuthorIds = existingAuthorIds.Except(request.AuthorIds).ToList();
                         foreach (var authorId in removeAuthorIds)
                         {
@@ -677,13 +685,11 @@ namespace AuthenticationJWT.Controllers
                     // Quản lý Categories
                     if (request.CategoryIds != null)
                     {
-                        // Lấy các Category hiện tại liên kết với sản phẩm
                         var existingCategoryIds = await db.ProductCategory
                                                             .Where(cp => cp.ProductId == id)
                                                             .Select(cp => cp.CategoryId)
                                                             .ToListAsync();
 
-                        // Các Category cần thêm
                         var newCategoryIds = request.CategoryIds.Except(existingCategoryIds).ToList();
                         foreach (var categoryId in newCategoryIds)
                         {
@@ -703,12 +709,11 @@ namespace AuthenticationJWT.Controllers
                             });
                         }
 
-                        // Các Category cần xóa
                         var removeCategoryIds = existingCategoryIds.Except(request.CategoryIds).ToList();
                         foreach (var categoryId in removeCategoryIds)
                         {
                             var categoryProduct = await db.ProductCategory
-                                                        .FirstOrDefaultAsync(cp => cp.ProductId == id && cp.CategoryId == categoryId);
+                                                            .FirstOrDefaultAsync(cp => cp.ProductId == id && cp.CategoryId == categoryId);
                             if (categoryProduct != null)
                             {
                                 db.ProductCategory.Remove(categoryProduct);
@@ -716,24 +721,26 @@ namespace AuthenticationJWT.Controllers
                         }
                     }
 
-                    //// Quản lý hình ảnh đã bị xóa
-                    //if (request.DeletedImages != null && request.DeletedImages.Any())
-                    //{
-                    //    foreach (var imagePath in request.DeletedImages)
-                    //    {
-                    //        var productImage = await db.ProductImage
-                    //                                    .FirstOrDefaultAsync(pi => pi.ProductId == id && pi.ImagePath.Equals(imagePath, StringComparison.OrdinalIgnoreCase));
-                    //        if (productImage != null)
-                    //        {
-                    //            var fullPath = Path.Combine(_environment.WebRootPath, imagePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
-                    //            if (System.IO.File.Exists(fullPath))
-                    //            {
-                    //                System.IO.File.Delete(fullPath);
-                    //            }
-                    //            db.ProductImage.Remove(productImage);
-                    //        }
-                    //    }
-                    //}
+                    // Quản lý hình ảnh đã bị xóa
+                    if (request.DeletedImages != null && request.DeletedImages.Any())
+                    {
+                        foreach (var imagePath in request.DeletedImages)
+                        {
+                            var productImage = await db.ProductImage
+                                .FirstOrDefaultAsync(pi => pi.ProductId == id &&
+                                                           pi.ImagePath.ToLower() == imagePath.ToLower());
+                            if (productImage != null)
+                            {
+                                var fullPath = Path.Combine(_environment.WebRootPath, imagePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                                if (System.IO.File.Exists(fullPath))
+                                {
+                                    System.IO.File.Delete(fullPath);
+                                }
+                                db.ProductImage.Remove(productImage);
+                            }
+                        }
+                    }
+
 
                     // Quản lý Thumbnail
                     if (request.ImageThumbPath != null && request.ImageThumbPath.Length > 0)
@@ -774,6 +781,7 @@ namespace AuthenticationJWT.Controllers
 
                         product.ImageThumbPath = Path.Combine("uploads", "thumbProduct", thumbFileName).Replace("\\", "/");
                     }
+
 
                     // Quản lý hình ảnh sản phẩm mới
                     if (request.ProductImages != null && request.ProductImages.Any())
@@ -817,18 +825,21 @@ namespace AuthenticationJWT.Controllers
                         }
                     }
 
-                    // Lưu các thay đổi vào cơ sở dữ liệu
+                    // Lưu các thay đổi vào database
                     await db.SaveChangesAsync();
+
+                    // Commit transaction nếu thành công
                     await transaction.CommitAsync();
+
+                    return Ok(new { message = "Product updated successfully." });
                 }
                 catch (Exception ex)
                 {
+                    // Rollback nếu có lỗi
                     await transaction.RollbackAsync();
-                    return StatusCode(500, new { message = "Error updating product and images.", error = ex.Message });
+                    return StatusCode(500, new { message = "An error occurred while updating the product.", detail = ex.Message });
                 }
             }
-
-            return Ok(new { data = product });
         }
 
         // DELETE api/<CompanyProductController>/5'

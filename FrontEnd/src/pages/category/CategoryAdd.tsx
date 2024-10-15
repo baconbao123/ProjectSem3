@@ -329,6 +329,7 @@ const CategoryAdd: React.FC<CategoryAddProps> = ({ loadDataTable, form, id }) =>
                 checked={category.status}
                 onChange={(e) => handleChange("status", e.target.checked)}
                 color="primary"
+                
               />
             }
             label="Status"
@@ -387,17 +388,17 @@ const CategoryAdd: React.FC<CategoryAddProps> = ({ loadDataTable, form, id }) =>
             variant="outlined"
             color="secondary"
             onClick={() => dispatch(setShowModal(false))}
-            className="mx-3"
+            className="mx-3 "
             startIcon={<CloseIcon />}
           >
             Cancel
           </Button>
           {form === "add" ? (
-            <Button variant="contained" color="primary" onClick={addNew}>
-              Save
+            <Button variant="contained" className="btn btn-general" onClick={addNew}>
+              Add
             </Button>
           ) : (
-            <Button variant="contained" color="primary" onClick={save}>
+            <Button variant="contained" className="btn btn-general" onClick={save}>
               Save
             </Button>
           )}

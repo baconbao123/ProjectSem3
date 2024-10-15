@@ -24,39 +24,58 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
 
   const handleAddToCart = () => {
     if (!userId) {
-      Swal.fire('Sign up or log in to add products')
+      Swal.fire({
+        icon: 'error',
+        title: 'Sign up or log in to add products',
+        confirmButtonText: 'Login',
+        cancelButtonText: 'Register',
+        showCancelButton: true,
+        customClass: {
+          confirmButton: 'custom-button',
+          cancelButton: 'custom-button'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login')
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          navigate('/register')
+        }
+      })
+
       return
     }
     dispatch(setUserId(userId))
     dispatch(addProductToCart(product))
-    Swal.fire({
-      icon: 'success',
-      title: 'Product has been added to the cart',
-      showConfirmButton: false,
-      timer: 1000
-    })
   }
 
   const handleBuyNow = () => {
     if (!userId) {
-      Swal.fire('Sign up or log in to purchase products immediately')
+      Swal.fire({
+        icon: 'error',
+        title: 'Sign up or log in to add products',
+        confirmButtonText: 'Login',
+        cancelButtonText: 'Register',
+        showCancelButton: true,
+        customClass: {
+          confirmButton: 'custom-button',
+          cancelButton: 'custom-button'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login')
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          navigate('/register')
+        }
+      })
+
       return
     }
 
-    const previousProductKey = `buynowProduct_${userId}`
-    localStorage.removeItem(previousProductKey)
-
-    const currentProduct = {
-      Id: product.Id,
-      Name: product.Name,
-      ImageThumbPath: product.ImageThumbPath,
-      SellPrice: product.SellPrice,
-      quantity: 1
-    }
-
-    localStorage.setItem(previousProductKey, JSON.stringify([currentProduct]))
-
-    navigate('/checkout/buynow')
+    dispatch(addProductToCart(product))
+    const existingCheckedProducts = localStorage.getItem(`productChecked_${userId}`)
+    const checkedProducts = existingCheckedProducts ? JSON.parse(existingCheckedProducts) : []
+    localStorage.setItem(`productChecked_${userId}`, JSON.stringify([...checkedProducts, product]))
+    navigate('/checkout/cart')
   }
 
   const header = (
@@ -74,12 +93,6 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
   const footer = (
     <div className='card-btn'>
       <Button icon={<BsCartPlus style={{ fontSize: '16px' }} />} className='btncart' onClick={handleAddToCart} />
-      <Button
-        label='Buy Now'
-        icon={<RiPaypalLine style={{ fontSize: '14px' }} />}
-        className='btn-buynow'
-        onClick={handleBuyNow}
-      />
     </div>
   )
 
@@ -87,7 +100,7 @@ export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
     <div className='card-product'>
       <Card
         title={<Link to={`/products/details/${product.Id}`}>{sliceText(product.Name, 35)}</Link>}
-        subTitle={product.CompanyPartnerName}
+        subTitle={product.CompanyPartnerName || product.CompanyName}
         footer={footer}
         header={header}
       >

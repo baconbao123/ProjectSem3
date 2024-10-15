@@ -8,8 +8,8 @@ import { useEffect, useRef, useState } from 'react'
 import { $axios } from '../../../axios'
 
 export const Menu = () => {
-  const [itemCategories, setItemCategories] = useState<any | []>([])
-  const [expandedCategoryId, setExpandedCategoryId] = useState<number | null>(null)
+  // const [itemCategories, setItemCategories] = useState<any | []>([])
+  // const [expandedCategoryId, setExpandedCategoryId] = useState<number | null>(null)
   const expandedCategoryRef = useRef<HTMLDivElement>(null)
 
   const itemsPage: { name: string; url: string }[] = [
@@ -30,27 +30,27 @@ export const Menu = () => {
   useEffect(() => {
     const fetchItem = async () => {
       const res = await $axios.get('CategoriesFE/getCategories')
-      setItemCategories(res.data.data)
+      // setItemCategories(res.data.data)
     }
 
     fetchItem()
   }, [])
 
-  const toggleSubcategory = (parentId: number) => {
-    setExpandedCategoryId((prevId) => (prevId === parentId ? null : parentId))
-  }
+  // const toggleSubcategory = (parentId: number) => {
+  //   setExpandedCategoryId((prevId) => (prevId === parentId ? null : parentId))
+  // }
 
-  const handleClickOutside = (e: MouseEvent) => {
-    if (expandedCategoryRef.current && !expandedCategoryRef.current.contains(e.target as Node)) {
-      setExpandedCategoryId(null)
-    }
-  }
+  // const handleClickOutside = (e: MouseEvent) => {
+  //   if (expandedCategoryRef.current && !expandedCategoryRef.current.contains(e.target as Node)) {
+  //     setExpandedCategoryId(null)
+  //   }
+  // }
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside)
+  // useEffect(() => {
+  //   document.addEventListener('mousedown', handleClickOutside)
 
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  //   return () => document.removeEventListener('mousedown', handleClickOutside)
+  // }, [])
 
   return (
     <>

@@ -49,7 +49,7 @@ const CategoryProductTable: React.FC = () => {
   useEffect(() => {
     // Gọi API để lấy dữ liệu category
     $axios
-      .get("Category")
+      .get("Common/category")
       .then((response) => {
         setCategories(response.data.data);
       })
@@ -62,7 +62,7 @@ const CategoryProductTable: React.FC = () => {
     // Gọi API để lấy danh sách sản phẩm theo category
     if (selectedCategory) {
       $axios
-        .get(`/Product/category/${selectedCategory}`)
+        .get(`Common/product/category?categoryId=${selectedCategory}`)
         .then((response) => {
           setProducts(response.data.data || []); // Đảm bảo mảng không bị undefined
           setTotalProducts(response.data.data.length);
@@ -75,7 +75,7 @@ const CategoryProductTable: React.FC = () => {
     } else {
       // Lấy tất cả sản phẩm nếu không chọn category
       $axios
-        .get("Product")
+        .get("Common/product")
         .then((response) => {
           const allProducts = response.data.data || []; // Đảm bảo mảng không bị undefined
           setProducts(allProducts);

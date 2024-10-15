@@ -14,6 +14,7 @@ export default interface Product {
   CategoryName: string
   CreatedAt: string
   CompanyPartnerName?: string
+  CompanyName?: string
   //   Thêm
   special?: string
 }

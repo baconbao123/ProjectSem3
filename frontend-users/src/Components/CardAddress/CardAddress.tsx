@@ -5,6 +5,8 @@ import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { InputSwitch } from 'primereact/inputswitch'
+import { $axios } from '../../axios'
+import Swal from 'sweetalert2'
 
 export interface CardAddressState {
   Id: string
@@ -22,33 +24,74 @@ interface CardAddressProps {
   selectedId: string
   setSelectedId: (id: string) => void
   onSelectAddress: any
+  setAddresses: any
 }
 
-const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSelectedId, onSelectAddress }) => {
+const CardAddress: React.FC<CardAddressProps> = ({
+  cardAdress,
+  selectedId,
+  setSelectedId,
+  onSelectAddress,
+  setAddresses
+}) => {
+  const addressId = cardAdress.Id
+  const userId = cardAdress.UserId
   const [viewUpdateAddress, setViewUpdateAddress] = useState<boolean>(false)
   const [assignName, setAssignName] = useState<string>(cardAdress.AssignName)
   const [assign, setAssign] = useState<boolean>(cardAdress.Assign)
   const [phone, setPhone] = useState<string>(cardAdress.Phone)
   const [index, setIndex] = useState<boolean>(cardAdress.Index)
   const [address, setAddress] = useState<string>(cardAdress.Address)
+
   const [detailAddress, setDetailAddress] = useState<string>(cardAdress.DetailAddress)
+
+  const [error, setError] = useState('')
+
+  const handlePhoneChange = (e: any) => {
+    const value = e.target.value
+
+    if (value.length !== 10) {
+      setError('Enter phone with 10 characters')
+    } else {
+      setError('')
+    }
+
+    setPhone(value)
+  }
 
   const handleChange = () => {
     setSelectedId(cardAdress.Id)
     onSelectAddress(cardAdress)
   }
 
-  const handleUpdateAddress = (e: any) => {
+  const handleUpdateAddress = async (e: any) => {
     e.preventDefault()
-    // setViewUpdateAddress(false)
+
+    const addressDataUpdate: CardAddressState = {
+      Id: addressId,
+      UserId: userId,
+      AssignName: assignName,
+      Assign: assign,
+      Phone: phone,
+      Address: address,
+      DetailAddress: detailAddress,
+      Index: index
+    }
 
     try {
-
-    } catch(error) {
-      console.log(error);
-      
+      await $axios.put('AddressUserFE/UpdateAdressByUser', addressDataUpdate)
+      const updatedAddresses = await $axios.get(`AddressUserFE/GetAdressByUser/${userId}`)
+      setAddresses(updatedAddresses.data)
+      setViewUpdateAddress(false)
+    } catch (error) {
+      console.log(error)
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Address Failed',
+        showConfirmButton: false,
+        timer: 1500
+      })
     }
-  
   }
 
   return (
@@ -95,7 +138,7 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
               setViewUpdateAddress(false)
             }}
           >
-            <form>
+            <form onSubmit={handleUpdateAddress}>
               <div className='row-address-1'>
                 <span className='input-address-group'>
                   <label htmlFor='Username'>AssignName</label>
@@ -103,7 +146,8 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
                 </span>
                 <div className='input-address-group' style={{ marginLeft: '10px' }}>
                   <label htmlFor='Phone'>Phone</label>
-                  <InputText id='Phone' value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <InputText id='Phone' value={phone} onChange={handlePhoneChange} />
+                  {error && <small style={{ color: 'red', fontSize: '12px' }}>{error}</small>}
                 </div>
               </div>
               <div className='row-address-2'>
@@ -140,7 +184,8 @@ const CardAddress: React.FC<CardAddressProps> = ({ cardAdress, selectedId, setSe
                 <span className='span-confirm'>Allow someone else to receive it for you</span>
               </div>
               <div className='row-address-3 mt-3'>
-                <Button type='submit' label='Save' className='save' onClick={(e) => handleUpdateAddress(e)} />
+                <input type='hidden' value={addressId} />
+                <Button type='submit' label='Save' className='save' />
               </div>
             </form>
           </Dialog>

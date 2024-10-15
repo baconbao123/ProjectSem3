@@ -186,23 +186,19 @@ const FAQList: React.FC = () => {
 
     const header: React.FC = () => {
         return (
-            <div className='header-page'>
-                <Breadcrumbs separator="›" aria-label="breadcrumb" className='breadcrumb'>
-                    <Link
-                        color="inherit"
-                        to="/"
-                    >
-                        <HomeIcon className='icon-breadcrum' />
-
-
-                    </Link>
-                    <Link
-                     to='/FAQ'
-                    >
-                        FAQ
-                    </Link>
-                </Breadcrumbs>
-            </div>
+            <div className="header-page m-3">
+            <Breadcrumbs
+              separator="›"
+              aria-label="breadcrumb"
+              className="breadcrumb"
+            >
+              <Link color="inherit" to="/">
+                <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+                Home
+              </Link>
+              <Link to="/FAQ">FAQs</Link>
+            </Breadcrumbs>
+          </div>
         )
     }
 

@@ -72,21 +72,21 @@ const Dashboard: React.FC = () => {
 
   // ======================Card ==========================//
   const cardInfo = [
-    { title: "Profit", value: "$85,000", growth: 5 },
+    { title: "Profit", value: "$800", growth: 5 },
     {
       title: "Total Customers",
       value: customerGrowthResponse ? customerGrowthResponse.TotalCustomers.toString() : "Loading...",
       growth: customerGrowthResponse ? customerGrowthResponse.GrowthRatePercentage : 0,
     },
-    { title: "Total Products", value: "8,320", growth: 10 },
-    { title: "Stock by Category", value: "1,200", growth: -5 },
+    { title: "Total Products", value: "30", growth: 10 },
+   
     {
       title: "Total Company Partners",
       value: totalPartners ? totalPartners.TotalCurrentMonthCompany.toString() : "Loading...",
       growth: totalPartners ? totalPartners.GrowthRatePercentage : 0,
       link: baseUrl + "company",
     },
-    { title: "Total Orders", value: `${totalOrders}`, growth: 10 },
+   
   ];
   // ======================End Card ==========================//
 
@@ -187,7 +187,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="card">
+      <div className="card card-product">
         <div className="row">
           <div className="col-lg-6">
             <div className="top-products">
